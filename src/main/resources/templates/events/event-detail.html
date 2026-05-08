@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Event</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <h2 th:text="${event.name}"></h2>
+    <p><strong>Dato:</strong> <span th:text="${event.date}"></span></p>
+    <p><strong>Lokation:</strong> <span th:text="${event.location}"></span></p>
+    <p><strong>Format:</strong> <span th:text="${event.format}"></span></p>
+    <p><strong>Maks. spillere:</strong> <span th:text="${event.maxPlayers}"></span></p>
+    <p><strong>Status:</strong> <span th:text="${event.status}"></span></p>
+
+    <h3>Tilmeldte spillere</h3>
+    <table th:if="${registrations != null and !#lists.isEmpty(registrations)}">
+        <thead>
+        <tr>
+            <th>Spiller</th>
+            <th>Deck</th>
+            <th>Tilmeldingsdato</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="reg : ${registrations}">
+            <td th:text="${reg.playerId}"></td>
+            <td th:text="${reg.deckId}"></td>
+            <td th:text="${reg.registrationDate}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <p th:if="${registrations == null or #lists.isEmpty(registrations)}">Ingen tilmeldte endnu.</p>
+
+    <div th:if="${event.upcoming and session.player != null}" style="margin-top: 24px;">
+        <h3>Tilmeld dig</h3>
+        <form th:action="@{/events/{id}/register(id=${event.id})}" method="post">
+            <label for="deckId">Vælg deck:</label>
+            <select id="deckId" name="deckId">
+                <option th:each="deck : ${decks}" th:value="${deck.id}" th:text="${deck.name}"></option>
+            </select>
+            <button type="submit">Tilmeld</button>
+        </form>
+    </div>
+
+    <div style="margin-top: 16px;">
+        <a th:href="@{/events}">Tilbage</a>
+    </div>
+</main>
+</body>
+</html>

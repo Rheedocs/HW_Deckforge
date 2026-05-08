@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Rediger spiller</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <h2>Rediger spiller</h2>
+    <form th:action="@{/players/{id}/edit(id=${player.id})}" th:object="${player}" method="post">
+        <input type="hidden" th:field="*{id}">
+
+        <label for="username">Brugernavn:</label>
+        <input type="text" id="username" th:field="*{username}" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" th:field="*{email}" required>
+
+        <label for="password">Ny adgangskode (lad være tom for at beholde nuværende):</label>
+        <input type="password" id="password" name="newPassword" autocomplete="new-password">
+
+        <label for="collectionVisibility">Samlingssynlighed:</label>
+        <select id="collectionVisibility" th:field="*{collectionVisibility}">
+            <option value="PUBLIC">Offentlig</option>
+            <option value="TRADE_ONLY">Kun byttekort</option>
+            <option value="PRIVATE">Privat</option>
+        </select>
+
+        <div th:if="${session.player.role.name() == 'ADMIN'}">
+            <label for="role">Rolle:</label>
+            <select id="role" th:field="*{role}">
+                <option value="PLAYER">Spiller</option>
+                <option value="ADMIN">Admin</option>
+            </select>
+        </div>
+
+        <button type="submit">Gem ændringer</button>
+    </form>
+    <div style="margin-top: 16px;">
+        <a th:href="@{/players}">Tilbage</a>
+    </div>
+</main>
+</body>
+</html>

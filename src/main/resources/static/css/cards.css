@@ -1,0 +1,39 @@
+/* ── Kortbilleder ── */
+.card-img {
+    width: 100%;
+    max-width: 200px;
+    border-radius: 8px;
+    display: block;
+}
+
+.card-img-small {
+    width: 40px;
+    height: auto;
+    border-radius: 4px;
+    vertical-align: middle;
+}
+
+/* ── Kort grid ── */
+.card-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.card-item {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.card-item h3 { margin: 0 0 8px 0; color: var(--primary); }
+.card-item p { margin: 4px 0; color: var(--text-light); font-size: 14px; }
+
+/* ── Desktop ── */
+@media (min-width: 768px) {
+    .card-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}

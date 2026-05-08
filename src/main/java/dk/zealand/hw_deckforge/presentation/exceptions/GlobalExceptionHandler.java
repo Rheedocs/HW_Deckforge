@@ -15,6 +15,12 @@ import java.util.List;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(DatabaseException.class)
+    public String handleDatabaseException(DatabaseException ex, Model model) {
+        model.addAttribute("fejl", List.of(ex.getMessage()));
+        return "error";
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleIllegalArgument(IllegalArgumentException ex, Model model, HttpServletRequest request) {
         model.addAttribute("fejl", List.of(ex.getMessage()));
@@ -24,12 +30,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public String handleRuntimeException(RuntimeException ex, Model model) {
-        model.addAttribute("fejl", List.of(ex.getMessage()));
-        return "error";
-    }
-
-    @ExceptionHandler(DatabaseException.class)
-    public String handleDatabaseException(DatabaseException ex, Model model) {
         model.addAttribute("fejl", List.of(ex.getMessage()));
         return "error";
     }

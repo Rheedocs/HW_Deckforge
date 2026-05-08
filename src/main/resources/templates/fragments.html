@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<body>
+<header th:fragment="header">
+    <div>
+        <h1><a th:href="@{/}">Deckforge</a></h1>
+        <input type="checkbox" id="menu-toggle" class="menu-toggle">
+        <label for="menu-toggle" class="burger" aria-label="Åbn menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+        <nav class="nav">
+            <a th:href="@{/cards}">Kort</a>
+            <a th:href="@{/decks}">Decks</a>
+            <a th:href="@{/events}">Events</a>
+            <a th:href="@{/trades}">Bytning</a>
+            <a th:if="${session.player == null}" th:href="@{/login}">Log ind</a>
+            <a th:if="${session.player == null}" th:href="@{/players/register}">Opret konto</a>
+            <a th:if="${session.player != null}" th:href="@{/logout}">Log ud</a>
+            <span th:if="${session.player != null}">Logget ind som: <strong th:text="${session.player.username}"></strong></span>
+        </nav>
+    </div>
+</header>
+</body>
+</html>

@@ -1,0 +1,46 @@
+package dk.zealand.hw_deckforge.presentation.controllers;
+
+import dk.zealand.hw_deckforge.application.service.DeckService;
+import dk.zealand.hw_deckforge.domain.Deck;
+import dk.zealand.hw_deckforge.presentation.helpers.AuthHelper;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+@RequestMapping("/decks")
+public class DeckController {
+
+    private final DeckService deckService;
+
+    public DeckController(DeckService deckService) {
+        this.deckService = deckService;
+    }
+
+    @GetMapping("/player/{playerId}")
+    public String getDecksByPlayer(@PathVariable int playerId, Model model, HttpSession session) {
+        return "decks/deck-list"; }
+
+    @GetMapping("/player/{playerId}/create")
+    public String showCreateForm(@PathVariable int playerId, Model model, HttpSession session) {
+        return "decks/add-deck"; }
+
+    @PostMapping("/create")
+    public String create(@ModelAttribute Deck deck, HttpSession session) { return "redirect:/decks/player/"
+            + deck.getPlayerId(); }
+
+    @GetMapping("/{id}/edit")
+    public String showEditForm(@PathVariable int id, Model model, HttpSession session) { return "decks/edit-deck"; }
+
+    @PostMapping("/{id}/edit")
+    public String update(@PathVariable int id, @ModelAttribute Deck deck, HttpSession session) {
+        return "redirect:/decks/player/" + deck.getPlayerId(); }
+
+    @GetMapping("/{id}/delete")
+    public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session) {
+        return "delete-confirm"; }
+
+    @PostMapping("/{id}/delete")
+    public String delete(@PathVariable int id, HttpSession session) { return "redirect:/decks"; }
+}

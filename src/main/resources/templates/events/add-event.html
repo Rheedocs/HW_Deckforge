@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Opret event</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <h2>Opret event</h2>
+    <form th:action="@{/events/create}" th:object="${event}" method="post">
+        <label for="name">Navn:</label>
+        <input type="text" id="name" th:field="*{name}" required>
+
+        <label for="location">Lokation:</label>
+        <input type="text" id="location" th:field="*{location}" required>
+
+        <label for="date">Dato:</label>
+        <input type="date" id="date" th:field="*{date}" required>
+
+        <label for="format">Format:</label>
+        <select id="format" th:field="*{format}">
+            <option value="COMMANDER">Commander</option>
+            <option value="STANDARD">Standard</option>
+            <option value="DRAFT">Draft</option>
+            <option value="CASUAL">Casual</option>
+        </select>
+
+        <label for="maxPlayers">Maks. spillere:</label>
+        <input type="number" id="maxPlayers" th:field="*{maxPlayers}" min="2" required>
+
+        <button type="submit">Opret event</button>
+    </form>
+    <div style="margin-top: 16px;">
+        <a th:href="@{/events}">Tilbage</a>
+    </div>
+</main>
+</body>
+</html>

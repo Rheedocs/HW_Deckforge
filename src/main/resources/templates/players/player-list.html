@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Spillere</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <div th:with="isAdmin=${session.player != null and session.player.role.name() == 'ADMIN'}">
+        <h2>Spillere</h2>
+        <table>
+            <thead>
+            <tr>
+                <th th:if="${isAdmin}">Id</th>
+                <th>Brugernavn</th>
+                <th>Email</th>
+                <th th:if="${isAdmin}">Rolle</th>
+                <th>Samlingssynlighed</th>
+                <th>Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="player : ${players}">
+                <td th:if="${isAdmin}" th:text="${player.id}"></td>
+                <td th:text="${player.username}"></td>
+                <td th:text="${player.email}"></td>
+                <td th:if="${isAdmin}" th:text="${player.role}"></td>
+                <td th:text="${player.collectionVisibility}"></td>
+                <td class="action-col">
+                    <a class="btn" th:if="${isAdmin or session.player.id == player.id}" th:href="@{/players/{id}/edit(id=${player.id})}">Rediger</a>
+                    <a class="btn btn-danger" th:if="${isAdmin or session.player.id == player.id}" th:href="@{/players/{id}/delete(id=${player.id})}">Slet</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Events</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <div th:with="isAdmin=${session.player != null and session.player.role.name() == 'ADMIN'}">
+        <h2>Events</h2>
+
+        <h3>Kommende events</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Navn</th>
+                <th>Dato</th>
+                <th>Lokation</th>
+                <th>Format</th>
+                <th>Pladser</th>
+                <th>Status</th>
+                <th>Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="event : ${events}" th:if="${event.upcoming}">
+                <td th:text="${event.name}"></td>
+                <td th:text="${event.date}"></td>
+                <td th:text="${event.location}"></td>
+                <td th:text="${event.format}"></td>
+                <td th:text="${event.maxPlayers}"></td>
+                <td><span class="badge badge-upcoming">Kommende</span></td>
+                <td class="action-col">
+                    <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
+                    <a class="btn" th:if="${isAdmin}" th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
+                    <a class="btn btn-danger" th:if="${isAdmin}" th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h3>Tidligere events</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Navn</th>
+                <th>Dato</th>
+                <th>Lokation</th>
+                <th>Format</th>
+                <th>Pladser</th>
+                <th>Status</th>
+                <th>Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="event : ${events}" th:if="${!event.upcoming}">
+                <td th:text="${event.name}"></td>
+                <td th:text="${event.date}"></td>
+                <td th:text="${event.location}"></td>
+                <td th:text="${event.format}"></td>
+                <td th:text="${event.maxPlayers}"></td>
+                <td><span class="badge badge-completed">Afsluttet</span></td>
+                <td class="action-col">
+                    <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
+                    <a class="btn" th:if="${isAdmin}" th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
+                    <a class="btn btn-danger" th:if="${isAdmin}" th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <a class="btn list-action" th:if="${isAdmin}" th:href="@{/events/create}">Opret nyt event</a>
+    </div>
+</main>
+</body>
+</html>

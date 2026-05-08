@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Bekræft sletning</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <h2>Bekræft sletning</h2>
+    <p>Er du sikker på at du vil slette <strong th:text="${navn}"></strong>?</p>
+    <div style="margin-top: 16px; display: flex; gap: 8px; align-items: center;">
+        <form th:action="${deleteUrl}" method="post">
+            <button type="submit" class="btn-danger">Ja, slet</button>
+        </form>
+        <a th:href="${tilbage}">Tilbage</a>
+    </div>
+</main>
+</body>
+</html>

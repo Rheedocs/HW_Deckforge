@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Adgang nægtet</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <div class="error-container">
+        <h2>Denne side kræver login</h2>
+        <p>Du skal være logget ind for at se denne side.</p>
+        <a class="btn" th:href="@{/login}">Log ind</a>
+        <a class="btn" th:href="@{/players/register}">Opret konto</a>
+    </div>
+</main>
+</body>
+</html>

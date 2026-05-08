@@ -1,0 +1,103 @@
+/* ── Header ── */
+header {
+    background-color: var(--primary);
+    padding: 16px 20px;
+    position: relative;
+    overflow: visible;
+}
+
+header > div {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+header h1 a {
+    color: white;
+    text-decoration: none;
+    font-size: 22px;
+}
+
+/* ── Nav ── */
+nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+nav a, nav span a { color: white; text-decoration: none; }
+nav > span { display: flex; gap: 16px; color: white; }
+nav a:hover, nav span a:hover { text-decoration: underline; }
+
+/* ── Burger ── */
+.menu-toggle { display: none; }
+
+.burger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.burger span {
+    width: 28px;
+    height: 3px;
+    background-color: white;
+    border-radius: 2px;
+    display: block;
+}
+
+/* ── Main ── */
+main {
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 0 16px;
+}
+
+/* ── Desktop ── */
+@media (min-width: 768px) {
+    .burger { display: none; }
+
+    nav.nav {
+        display: flex !important;
+        position: static;
+        flex-direction: row;
+        background-color: transparent;
+        padding: 0;
+    }
+
+    nav.nav a, nav.nav span a { padding: 0; border-bottom: none; }
+    nav.nav > span { display: flex; font-size: inherit; }
+
+    main { padding: 0 24px; margin: 40px auto; }
+}
+
+/* ── Mobil nav ── */
+@media (max-width: 768px) {
+    nav.nav {
+        position: absolute;
+        top: 70px;
+        left: -20px;
+        right: -20px;
+        background-color: var(--primary-dark);
+        display: none;
+        flex-direction: column;
+        padding: 0;
+        z-index: 999;
+    }
+
+    nav.nav a, nav.nav span a {
+        display: block;
+        padding: 8px 32px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        color: white;
+        text-align: center;
+    }
+
+    nav.nav > span { display: contents; font-size: 0; }
+
+    .menu-toggle:checked + .burger + nav.nav { display: flex; }
+}

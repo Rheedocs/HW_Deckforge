@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Noget gik galt</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <div class="error-container">
+        <h2>Noget gik galt</h2>
+        <div class="error" th:if="${fejl != null}">
+            <p th:each="fejlBesked : ${fejl}" th:text="${fejlBesked}"></p>
+        </div>
+        <p th:if="${fejl == null}">En ukendt fejl opstod.</p>
+        <a class="btn" th:href="${tilbage != null ? tilbage : '/'}">Tilbage</a>
+    </div>
+</main>
+</body>
+</html>
