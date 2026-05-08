@@ -1,0 +1,105 @@
+SET SQL_SAFE_UPDATES = 0;
+
+DROP TABLE IF EXISTS result;
+DROP TABLE IF EXISTS trade_card;
+DROP TABLE IF EXISTS trade;
+DROP TABLE IF EXISTS event_registration;
+DROP TABLE IF EXISTS deck;
+DROP TABLE IF EXISTS player_card;
+DROP TABLE IF EXISTS event;
+DROP TABLE IF EXISTS card;
+DROP TABLE IF EXISTS player;
+
+CREATE DATABASE IF NOT EXISTS deckforge;
+USE deckforge;
+
+CREATE TABLE player (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('PLAYER','ADMIN') NOT NULL DEFAULT 'PLAYER',
+    collection_visibility ENUM('PRIVATE','TRADE_ONLY','PUBLIC') NOT NULL DEFAULT 'PUBLIC'
+);
+
+CREATE TABLE card (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    card_type ENUM('CREATURE','LAND','INSTANT','SORCERY','ARTIFACT','ENCHANTMENT','PLANESWALKER') NOT NULL,
+    color ENUM('WHITE','BLUE','BLACK','RED','GREEN','COLORLESS') NOT NULL,
+    set_name VARCHAR(100) NOT NULL,
+    rarity ENUM('COMMON','UNCOMMON','RARE','MYTHIC_RARE') NOT NULL,
+    rule_text TEXT NULL,
+    image_url VARCHAR(255) NULL
+);
+
+CREATE TABLE player_card (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    player_id INT NOT NULL,
+    card_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    for_trade BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE,
+    FOREIGN KEY (card_id) REFERENCES card(id) ON DELETE CASCADE
+);
+
+CREATE TABLE deck (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    player_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    format ENUM('COMMANDER','STANDARD','DRAFT','CASUAL') NOT NULL,
+    visibility ENUM('PRIVATE','PUBLIC') NOT NULL DEFAULT 'PRIVATE',
+    FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE
+);
+
+CREATE TABLE event (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    location VARCHAR(100) NOT NULL,
+    date DATE NOT NULL,
+    format ENUM('COMMANDER','STANDARD','DRAFT','CASUAL') NOT NULL,
+    max_players INT NOT NULL,
+    status ENUM('UPCOMING','ONGOING','COMPLETED','CANCELLED') NOT NULL DEFAULT 'UPCOMING'
+);
+
+CREATE TABLE event_registration (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    player_id INT NOT NULL,
+    event_id INT NOT NULL,
+    deck_id INT NOT NULL,
+    registration_date DATE NOT NULL,
+    FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE,
+    FOREIGN KEY (deck_id) REFERENCES deck(id)
+);
+
+CREATE TABLE trade (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    proposer_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    status ENUM('PENDING','ACCEPTED','DECLINED','CANCELLED','EXPIRED') NOT NULL DEFAULT 'PENDING',
+    created_at DATETIME NOT NULL,
+    expires_at DATETIME NOT NULL,
+    FOREIGN KEY (proposer_id) REFERENCES player(id),
+    FOREIGN KEY (receiver_id) REFERENCES player(id)
+);
+
+CREATE TABLE trade_card (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    trade_id INT NOT NULL,
+    player_card_id INT NOT NULL,
+    role ENUM('PROPOSER','RECEIVER') NOT NULL,
+    FOREIGN KEY (trade_id) REFERENCES trade(id) ON DELETE CASCADE,
+    FOREIGN KEY (player_card_id) REFERENCES player_card(id)
+);
+
+CREATE TABLE result (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    player_id INT NOT NULL,
+    event_id INT NOT NULL,
+    placement INT NOT NULL,
+    FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE
+);
+
+SET SQL_SAFE_UPDATES = 1;
