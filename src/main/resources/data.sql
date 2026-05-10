@@ -3,11 +3,11 @@ SET SQL_SAFE_UPDATES = 0;
 USE deckforge;
 
 INSERT INTO player (username, email, password, role, collection_visibility) VALUES
-('admin', 'admin@deckforge.dk', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh', 'ADMIN', 'PUBLIC'),
-('goncalo', 'goncalo@deckforge.dk', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh', 'PLAYER', 'PUBLIC'),
-('mattias', 'mattias@deckforge.dk', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh', 'PLAYER', 'TRADE_ONLY'),
-('nicki', 'nicki@deckforge.dk', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh', 'PLAYER', 'PRIVATE'),
-('holger', 'holger@deckforge.dk', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh', 'PLAYER', 'PUBLIC');
+('admin', 'admin@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'ADMIN', 'PUBLIC'),
+('goncalo', 'goncalo@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'PUBLIC'),
+('mattias', 'mattias@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'TRADE_ONLY'),
+('nicki', 'nicki@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'PRIVATE'),
+('holger', 'holger@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'PUBLIC');
 
 INSERT INTO card (name, card_type, color, set_name, rarity, rule_text, image_url) VALUES
 ('Shivan Dragon', 'CREATURE', 'RED', 'Foundations', 'UNCOMMON', 'Flying. R: This creature gets +1/+0 until end of turn.', 'https://cards.scryfall.io/normal/front/7/0/702c4781-670b-49ae-b511-90ed119841b0.jpg'),

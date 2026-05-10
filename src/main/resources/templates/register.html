@@ -24,13 +24,6 @@
         <label for="password">Adgangskode:</label>
         <input type="password" id="password" name="password" required>
 
-        <label for="collectionVisibility">Samlingssynlighed:</label>
-        <select id="collectionVisibility" name="collectionVisibility">
-            <option value="PUBLIC">Offentlig</option>
-            <option value="TRADE_ONLY">Kun byttekort</option>
-            <option value="PRIVATE">Privat</option>
-        </select>
-
         <button type="submit">Opret konto</button>
     </form>
     <p>Har du allerede en konto? <a th:href="@{/login}">Log ind</a></p>

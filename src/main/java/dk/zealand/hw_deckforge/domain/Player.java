@@ -29,17 +29,48 @@ public class Player {
     public Role getRole() { return role; }
     public CollectionVisibility getCollectionVisibility() { return collectionVisibility; }
 
-    public boolean isCollectionVisible(CollectionVisibility visibility) {
-        return this.collectionVisibility == visibility;
-    }
-
     public void setId(int id) { this.id = id; }
     public void setUsername(String username) { this.username = username; }
     public void setEmail(String email) { this.email = email; }
-    public void setPassword(String password) { this.password = password; }
-    public void setRole(Role role) { this.role = role; }
-    public void setCollectionVisibility(CollectionVisibility collectionVisibility) {
-        this.collectionVisibility = collectionVisibility; }
+
+    /**
+     * Ændrer samlingssynlighed. Null er ikke tilladt.
+     */
+    public void changeVisibility(CollectionVisibility visibility) {
+        if (visibility == null) throw new IllegalArgumentException("Synlighed må ikke være null");
+        this.collectionVisibility = visibility;
+    }
+
+    /**
+     * Sætter et nyt BCrypt-hashet password. Bruges af service-laget efter encoding.
+     */
+    public void changePassword(String hashedPassword) {
+        if (hashedPassword == null || hashedPassword.isBlank())
+            throw new IllegalArgumentException("Password må ikke være tomt");
+        this.password = hashedPassword;
+    }
+
+    /**
+     * Giver admin-rolle. Kan kun tildeles af service-laget.
+     */
+    public void promoteToAdmin() {
+        this.role = Role.ADMIN;
+    }
+
+    /**
+     * Fjerner admin-rolle og sætter tilbage til PLAYER.
+     */
+    public void demoteToPlayer() {
+        this.role = Role.PLAYER;
+    }
+
+    public boolean isAdmin() {
+        return this.role == Role.ADMIN;
+    }
+
+    public boolean isCollectionVisible(CollectionVisibility visibility) {
+        return this.collectionVisibility == visibility;
+    }
 
     @Override
     public String toString() {
