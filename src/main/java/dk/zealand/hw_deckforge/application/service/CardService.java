@@ -5,6 +5,7 @@ import dk.zealand.hw_deckforge.domain.Card;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class CardService {
@@ -15,9 +16,40 @@ public class CardService {
         this.cardRepository = cardRepository;
     }
 
-    public List<Card> getAll() { return cardRepository.findAll(); }
-    public Card getById(int id) { return cardRepository.findById(id); }
-    public void create(Card card) { cardRepository.save(card); }
-    public void update(Card card) { cardRepository.update(card); }
-    public void delete(int id) { cardRepository.delete(id); }
+    public List<Card> getAll() {
+        return cardRepository.findAll();
+    }
+// Ændret Exception til NoSuchElementException da jeg fik fejl med CardNotFoundException(id)
+    public Card getById(int id) {
+        if (id <= 0) throw new IllegalArgumentException("Id skal være større end 0!");
+        Card card = cardRepository.findById(id);
+        if (card == null) throw new NoSuchElementException("Kort med id " + id + " blev ikke fundet!");
+        return card;
+    }
+
+    public void create(Card card) {
+        if (card == null) throw new IllegalArgumentException("Kort må ikke være null!");
+        validateCard(card);
+        cardRepository.save(card);
+    }
+
+    public void update(Card card) {
+        if (card == null) throw new IllegalArgumentException("Kort må ikke være null!");
+        validateCard(card);
+        cardRepository.update(card);
+    }
+
+    public void delete(int id) {
+        if (id <= 0) throw new IllegalArgumentException("Ugyldigt id!");
+        cardRepository.delete(id);
+    }
+
+    private void validateCard(Card card) {
+        if (card.getName() == null || card.getName().isBlank())
+            throw new IllegalArgumentException("Kort skal have et navn!");
+        if (card.getCardType() == null)
+            throw new IllegalArgumentException("Kortet skal have en type!");
+        if (card.getColor() == null)
+            throw new IllegalArgumentException("Kortet skal have en farve!");
+    }
 }

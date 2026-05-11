@@ -2,6 +2,9 @@ package dk.zealand.hw_deckforge.infrastructure;
 
 import dk.zealand.hw_deckforge.application.interfaces.ICardRepository;
 import dk.zealand.hw_deckforge.domain.Card;
+import dk.zealand.hw_deckforge.domain.enums.CardType;
+import dk.zealand.hw_deckforge.domain.enums.Color;
+import dk.zealand.hw_deckforge.domain.enums.Rarity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -15,8 +18,35 @@ public class CardRepository implements ICardRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override public List<Card> findAll() { return null; }
-    @Override public Card findById(int id) { return null; }
+    @Override
+    public List<Card> findAll() {
+        String sql = "SELECT id, name, type, color FROM card";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Card(
+                rs.getInt("id"),
+                rs.getString("name"),
+                CardType.valueOf(rs.getString("type")),
+                rs.getString("set_name"),
+                Color.valueOf(rs.getString("color")),
+                Rarity.valueOf(rs.getString("rarity")),
+                rs.getString("rule_text"),
+                rs.getString("image_url")
+        ));
+    }
+    @Override
+    public Card findById(int id) {
+        String sql = "SELECT id, name, type, set_name, color, rarity, rule_text, image_url FROM card WHERE id = ?";
+        List<Card> card = jdbcTemplate.query(sql, (rs, rowNum) -> new Card(
+                rs.getInt("id"),
+                rs.getString("name"),
+                CardType.valueOf(rs.getString("type")),
+                rs.getString("set_name"),
+                Color.valueOf(rs.getString("color")),
+                Rarity.valueOf(rs.getString("rarity")),
+                rs.getString("rule_text"),
+                rs.getString("image_url")
+        ), id);
+        return card.isEmpty() ? null : card.getFirst();
+    }
     @Override public void save(Card card) {}
     @Override public void update(Card card) {}
     @Override public void delete(int id) {}
