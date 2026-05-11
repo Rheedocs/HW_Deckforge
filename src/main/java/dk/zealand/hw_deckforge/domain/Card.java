@@ -41,6 +41,8 @@ public class Card {
     public void setRarity(Rarity rarity) { this.rarity = rarity; }
     public void setRuleText(String ruleText) { this.ruleText = ruleText; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public boolean hasImage(){return imageUrl != null && !imageUrl.isBlank();}
+    public boolean isLand(){return cardType == cardType.LAND;}
 
     @Override
     public String toString() {
