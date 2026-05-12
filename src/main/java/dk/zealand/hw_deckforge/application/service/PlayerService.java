@@ -76,8 +76,8 @@ public class PlayerService {
     }
 
     public void delete(int id) {
-        if (id <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
-        getById(id);
+        if (id <= 0) throw new IllegalArgumentException("Id skal være større end 0");
+        if (isOnlyAdmin(id)) throw new IllegalArgumentException("Du kan ikke slette den eneste admin");
         playerRepository.delete(id);
     }
 

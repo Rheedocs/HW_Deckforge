@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Profil</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <div class="profile-header">
+        <h2 th:text="${player.username}"></h2>
+        <p th:text="${player.email}"></p>
+    </div>
+
+    <div class="profile-stats">
+        <div>
+            <span class="stat-number">0</span>
+            <span class="stat-label">Turneringer</span>
+        </div>
+        <div>
+            <span class="stat-number">0</span>
+            <span class="stat-label">Kort</span>
+        </div>
+    </div>
+
+    <div th:if="${isSelf}">
+        <a class="btn" th:href="@{/players/{id}/edit(id=${player.id})}">Rediger profil</a>
+        <a class="btn btn-danger" th:href="@{/players/{id}/delete(id=${player.id})}">Slet konto</a>
+        <a class="btn" th:href="@{/logout}">Log ud</a>
+    </div>
+</main>
+</body>
+</html>

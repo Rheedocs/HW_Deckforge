@@ -32,6 +32,10 @@ public class Player {
     public void setId(int id) { this.id = id; }
     public void setUsername(String username) { this.username = username; }
     public void setEmail(String email) { this.email = email; }
+    public void setRole(Role role) { this.role = role; }
+    public void setCollectionVisibility(CollectionVisibility collectionVisibility) {
+        this.collectionVisibility = collectionVisibility;
+    }
 
     /**
      * Ændrer samlingssynlighed. Null er ikke tilladt.
