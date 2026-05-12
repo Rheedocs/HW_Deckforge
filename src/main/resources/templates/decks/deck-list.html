@@ -1,10 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deck List</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
 </head>
 <body>
-
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <h2>Decks</h2>
+    <a class="btn" th:href="@{/decks/create}">Tilføj deck</a>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Deck navn</th>
+            <th>Format</th>
+            <th>Ejer</th>
+            <th>Handlinger</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="deck : ${decks}">
+            <td th:text="${deck.id}"></td>
+            <td th:text="${deck.name}"></td>
+            <td th:text="${deck.format}"></td>
+            <td th:text="${deck.playerId}"></td>
+            <td class="action-col">
+                <a class="btn" th:href="@{/decks/{id}/edit(id=${deck.id})}">Rediger</a>
+                <a class="btn btn-danger" th:href="@{/decks/{id}/delete(id=${deck.id})}">Slet</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
 </body>
 </html>

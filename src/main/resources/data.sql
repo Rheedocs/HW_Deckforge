@@ -32,6 +32,7 @@ INSERT INTO player_card (player_id, card_id, quantity, for_trade) VALUES
 (5, 3, 2, FALSE);
 
 INSERT INTO deck (player_id, name, format, visibility) VALUES
+(1, 'Admin Test Deck', 'CASUAL', 'PUBLIC'),
 (2, 'Goncalos Rod Aggro', 'STANDARD', 'PUBLIC'),
 (3, 'Mattias Commander Deck', 'COMMANDER', 'PUBLIC'),
 (4, 'Nickis Casual', 'CASUAL', 'PRIVATE'),

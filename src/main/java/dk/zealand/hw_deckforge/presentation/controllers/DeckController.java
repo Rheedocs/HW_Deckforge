@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/decks")
 public class DeckController {
@@ -20,27 +22,67 @@ public class DeckController {
 
     @GetMapping("/player/{playerId}")
     public String getDecksByPlayer(@PathVariable int playerId, Model model, HttpSession session) {
-        return "decks/deck-list"; }
+        List<Deck> decks = deckService.getByPlayerId(playerId);
+        model.addAttribute("decks", decks);
+        return "decks/deck-list";
+    }
 
-    @GetMapping("/player/{playerId}/create")
-    public String showCreateForm(@PathVariable int playerId, Model model, HttpSession session) {
-        return "decks/add-deck"; }
+    @GetMapping
+    public String getAllDecks(HttpSession session) {
+        int playerId = AuthHelper.getLoggedIn(session).getId();
+        return "redirect:/decks/player/" + playerId;
+    }
+
+    @GetMapping("/create")
+    public String showCreateForm(Model model, HttpSession session) {
+        return "decks/add-deck";
+    }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute Deck deck, HttpSession session) { return "redirect:/decks/player/"
-            + deck.getPlayerId(); }
+    public String create(@ModelAttribute Deck deck, HttpSession session) {
+        if (!AuthHelper.isSelf(session, deck.getPlayerId())) return "redirect:/access-denied";
+        deckService.create(deck);
+        return "redirect:/decks/player/" + deck.getPlayerId();
+    }
 
     @GetMapping("/{id}/edit")
-    public String showEditForm(@PathVariable int id, Model model, HttpSession session) { return "decks/edit-deck"; }
+    public String showEditForm(@PathVariable int id, Model model, HttpSession session) {
+        return "decks/edit-deck";
+    }
 
     @PostMapping("/{id}/edit")
     public String update(@PathVariable int id, @ModelAttribute Deck deck, HttpSession session) {
-        return "redirect:/decks/player/" + deck.getPlayerId(); }
+        if (!AuthHelper.isSelf(session, id)) return "redirect:/access-denied";
+        deckService.update(deck);
+        return "redirect:/decks/player/" + deck.getPlayerId();
+    }
 
     @GetMapping("/{id}/delete")
     public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session) {
-        return "delete-confirm"; }
+        return "delete-confirm";
+    }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable int id, HttpSession session) { return "redirect:/decks"; }
+    public String delete(@PathVariable int id, HttpSession session) {
+        Deck deck = deckService.getById(id);
+        if (!AuthHelper.isSelf(session, deck.getPlayerId())) return "redirect:/access-denied";
+        deckService.delete(id);
+        return "redirect:/decks";
+    }
+
+    @PostMapping("/{id}/make-public")
+    public String makePublic(@PathVariable int id, HttpSession session) {
+        Deck deck = deckService.getById(id);
+        if (!AuthHelper.isSelf(session, deck.getPlayerId())) return "redirect:/access-denied";
+        deckService.makePublic(id, deck.getPlayerId());
+        return "redirect:/decks/player/" + deck.getPlayerId();
+    }
+
+    @PostMapping("/{id}/make-private")
+    public String makePrivate(@PathVariable int id, HttpSession session) {
+        Deck deck = deckService.getById(id);
+        if (!AuthHelper.isSelf(session, deck.getPlayerId())) return "redirect:/access-denied";
+        deckService.makePrivate(id, deck.getPlayerId());
+        return "redirect:/decks/player/" + deck.getPlayerId();
+    }
 }

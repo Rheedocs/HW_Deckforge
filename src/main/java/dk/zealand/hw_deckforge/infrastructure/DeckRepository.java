@@ -88,6 +88,7 @@ public class DeckRepository implements IDeckRepository {
             String sql = "DELETE FROM deck WHERE id = ?";
             jdbcTemplate.update(sql, id);
         } catch (DataAccessException e) {
+            e.getStackTrace();
             throw new DatabaseException("Kunne ikke slette deck med id " + id, e);
         }
     }

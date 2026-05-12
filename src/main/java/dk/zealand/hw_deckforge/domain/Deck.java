@@ -5,13 +5,13 @@ import dk.zealand.hw_deckforge.domain.enums.DeckVisibility;
 import dk.zealand.hw_deckforge.domain.enums.Format;
 
 public class Deck {
-    private int id;
+    private Integer id;
     private int playerId;
     private String name;
     private Format format;
     private DeckVisibility visibility;
 
-    public Deck(int id, int playerId, String name, Format format, DeckVisibility visibility) {
+    public Deck(Integer id, int playerId, String name, Format format, DeckVisibility visibility) {
         this.id = id;
         this.playerId = playerId;
         this.name = name;
@@ -33,20 +33,8 @@ public class Deck {
     }
     public void setFormat(Format format) { this.format = format; }
     public void setVisibility(DeckVisibility visibility) { this.visibility = visibility; }
-
-    public void setPlayerId(int playerId){
-        if (playerId <= 0){
-            throw new IllegalArgumentException("playerId må ikke være null");
-        }
-        this.playerId = playerId;
-    }
-
-    public void setId(int id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("Id må ikke være null");
-        }
-        this.id = id;
-    }
+    public void setPlayerId(int playerId){this.playerId = playerId;}
+    public void setId(Integer id) {this.id = id;}
 
     public boolean isPublic(){
         return this.visibility == DeckVisibility.PUBLIC;
@@ -63,14 +51,9 @@ public class Deck {
         this.visibility = visibility;
     }
 
-
     @Override
     public String toString(){
         return "id=" + id + ", Player{id='" + playerId + "', name='" + name + "', Format" + format
                 + "Visibility" + visibility;
     }
-
-
-
-
 }

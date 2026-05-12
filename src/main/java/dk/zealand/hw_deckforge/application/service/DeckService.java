@@ -26,10 +26,8 @@ public class DeckService {
         return  deck;
     }
     public List<Deck> getByPlayerId(int playerId) {
-        if (playerId >= 0) throw new IllegalArgumentException("PlayerId skal være større end nul");
-        List<Deck> decks = deckRepository.findByPlayerId(playerId);
-        if (decks == null) throw new IllegalArgumentException("Deck med playerId " + playerId + " findes ikke");
-        return decks;
+        if (playerId <= 0) throw new IllegalArgumentException("PlayerId skal være større end nul");
+        return deckRepository.findByPlayerId(playerId);
     }
     public void create(Deck deck) {
         if (deck == null) throw new IllegalArgumentException("Deck må ikke være null");
