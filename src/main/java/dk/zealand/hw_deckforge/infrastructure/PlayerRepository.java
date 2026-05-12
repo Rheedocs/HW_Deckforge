@@ -18,16 +18,20 @@ public class PlayerRepository implements IPlayerRepository {
     private final JdbcTemplate jdbcTemplate;
 
     private static final String BASE_SQL =
-            "SELECT id, username, email, password, role, collection_visibility FROM player";
+            "SELECT id, username, email, password, role, collection_visibility, active FROM player";
 
-    private final RowMapper<Player> playerRowMapper = (rs, rowNum) -> new Player(
-            rs.getInt("id"),
-            rs.getString("username"),
-            rs.getString("email"),
-            rs.getString("password"),
-            Role.valueOf(rs.getString("role")),
-            CollectionVisibility.valueOf(rs.getString("collection_visibility"))
-    );
+    private final RowMapper<Player> playerRowMapper = (rs, rowNum) -> {
+        Player player = new Player(
+                rs.getInt("id"),
+                rs.getString("username"),
+                rs.getString("email"),
+                rs.getString("password"),
+                Role.valueOf(rs.getString("role")),
+                CollectionVisibility.valueOf(rs.getString("collection_visibility"))
+        );
+        player.setActive(rs.getBoolean("active"));
+        return player;
+    };
 
     public PlayerRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -36,7 +40,7 @@ public class PlayerRepository implements IPlayerRepository {
     @Override
     public List<Player> findAll() {
         try {
-            return jdbcTemplate.query(BASE_SQL, playerRowMapper);
+            return jdbcTemplate.query(BASE_SQL + " WHERE active = TRUE", playerRowMapper);
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke hente spillere", e);
         }
@@ -55,7 +59,7 @@ public class PlayerRepository implements IPlayerRepository {
     @Override
     public Player findByEmail(String email) {
         try {
-            List<Player> players = jdbcTemplate.query(BASE_SQL + " WHERE email = ?", playerRowMapper, email);
+            List<Player> players = jdbcTemplate.query(BASE_SQL + " WHERE email = ? AND active = TRUE", playerRowMapper, email);
             return players.isEmpty() ? null : players.getFirst();
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke hente spiller med email " + email, e);
@@ -65,13 +69,14 @@ public class PlayerRepository implements IPlayerRepository {
     @Override
     public void save(Player player) {
         try {
-            String sql = "INSERT INTO player (username, email, password, role, collection_visibility) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO player (username, email, password, role, collection_visibility, active) VALUES (?, ?, ?, ?, ?, ?)";
             jdbcTemplate.update(sql,
                     player.getUsername(),
                     player.getEmail(),
                     player.getPassword(),
                     player.getRole().name(),
-                    player.getCollectionVisibility().name());
+                    player.getCollectionVisibility().name(),
+                    true);
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke oprette spiller", e);
         }
@@ -80,14 +85,14 @@ public class PlayerRepository implements IPlayerRepository {
     @Override
     public void update(Player player) {
         try {
-            String sql = "UPDATE player SET username = ?, email = ?, password = ?, role = ?," +
-                    " collection_visibility = ? WHERE id = ?";
+            String sql = "UPDATE player SET username = ?, email = ?, password = ?, role = ?, collection_visibility = ?, active = ? WHERE id = ?";
             jdbcTemplate.update(sql,
                     player.getUsername(),
                     player.getEmail(),
                     player.getPassword(),
                     player.getRole().name(),
                     player.getCollectionVisibility().name(),
+                    player.isActive(),
                     player.getId());
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke opdatere spiller", e);
@@ -97,10 +102,10 @@ public class PlayerRepository implements IPlayerRepository {
     @Override
     public void delete(int id) {
         try {
-            String sql = "DELETE FROM player WHERE id = ?";
+            String sql = "UPDATE player SET active = FALSE WHERE id = ?";
             jdbcTemplate.update(sql, id);
         } catch (DataAccessException e) {
-            throw new DatabaseException("Kunne ikke slette spiller med id " + id, e);
+            throw new DatabaseException("Kunne ikke deaktivere spiller med id " + id, e);
         }
     }
 }

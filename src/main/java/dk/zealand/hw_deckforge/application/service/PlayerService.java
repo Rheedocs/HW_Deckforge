@@ -35,6 +35,18 @@ public class PlayerService {
         return player;
     }
 
+    public List<Player> getAllSortedByLoggedIn(int loggedInId) {
+        List<Player> all = playerRepository.findAll();
+        List<Player> sorted = new java.util.ArrayList<>();
+        Player self = null;
+        for (Player p : all) {
+            if (p.getId() == loggedInId) self = p;
+            else sorted.add(p);
+        }
+        if (self != null) sorted.add(0, self);
+        return sorted;
+    }
+
     /**
      * Validerer email og adgangskode mod databasen.
      * Fejlbeskeden er bevidst generisk for ikke at afsløre
@@ -44,6 +56,8 @@ public class PlayerService {
         Player player = playerRepository.findByEmail(email);
         if (player == null || !passwordEncoder.matches(password, player.getPassword()))
             throw new IllegalArgumentException("Forkert email eller adgangskode");
+        if (!player.isActive())
+            throw new IllegalArgumentException("Denne konto er deaktiveret");
         return player;
     }
 

@@ -15,13 +15,23 @@
             <a th:href="@{/decks}">Decks</a>
             <a th:href="@{/events}">Events</a>
             <a th:href="@{/trades}">Bytning</a>
-            <a th:if="${session.player != null and session.player.role.name() == 'ADMIN'}" th:href="@{/players}">Spillere</a>
+            <a th:if="${session.player != null}" th:href="@{/players}">Spillere</a>
+            <span class="nav-separator" th:if="${session.player != null}">|</span>
             <a th:if="${session.player == null}" th:href="@{/login}">Log ind</a>
             <a th:if="${session.player == null}" th:href="@{/players/register}">Opret konto</a>
+            <a th:if="${session.player != null}" th:href="@{/players/{id}(id=${session.player.id})}">Profil</a>
             <a th:if="${session.player != null}" th:href="@{/logout}">Log ud</a>
             <span th:if="${session.player != null}">Logget ind som: <strong th:text="${session.player.username}"></strong></span>
         </nav>
     </div>
 </header>
+<footer th:fragment="footer">
+    <p>© 2026 Deckforge. Alle rettigheder forbeholdes.</p>
+    <p>
+        <a th:href="@{/privacy}">Privatlivspolitik</a> |
+        <a th:href="@{/about}">Om os</a> |
+        <a th:href="@{/contact}">Kontakt</a>
+    </p>
+</footer>
 </body>
 </html>

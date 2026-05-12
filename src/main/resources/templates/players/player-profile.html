@@ -12,27 +12,49 @@
 <body>
 <header th:replace="~{fragments :: header}"></header>
 <main>
-    <div class="profile-header">
+    <div class="info-section">
         <h2 th:text="${player.username}"></h2>
-        <p th:text="${player.email}"></p>
+        <p th:if="${isSelf or session.player.role.name() == 'ADMIN'}">
+            <strong>Email:</strong>
+            <span th:text="${player.email}"></span>
+        </p>
+        <p th:with="s=${player.collectionVisibility.name()}">
+            <strong>Samling:</strong>
+            <span th:text="${s == 'PUBLIC' ? 'Offentlig' :
+                            (s == 'TRADE_ONLY' ? 'Kun byttekort synlige' : 'Privat')}">
+            </span>
+        </p>
     </div>
 
-    <div class="profile-stats">
-        <div>
+    <div class="profile-stats-grid">
+        <div class="info-section stat-box">
             <span class="stat-number">0</span>
             <span class="stat-label">Turneringer</span>
         </div>
-        <div>
+        <div class="info-section stat-box">
             <span class="stat-number">0</span>
             <span class="stat-label">Kort</span>
         </div>
+        <div class="info-section stat-box">
+            <span class="stat-number">0</span>
+            <span class="stat-label">Decks</span>
+        </div>
     </div>
 
-    <div th:if="${isSelf}">
-        <a class="btn" th:href="@{/players/{id}/edit(id=${player.id})}">Rediger profil</a>
-        <a class="btn btn-danger" th:href="@{/players/{id}/delete(id=${player.id})}">Slet konto</a>
+    <div th:if="${!isSelf}" class="info-section">
+        <h3>Handlinger</h3>
+        <a class="btn" th:href="@{/trades/propose}">Foreslå bytte</a>
+    </div>
+
+    <div th:if="${isSelf}" class="info-section">
+        <h3>Din konto</h3>
+        <a class="btn"
+           th:href="@{/players/{id}/edit(id=${player.id})}">Rediger profil</a>
+        <a class="btn btn-danger"
+           th:href="@{/players/{id}/delete(id=${player.id})}">Slet konto</a>
         <a class="btn" th:href="@{/logout}">Log ud</a>
     </div>
 </main>
+<footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

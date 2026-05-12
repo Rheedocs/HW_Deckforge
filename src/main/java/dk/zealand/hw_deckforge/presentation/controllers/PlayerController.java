@@ -21,8 +21,10 @@ public class PlayerController {
     }
 
     @GetMapping
-    public String getAllPlayers(Model model) {
-        model.addAttribute("players", playerService.getAll());
+    public String getAllPlayers(Model model, HttpSession session) {
+        int loggedInId = AuthHelper.getLoggedIn(session).getId();
+        model.addAttribute("players", playerService.getAllSortedByLoggedIn(loggedInId));
+        model.addAttribute("isAdmin", AuthHelper.isAdmin(session));
         return "players/player-list";
     }
 

@@ -10,6 +10,7 @@ public class Player {
     private String password;
     private Role role;
     private CollectionVisibility collectionVisibility;
+    private boolean active;
 
     public Player() {}
 
@@ -20,6 +21,7 @@ public class Player {
         this.password = password;
         this.role = role;
         this.collectionVisibility = collectionVisibility;
+        this.active = true;
     }
 
     public int getId() { return id; }
@@ -28,6 +30,7 @@ public class Player {
     public String getPassword() { return password; }
     public Role getRole() { return role; }
     public CollectionVisibility getCollectionVisibility() { return collectionVisibility; }
+    public boolean isActive() { return active; }
 
     public void setId(int id) { this.id = id; }
     public void setUsername(String username) { this.username = username; }
@@ -35,6 +38,14 @@ public class Player {
     public void setRole(Role role) { this.role = role; }
     public void setCollectionVisibility(CollectionVisibility collectionVisibility) {
         this.collectionVisibility = collectionVisibility;
+    }
+    public void setActive(boolean active) { this.active = active; }
+
+    /**
+     * Deaktiverer kontoen i stedet for at slette den.
+     */
+    public void deactivate() {
+        this.active = false;
     }
 
     /**
@@ -79,6 +90,6 @@ public class Player {
     @Override
     public String toString() {
         return "Player{id=" + id + ", username='" + username + "', email='" + email + "', role=" + role
-                + ", password='[hidden]'}";
+                + ", password='[hidden]', active=" + active + "}";
     }
 }

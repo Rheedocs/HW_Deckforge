@@ -86,9 +86,10 @@ class PlayerRepositoryTest {
     }
 
     @Test
-    void delete_existingPlayer_cannotBeFoundAfterwards() {
+    void delete_existingPlayer_isDeactivated() {
         repository.delete(6);
         Player deleted = repository.findById(6);
-        assertNull(deleted);
+        assertNotNull(deleted);
+        assertFalse(deleted.isActive());
     }
 }

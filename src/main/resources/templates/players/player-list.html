@@ -12,14 +12,15 @@
 <body>
 <header th:replace="~{fragments :: header}"></header>
 <main>
-    <div th:with="isAdmin=${session.player != null and session.player.role.name() == 'ADMIN'}">
+    <div th:with="isAdmin=${session.player != null
+                  and session.player.role.name() == 'ADMIN'}">
         <h2>Spillere</h2>
         <table>
             <thead>
             <tr>
                 <th th:if="${isAdmin}">Id</th>
                 <th>Brugernavn</th>
-                <th>Email</th>
+                <th th:if="${isAdmin}">Email</th>
                 <th th:if="${isAdmin}">Rolle</th>
                 <th>Samlingssynlighed</th>
                 <th>Handlinger</th>
@@ -28,18 +29,38 @@
             <tbody>
             <tr th:each="player : ${players}">
                 <td th:if="${isAdmin}" th:text="${player.id}"></td>
-                <td th:text="${player.username}"></td>
-                <td th:text="${player.email}"></td>
+                <td>
+                    <a th:href="@{/players/{id}(id=${player.id})}"
+                       th:text="${player.username}"></a>
+                </td>
+                <td th:if="${isAdmin}" th:text="${player.email}"></td>
                 <td th:if="${isAdmin}" th:text="${player.role}"></td>
-                <td th:text="${player.collectionVisibility}"></td>
+                <td th:with="s=${player.collectionVisibility.name()}"
+                    th:text="${s == 'PUBLIC' ? 'Offentlig' :
+                              (s == 'TRADE_ONLY' ? 'Kun byttekort' : 'Privat')}">
+                </td>
                 <td class="action-col">
-                    <a class="btn" th:if="${isAdmin or session.player.id == player.id}" th:href="@{/players/{id}/edit(id=${player.id})}">Rediger</a>
-                    <a class="btn btn-danger" th:if="${isAdmin or session.player.id == player.id}" th:href="@{/players/{id}/delete(id=${player.id})}">Slet</a>
+                    <a class="btn"
+                       th:if="${isAdmin or session.player.id == player.id}"
+                       th:href="@{/players/{id}/edit(id=${player.id})}">Rediger</a>
+                    <a class="btn btn-danger"
+                       th:if="${isAdmin or session.player.id == player.id}"
+                       th:href="@{/players/{id}/delete(id=${player.id})}">Slet</a>
+                    <a class="btn"
+                       th:if="${session.player.id != player.id}"
+                       th:href="@{/cards/player/{id}(id=${player.id})}">Se samling</a>
+                    <a class="btn"
+                       th:if="${session.player.id != player.id}"
+                       th:href="@{/decks/player/{id}(id=${player.id})}">Se decks</a>
+                    <a class="btn"
+                       th:if="${!isAdmin and session.player.id != player.id}"
+                       th:href="@{/trades/propose}">Foreslå bytte</a>
                 </td>
             </tr>
             </tbody>
         </table>
     </div>
 </main>
+<footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

@@ -14,7 +14,8 @@ CREATE TABLE player (
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'PLAYER',
-    collection_visibility VARCHAR(20) NOT NULL DEFAULT 'TRADE_ONLY'
+    collection_visibility VARCHAR(20) NOT NULL DEFAULT 'TRADE_ONLY',
+    active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE card (
