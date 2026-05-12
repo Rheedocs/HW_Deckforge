@@ -15,6 +15,7 @@
             <a th:href="@{/decks}">Decks</a>
             <a th:href="@{/events}">Events</a>
             <a th:href="@{/trades}">Bytning</a>
+            <a th:if="${session.player != null and session.player.role.name() == 'ADMIN'}" th:href="@{/players}">Spillere</a>
             <a th:if="${session.player == null}" th:href="@{/login}">Log ind</a>
             <a th:if="${session.player == null}" th:href="@{/players/register}">Opret konto</a>
             <a th:if="${session.player != null}" th:href="@{/logout}">Log ud</a>

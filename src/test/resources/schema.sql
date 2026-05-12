@@ -65,7 +65,7 @@ CREATE TABLE event_registration (
     registration_date DATE NOT NULL,
     FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE,
     FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE,
-    FOREIGN KEY (deck_id) REFERENCES deck(id)
+    FOREIGN KEY (deck_id) REFERENCES deck(id) ON DELETE CASCADE
 );
 
 CREATE TABLE trade (
@@ -75,8 +75,8 @@ CREATE TABLE trade (
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
     created_at TIMESTAMP NOT NULL,
     expires_at TIMESTAMP NOT NULL,
-    FOREIGN KEY (proposer_id) REFERENCES player(id),
-    FOREIGN KEY (receiver_id) REFERENCES player(id)
+    FOREIGN KEY (proposer_id) REFERENCES player(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES player(id) ON DELETE CASCADE
 );
 
 CREATE TABLE trade_card (
@@ -85,7 +85,7 @@ CREATE TABLE trade_card (
     player_card_id INT NOT NULL,
     role VARCHAR(20) NOT NULL,
     FOREIGN KEY (trade_id) REFERENCES trade(id) ON DELETE CASCADE,
-    FOREIGN KEY (player_card_id) REFERENCES player_card(id)
+    FOREIGN KEY (player_card_id) REFERENCES player_card(id) ON DELETE CASCADE
 );
 
 CREATE TABLE result (

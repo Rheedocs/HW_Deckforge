@@ -32,6 +32,7 @@ INSERT INTO player_card (player_id, card_id, quantity, for_trade) VALUES
 (5, 3, 2, FALSE);
 
 INSERT INTO deck (player_id, name, format, visibility) VALUES
+(1, 'Admin Test Deck', 'CASUAL', 'PUBLIC'),
 (2, 'Goncalos Rod Aggro', 'STANDARD', 'PUBLIC'),
 (3, 'Mattias Commander Deck', 'COMMANDER', 'PUBLIC'),
 (4, 'Nickis Casual', 'CASUAL', 'PRIVATE'),
@@ -44,11 +45,11 @@ INSERT INTO event (name, location, date, format, max_players, status) VALUES
 ('Draft Night', 'Deckforge Naestved', '2026-06-01', 'DRAFT', 8, 'UPCOMING');
 
 INSERT INTO event_registration (player_id, event_id, deck_id, registration_date) VALUES
-(2, 1, 1, '2026-05-01'),
-(3, 1, 2, '2026-05-02'),
-(4, 3, 3, '2026-04-10'),
-(5, 3, 4, '2026-04-10'),
-(2, 3, 1, '2026-04-11');
+(2, 1, 2, '2026-05-01'),
+(3, 1, 3, '2026-05-02'),
+(4, 3, 4, '2026-04-10'),
+(5, 3, 5, '2026-04-10'),
+(2, 3, 2, '2026-04-11');
 
 INSERT INTO trade (proposer_id, receiver_id, status, created_at, expires_at) VALUES
 (2, 3, 'PENDING', '2026-05-07 10:00:00', '2026-05-08 10:00:00'),
