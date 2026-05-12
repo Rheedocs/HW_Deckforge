@@ -1,7 +1,9 @@
 package dk.zealand.hw_deckforge.application.service;
 
+import dk.zealand.hw_deckforge.application.interfaces.IPlayerCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerRepository;
 import dk.zealand.hw_deckforge.domain.Player;
+import dk.zealand.hw_deckforge.domain.PlayerCard;
 import dk.zealand.hw_deckforge.domain.enums.CollectionVisibility;
 import dk.zealand.hw_deckforge.domain.enums.Role;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +26,9 @@ class PlayerServiceTest {
 
     @Mock
     private IPlayerRepository playerRepository;
+
+    @Mock
+    private IPlayerCardRepository playerCardRepository;
 
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
@@ -118,6 +123,20 @@ class PlayerServiceTest {
                 () -> playerService.create("TestSpiller", "ikkeengyldigemail", "password123"));
     }
 
+    @Test
+    void create_withBlankUsername_throwsIllegalArgumentException() {
+        when(playerRepository.findByEmail("test@mail.dk")).thenReturn(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> playerService.create("", "test@mail.dk", "password123"));
+    }
+
+    @Test
+    void create_withBlankPassword_throwsIllegalArgumentException() {
+        when(playerRepository.findByEmail("test@mail.dk")).thenReturn(null);
+        assertThrows(IllegalArgumentException.class,
+                () -> playerService.create("TestSpiller", "test@mail.dk", ""));
+    }
+
     // delete
     @Test
     void delete_withValidId_deletesPlayer() {
@@ -129,6 +148,12 @@ class PlayerServiceTest {
     @Test
     void delete_withInvalidId_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> playerService.delete(0));
+    }
+
+    @Test
+    void delete_withNonExistingPlayer_throwsIllegalArgumentException() {
+        when(playerRepository.findById(99)).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> playerService.delete(99));
     }
 
     // isOnlyAdmin
@@ -153,5 +178,41 @@ class PlayerServiceTest {
     void isOnlyAdmin_ifPlayerIsNotAdmin_returnsFalse() {
         when(playerRepository.findAll()).thenReturn(List.of(player));
         assertFalse(playerService.isOnlyAdmin(1));
+    }
+
+    // addToCollection
+    @Test
+    void addToCollection_validInput_callsSave() {
+        when(playerRepository.findById(1)).thenReturn(player);
+        playerService.addToCollection(1, 1);
+        verify(playerCardRepository).save(any(PlayerCard.class));
+    }
+
+    @Test
+    void addToCollection_invalidPlayerId_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> playerService.addToCollection(0, 1));
+    }
+
+    @Test
+    void addToCollection_invalidCardId_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> playerService.addToCollection(1, 0));
+    }
+
+    @Test
+    void addToCollection_playerNotFound_throwsIllegalArgumentException() {
+        when(playerRepository.findById(1)).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> playerService.addToCollection(1, 1));
+    }
+
+    // removeFromCollection
+    @Test
+    void removeFromCollection_validId_callsDelete() {
+        playerService.removeFromCollection(1);
+        verify(playerCardRepository).delete(1);
+    }
+
+    @Test
+    void removeFromCollection_invalidId_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> playerService.removeFromCollection(0));
     }
 }
