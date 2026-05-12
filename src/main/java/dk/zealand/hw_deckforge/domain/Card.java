@@ -5,7 +5,7 @@ import dk.zealand.hw_deckforge.domain.enums.Color;
 import dk.zealand.hw_deckforge.domain.enums.Rarity;
 
 public class Card {
-    private int id;
+    private Integer id;
     private String name;
     private CardType cardType;
     private String setName;
@@ -25,7 +25,7 @@ public class Card {
         this.imageUrl = imageUrl;
     }
 
-    public int getId() { return id; }
+    public Integer getId() { return id; }
     public String getName() { return name; }
     public CardType getCardType() { return cardType; }
     public String getSetName() { return setName; }
@@ -35,6 +35,7 @@ public class Card {
     public String getImageUrl() { return imageUrl; }
 
     public void setName(String name) { this.name = name; }
+    public void setId(int id){this.id = id;}
     public void setCardType(CardType cardType) { this.cardType = cardType; }
     public void setSetName(String setName) { this.setName = setName; }
     public void setColor(Color color) { this.color = color; }

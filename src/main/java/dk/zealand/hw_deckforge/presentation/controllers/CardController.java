@@ -19,7 +19,10 @@ public class CardController {
     }
 
     @GetMapping
-    public String getAllCards(Model model, HttpSession session) { return "cards/card-list"; }
+    public String getAllCards(Model model, HttpSession session) {
+        model.addAttribute("cards",cardService.getAll());
+        return "cards/card-list";
+    }
 
     @GetMapping("/create")
     public String showCreateForm(Model model, HttpSession session) {
@@ -29,7 +32,10 @@ public class CardController {
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute Card card, HttpSession session) { return "redirect:/cards"; }
+    public String create(@ModelAttribute Card card, HttpSession session) {
+        cardService.create(card);
+        return "redirect:/cards";
+    }
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable int id, Model model, HttpSession session) {
@@ -39,11 +45,22 @@ public class CardController {
     }
 
     @PostMapping("/{id}/edit")
-    public String update(@PathVariable int id, @ModelAttribute Card card, HttpSession session) { return "redirect:/cards"; }
+    public String update(@PathVariable int id, @ModelAttribute Card card, HttpSession session) {
+        card.setId(id);
+        cardService.update(card);
+        return "redirect:/cards";
+    }
+
 
     @GetMapping("/{id}/delete")
-    public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session) { return "delete-confirm"; }
+    public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session) {
+        Card card = cardService.getById(id);
+        model.addAttribute("card",card);
+        return "delete-confirm";
+    }
 
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable int id, HttpSession session) { return "redirect:/cards"; }
+    public String delete(@PathVariable int id, HttpSession session) {
+        cardService.delete(id);
+        return "redirect:/cards"; }
 }

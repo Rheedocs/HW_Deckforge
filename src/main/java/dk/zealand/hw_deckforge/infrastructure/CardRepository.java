@@ -47,7 +47,21 @@ public class CardRepository implements ICardRepository {
         ), id);
         return card.isEmpty() ? null : card.getFirst();
     }
-    @Override public void save(Card card) {}
-    @Override public void update(Card card) {}
-    @Override public void delete(int id) {}
+    @Override
+    public void save(Card card) {
+        String sql = "INSERT INTO card (id, name, color, type) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, card.getId(), card.getName(), card.getColor(), card.getCardType(),
+                card.getRuleText(), card.getImageUrl());
+    }
+    @Override
+    public void update(Card card) {
+        String sql = "INSERT INTO card SET id = ?, name = ?, color = ?, type = ? WHERE id = ?";
+        jdbcTemplate.update(sql, card.getId(), card.getName(), card.getColor(), card.getCardType(),
+                card.getRuleText(), card.getImageUrl());
+    }
+    @Override
+    public void delete(int id) {
+        String sql = "DELETE FROM card WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
 }
