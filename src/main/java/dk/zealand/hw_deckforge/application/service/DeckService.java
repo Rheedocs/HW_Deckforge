@@ -41,26 +41,30 @@ public class DeckService {
         validateDeck(deck);
         deckRepository.update(deck);
     }
-    public void delete(int id) {
-        if (id <= 0) throw new IllegalArgumentException("Id skal være større end 0");
-        if (deckRepository.findById(id) == null)
-            throw new IllegalArgumentException("Deck med id " + id + " findes ikke");
-        deckRepository.delete(id);
+    public void makePrivate(int id, int requestingPlayerId) {
+        Deck deck = deckRepository.findById(id);
+        if (deck == null) throw new IllegalArgumentException("Deck med id " + id + " findes ikke");
+        if (deck.getPlayerId() != requestingPlayerId) throw new IllegalArgumentException("Du har ikke adgang til dette deck");
+        if (!deck.isPublic()) throw new IllegalArgumentException("Deck er allerede privat");
+        deck.makePrivate();
+        deckRepository.update(deck);
     }
+
     public void makePublic(int id, int requestingPlayerId) {
         Deck deck = deckRepository.findById(id);
         if (deck == null) throw new IllegalArgumentException("Deck med id " + id + " findes ikke");
+        if (deck.getPlayerId() != requestingPlayerId) throw new IllegalArgumentException("Du har ikke adgang til dette deck");
         if (deck.isPublic()) throw new IllegalStateException("Deck er allerede offentligt");
         deck.makePublic();
         deckRepository.update(deck);
     }
 
-    public void makePrivate(int id, int requestingPlayerId) {
+    public void delete(int id, int requestingPlayerId) {
+        if (id <= 0) throw new IllegalArgumentException("Id skal være større end 0");
         Deck deck = deckRepository.findById(id);
         if (deck == null) throw new IllegalArgumentException("Deck med id " + id + " findes ikke");
-        if (!deck.isPublic()) throw new IllegalArgumentException("Deck er allerede privat");
-        deck.makePrivate();
-        deckRepository.update(deck);
+        if (deck.getPlayerId() != requestingPlayerId) throw new IllegalArgumentException("Du har ikke adgang til at slette dette deck");
+        deckRepository.delete(id);
     }
 
     private void validateDeck(Deck deck) {

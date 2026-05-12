@@ -64,25 +64,22 @@ public class DeckController {
 
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable int id, HttpSession session) {
-        Deck deck = deckService.getById(id);
-        if (!AuthHelper.isSelf(session, deck.getPlayerId())) return "redirect:/access-denied";
-        deckService.delete(id);
+        int playerId = AuthHelper.getLoggedIn(session).getId();
+        deckService.delete(id, playerId);
         return "redirect:/decks";
     }
 
     @PostMapping("/{id}/make-public")
     public String makePublic(@PathVariable int id, HttpSession session) {
-        Deck deck = deckService.getById(id);
-        if (!AuthHelper.isSelf(session, deck.getPlayerId())) return "redirect:/access-denied";
-        deckService.makePublic(id, deck.getPlayerId());
-        return "redirect:/decks/player/" + deck.getPlayerId();
+        int playerId = AuthHelper.getLoggedIn(session).getId();
+        deckService.makePublic(id, playerId);
+        return "redirect:/decks/player/" + playerId;
     }
 
     @PostMapping("/{id}/make-private")
     public String makePrivate(@PathVariable int id, HttpSession session) {
-        Deck deck = deckService.getById(id);
-        if (!AuthHelper.isSelf(session, deck.getPlayerId())) return "redirect:/access-denied";
-        deckService.makePrivate(id, deck.getPlayerId());
-        return "redirect:/decks/player/" + deck.getPlayerId();
+        int playerId = AuthHelper.getLoggedIn(session).getId();
+        deckService.makePrivate(id, playerId);
+        return "redirect:/decks/player/" + playerId;
     }
 }
