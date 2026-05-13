@@ -2,6 +2,9 @@ package dk.zealand.hw_deckforge.presentation.controllers;
 
 import dk.zealand.hw_deckforge.application.service.CardService;
 import dk.zealand.hw_deckforge.domain.Card;
+import dk.zealand.hw_deckforge.domain.enums.CardType;
+import dk.zealand.hw_deckforge.domain.enums.Color;
+import dk.zealand.hw_deckforge.domain.enums.Rarity;
 import dk.zealand.hw_deckforge.presentation.helpers.AuthHelper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -24,16 +27,13 @@ public class CardController {
         return "cards/card-list";
     }
 
-    @GetMapping("/{id}")
-    public String getCard(@PathVariable int id, Model model) {
-        model.addAttribute("card", cardService.getById(id));
-        return "cards/card-detail";
-    }
-
     @GetMapping("/create")
     public String showCreateForm(Model model, HttpSession session) {
         if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
         model.addAttribute("card", new Card());
+        model.addAttribute("cardTypes", CardType.values());
+        model.addAttribute("colors", Color.values());
+        model.addAttribute("rarities", Rarity.values());
         return "cards/add-card";
     }
 
@@ -48,6 +48,9 @@ public class CardController {
     public String showEditForm(@PathVariable int id, Model model, HttpSession session) {
         if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
         model.addAttribute("card", cardService.getById(id));
+        model.addAttribute("cardTypes", CardType.values());
+        model.addAttribute("colors", Color.values());
+        model.addAttribute("rarities", Rarity.values());
         return "cards/edit-card";
     }
 
@@ -62,9 +65,11 @@ public class CardController {
     @GetMapping("/{id}/delete")
     public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session) {
         if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
-        model.addAttribute("card", cardService.getById(id));
+        Card card = cardService.getById(id);
+        model.addAttribute("navn", card.getName());
+        model.addAttribute("deleteUrl", "/cards/" + id + "/delete");
         model.addAttribute("tilbage", "/cards");
-        return "cards/delete-confirm";
+        return "delete-confirm";
     }
 
     @PostMapping("/{id}/delete")

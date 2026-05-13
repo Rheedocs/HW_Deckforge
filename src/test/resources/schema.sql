@@ -26,7 +26,7 @@ CREATE TABLE card (
     set_name VARCHAR(100) NOT NULL,
     rarity VARCHAR(20) NOT NULL,
     rule_text TEXT NULL,
-    image_url VARCHAR(255) NULL
+    image_url VARCHAR(500) NULL
 );
 
 CREATE TABLE player_card (

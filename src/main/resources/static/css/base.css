@@ -1,4 +1,4 @@
-/* ── Farver ── */
+/* ── Farvepalette ── */
 :root {
     --primary: #3a3a3a;
     --primary-dark: #1a1a1a;
@@ -14,8 +14,10 @@
     --success-bg: #eafaf1;
 }
 
+/* ── Reset ── */
 * { box-sizing: border-box; }
 
+/* ── Grundlæggende typografi og baggrund ── */
 body {
     font-family: Arial, sans-serif;
     background-color: var(--background);

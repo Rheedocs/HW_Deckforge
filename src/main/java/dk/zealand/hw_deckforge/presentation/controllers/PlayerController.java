@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.presentation.controllers;
 
+import dk.zealand.hw_deckforge.application.service.PlayerCardService;
 import dk.zealand.hw_deckforge.application.service.PlayerService;
 import dk.zealand.hw_deckforge.domain.Player;
 import dk.zealand.hw_deckforge.domain.enums.CollectionVisibility;
@@ -15,9 +16,11 @@ import org.springframework.web.bind.annotation.*;
 public class PlayerController {
 
     private final PlayerService playerService;
+    private final PlayerCardService playerCardService;
 
-    public PlayerController(PlayerService playerService) {
+    public PlayerController(PlayerService playerService, PlayerCardService playerCardService) {
         this.playerService = playerService;
+        this.playerCardService = playerCardService;
     }
 
     @GetMapping
@@ -46,6 +49,7 @@ public class PlayerController {
         Player player = playerService.getById(id);
         model.addAttribute("player", player);
         model.addAttribute("isSelf", AuthHelper.isSelf(session, id));
+        model.addAttribute("kortCount", playerCardService.countByPlayerId(id));
         return "players/player-profile";
     }
 

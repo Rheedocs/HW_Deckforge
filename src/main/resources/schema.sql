@@ -31,7 +31,7 @@ CREATE TABLE card (
     set_name VARCHAR(100) NOT NULL,
     rarity ENUM('COMMON','UNCOMMON','RARE','MYTHIC_RARE') NOT NULL,
     rule_text TEXT NULL,
-    image_url VARCHAR(255) NULL
+    image_url VARCHAR(500) NULL
 );
 
 CREATE TABLE player_card (

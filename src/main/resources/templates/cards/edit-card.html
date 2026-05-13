@@ -21,23 +21,16 @@
 
         <label for="cardType">Korttype:</label>
         <select id="cardType" th:field="*{cardType}">
-            <option value="CREATURE">Creature</option>
-            <option value="LAND">Land</option>
-            <option value="INSTANT">Instant</option>
-            <option value="SORCERY">Sorcery</option>
-            <option value="ARTIFACT">Artifact</option>
-            <option value="ENCHANTMENT">Enchantment</option>
-            <option value="PLANESWALKER">Planeswalker</option>
+            <option th:each="type : ${cardTypes}"
+                    th:value="${type.name()}"
+                    th:text="${type.displayName}"></option>
         </select>
 
         <label for="color">Farve:</label>
         <select id="color" th:field="*{color}">
-            <option value="WHITE">White</option>
-            <option value="BLUE">Blue</option>
-            <option value="BLACK">Black</option>
-            <option value="RED">Red</option>
-            <option value="GREEN">Green</option>
-            <option value="COLORLESS">Colorless</option>
+            <option th:each="c : ${colors}"
+                    th:value="${c.name()}"
+                    th:text="${c.displayName}"></option>
         </select>
 
         <label for="setName">Sæt:</label>
@@ -45,10 +38,9 @@
 
         <label for="rarity">Sjældenhed:</label>
         <select id="rarity" th:field="*{rarity}">
-            <option value="COMMON">Common</option>
-            <option value="UNCOMMON">Uncommon</option>
-            <option value="RARE">Rare</option>
-            <option value="MYTHIC_RARE">Mythic Rare</option>
+            <option th:each="r : ${rarities}"
+                    th:value="${r.name()}"
+                    th:text="${r.displayName}"></option>
         </select>
 
         <label for="ruleText">Regeltext:</label>
@@ -63,5 +55,6 @@
         <a th:href="@{/cards}">Tilbage</a>
     </div>
 </main>
+<footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

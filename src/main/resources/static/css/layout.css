@@ -3,6 +3,7 @@ header {
     background-color: var(--primary);
     padding: 16px 20px;
     position: relative;
+    /* overflow: visible så mobil-nav kan folde ud nedad */
     overflow: visible;
 }
 
@@ -34,20 +35,11 @@ footer {
     align-items: center;
 }
 
-footer a {
-    color: white;
-    text-decoration: none;
-}
+footer a { color: white; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+footer p { margin: 0; }
 
-footer a:hover {
-    text-decoration: underline;
-}
-
-footer p {
-    margin: 0;
-}
-
-/* ── Nav ── */
+/* ── Navigation ── */
 nav {
     display: flex;
     align-items: center;
@@ -57,12 +49,14 @@ nav {
 nav a, nav span a { color: white; text-decoration: none; }
 nav > span { display: flex; gap: 4px; color: white; }
 nav a:hover, nav span a:hover { text-decoration: underline; }
-
 .nav-separator { color: rgba(255,255,255,0.4); }
 
-/* ── Burger ── */
+/* ── Burger menu (mobil) ── */
+
+/* Den usynlige checkbox der styrer om menuen er åben eller lukket */
 .menu-toggle { display: none; }
 
+/* De tre vandrette streger der udgør burger-ikonet */
 .burger {
     display: flex;
     flex-direction: column;
@@ -79,6 +73,8 @@ nav a:hover, nav span a:hover { text-decoration: underline; }
 }
 
 /* ── Body og Main ── */
+
+/* Flex kolonne så footer altid sidder i bunden */
 body {
     display: flex;
     flex-direction: column;
@@ -115,6 +111,7 @@ main {
 @media (max-width: 768px) {
     nav.nav span.nav-separator { display: none; }
 
+    /* Nav folder ud nedad fra headeren som en dropdown */
     nav.nav {
         position: absolute;
         top: 70px;
@@ -144,5 +141,6 @@ main {
         color: white;
     }
 
+    /* CSS-only burger menu: når checkbox er checked, vis nav uden JavaScript */
     .menu-toggle:checked + .burger + nav.nav { display: flex; }
 }

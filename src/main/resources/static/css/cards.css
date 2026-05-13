@@ -1,4 +1,6 @@
 /* ── Kortbilleder ── */
+
+/* Stort billede på kortdetalje-siden */
 .card-img {
     width: 100%;
     max-width: 200px;
@@ -6,43 +8,71 @@
     display: block;
 }
 
-.card-details {
-    width: 100%;
-    max-width: 200px;
-    border-radius: 8px;
-    box-sizing: border-box;
-    display: block;
-    margin: 24px auto 0;
-}
-
+/* Lille billede i tabellen, klikbart for at åbne modal */
 .card-img-small {
-    width: 40px;
+    width: 80px;
     height: auto;
     border-radius: 4px;
     vertical-align: middle;
+    cursor: pointer;
 }
 
-/* ── Kort grid ── */
-.card-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-    margin-top: 16px;
+/* ── Modal ── */
+
+/* Mørkt overlay der dækker hele skærmen bag modalen */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    /* inset: 0 er shorthand for top/right/bottom/left: 0, dækker hele skærmen */
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
 }
 
-.card-item {
-    background-color: var(--surface);
+/* Tilføj .active for at vise overlay og modal */
+.modal-overlay.active { display: flex; }
+
+/* Selve modal-boksen */
+.modal {
+    background: var(--surface);
     border: 1px solid var(--border);
+    padding: 24px;
     border-radius: 8px;
-    padding: 16px;
+    max-width: 400px;
+    width: 100%;
+    position: relative;
 }
 
-.card-item h3 { margin: 0 0 8px 0; color: var(--primary); }
-.card-item p { margin: 4px 0; color: var(--text-light); font-size: 14px; }
-
-/* ── Desktop ── */
-@media (min-width: 768px) {
-    .card-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    }
+.modal img {
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 16px;
 }
+
+.modal h3 {
+    color: var(--primary);
+    margin: 0 0 12px 0;
+}
+
+.modal ul {
+    padding-left: 16px;
+    margin: 0 0 16px 0;
+}
+
+.modal ul li { color: var(--text); padding: 4px 0; }
+.modal ul li strong { color: var(--primary); }
+
+/* Luk-knap øverst til højre i modalen */
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--text);
+}
+.modal-close:hover { color: var(--error); }

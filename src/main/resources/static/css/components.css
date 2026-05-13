@@ -10,6 +10,7 @@ button, .btn {
     display: inline-block;
     font-family: inherit;
     font-size: inherit;
+    /* Fuld bredde på mobil, auto på desktop via media query */
     width: 100%;
     margin-bottom: 8px;
 }
@@ -33,6 +34,7 @@ input, select, textarea {
     font-size: inherit;
 }
 
+/* Checkboxes og den skjulte burger-checkbox skal ikke følge input-reglerne */
 input[type="checkbox"] { display: inline; width: auto; }
 input#menu-toggle { display: none !important; width: auto; margin: 0; padding: 0; border: none; }
 
@@ -41,18 +43,25 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 16px;
+    /* Vandret scroll på mobil når tabellen er for bred */
     display: block;
     overflow-x: auto;
-    white-space: nowrap;
+    /* Smooth scroll på iOS */
     -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
 }
 
 tbody tr:nth-child(even) { background-color: var(--background); }
 tbody tr:nth-child(odd) { background-color: var(--surface); }
 
-th, td { padding: 10px; border: 1px solid var(--border); text-align: left; }
+/* height: 1px er et CSS-trick der tvinger height: 100% til at virke korrekt i tabelceller */
+th, td { padding: 10px; border: 1px solid var(--border); text-align: left; vertical-align: middle; height: 1px; }
 thead { background-color: var(--primary); color: white; }
-.action-col { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 120px; }
+
+/* Flex så knapper i handlingskolonnen ligger på række med afstand */
+.action-col { display: flex; align-items: center; align-content: center; gap: 8px; flex-wrap: wrap; min-width: 120px; height: 100%; }
+
+/* Tomme celler skal ikke vise kant eller baggrund */
 td:empty { border: none; background: transparent; }
 
 /* ── Badges ── */
@@ -64,13 +73,17 @@ td:empty { border: none; background: transparent; }
     font-weight: bold;
 }
 
-.badge-upcoming { background-color: #d5e8d4; color: #2d6a2d; }
-.badge-ongoing { background-color: #fff3cd; color: #856404; }
+/* Grønne badges: aktive og positive tilstande */
+.badge-upcoming, .badge-accepted { background-color: #d5e8d4; color: #2d6a2d; }
+
+/* Gule badges: afventende tilstande */
+.badge-ongoing, .badge-pending { background-color: #fff3cd; color: #856404; }
+
+/* Grå badge: afsluttet */
 .badge-completed { background-color: #e2e3e5; color: #383d41; }
-.badge-cancelled { background-color: var(--error-bg); color: var(--error); }
-.badge-pending { background-color: #fff3cd; color: #856404; }
-.badge-accepted { background-color: #d5e8d4; color: #2d6a2d; }
-.badge-declined { background-color: var(--error-bg); color: var(--error); }
+
+/* Røde badges: fejl og afviste tilstande */
+.badge-cancelled, .badge-declined { background-color: var(--error-bg); color: var(--error); }
 
 /* ── Desktop ── */
 @media (min-width: 768px) {
