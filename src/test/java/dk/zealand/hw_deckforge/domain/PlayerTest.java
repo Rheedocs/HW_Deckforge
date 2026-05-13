@@ -37,6 +37,13 @@ class PlayerTest {
     }
 
     @Test
+    void promoteToAdmin_alreadyAdmin_remainsAdmin() {
+        player.promoteToAdmin();
+        player.promoteToAdmin();
+        assertEquals(Role.ADMIN, player.getRole());
+    }
+
+    @Test
     void demoteToPlayer_setsRoleToPlayer() {
         player.promoteToAdmin();
         player.demoteToPlayer();
@@ -81,6 +88,11 @@ class PlayerTest {
     @Test
     void isCollectionVisible_ifNotMatchingVisibility_returnsFalse() {
         assertFalse(player.isCollectionVisible(CollectionVisibility.PUBLIC));
+    }
+
+    @Test
+    void isCollectionVisible_withNull_returnsFalse() {
+        assertFalse(player.isCollectionVisible(null));
     }
 
     // toString

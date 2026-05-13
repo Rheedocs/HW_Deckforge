@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
 <head>
     <meta charset="UTF-8">
-    <title>Trade History</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Byttehistorik</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
 </head>
 <body>
-
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <h2>Byttehistorik</h2>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

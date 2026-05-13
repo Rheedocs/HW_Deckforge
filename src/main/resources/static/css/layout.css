@@ -21,6 +21,32 @@ header h1 a {
     font-size: 22px;
 }
 
+/* ── Footer ── */
+footer {
+    background-color: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 16px 20px;
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+footer p {
+    margin: 0;
+}
+
 /* ── Nav ── */
 nav {
     display: flex;
@@ -29,8 +55,10 @@ nav {
 }
 
 nav a, nav span a { color: white; text-decoration: none; }
-nav > span { display: flex; gap: 16px; color: white; }
+nav > span { display: flex; gap: 4px; color: white; }
 nav a:hover, nav span a:hover { text-decoration: underline; }
+
+.nav-separator { color: rgba(255,255,255,0.4); }
 
 /* ── Burger ── */
 .menu-toggle { display: none; }
@@ -50,11 +78,19 @@ nav a:hover, nav span a:hover { text-decoration: underline; }
     display: block;
 }
 
-/* ── Main ── */
+/* ── Body og Main ── */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
 main {
+    flex: 1;
     max-width: 1200px;
     margin: 24px auto;
     padding: 0 16px;
+    width: 100%;
 }
 
 /* ── Desktop ── */
@@ -70,13 +106,15 @@ main {
     }
 
     nav.nav a, nav.nav span a { padding: 0; border-bottom: none; }
-    nav.nav > span { display: flex; font-size: inherit; }
+    nav.nav > span { display: flex; font-size: inherit; gap: 4px; }
 
     main { padding: 0 24px; margin: 40px auto; }
 }
 
 /* ── Mobil nav ── */
 @media (max-width: 768px) {
+    nav.nav span.nav-separator { display: none; }
+
     nav.nav {
         position: absolute;
         top: 70px;
@@ -85,7 +123,7 @@ main {
         background-color: var(--primary-dark);
         display: none;
         flex-direction: column;
-        padding: 0;
+        padding: 8px 0;
         z-index: 999;
     }
 
@@ -97,7 +135,14 @@ main {
         text-align: center;
     }
 
-    nav.nav > span { display: contents; font-size: 0; }
+    nav.nav > span {
+        display: block;
+        padding: 8px 32px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        text-align: center;
+        font-size: inherit;
+        color: white;
+    }
 
     .menu-toggle:checked + .burger + nav.nav { display: flex; }
 }

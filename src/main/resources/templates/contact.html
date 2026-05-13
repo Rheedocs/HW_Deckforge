@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Kontakt</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <h2>Kontakt</h2>
+
+    <div class="info-section">
+        <h3>Deckforge Næstved</h3>
+        <p>Ringstedgade 14, 4700 Næstved</p>
+        <p>Email: holger@deckforge.dk</p>
+        <p>Mandag til fredag: 10:00 - 18:00</p>
+        <p>Lørdag: 10:00 - 15:00</p>
+        <p>Søndag: Lukket</p>
+    </div>
+
+    <div class="info-section">
+        <h3>Deckforge Odense</h3>
+        <p>Vestergade 42, 5000 Odense C</p>
+        <p>Email: odense@deckforge.dk</p>
+        <p>Mandag til fredag: 10:00 - 18:00</p>
+        <p>Lørdag: 10:00 - 15:00</p>
+        <p>Søndag: Lukket</p>
+    </div>
+
+    <div class="info-section">
+        <h3>Deckforge Aalborg</h3>
+        <p>Algade 8, 9000 Aalborg</p>
+        <p>Email: aalborg@deckforge.dk</p>
+        <p>Mandag til fredag: 10:00 - 18:00</p>
+        <p>Lørdag: 10:00 - 15:00</p>
+        <p>Søndag: Lukket</p>
+    </div>
+
+    <div class="info-section">
+        <h3>Skriv til os</h3>
+        <p>Har du spørgsmål eller feedback? Udfyld formularen og vi vender tilbage hurtigst muligt.</p>
+        <form>
+            <label for="navn">Navn:</label>
+            <input type="text" id="navn" name="navn" placeholder="Dit navn" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="navn@domæne.dk" required>
+
+            <label for="besked">Besked:</label>
+            <textarea id="besked" name="besked" rows="5" placeholder="Skriv din besked her..." required></textarea>
+
+            <button type="submit">Send besked</button>
+        </form>
+    </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

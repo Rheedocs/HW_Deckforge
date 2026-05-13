@@ -3,11 +3,12 @@ SET SQL_SAFE_UPDATES = 0;
 USE deckforge;
 
 INSERT INTO player (username, email, password, role, collection_visibility) VALUES
-('admin', 'admin@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'ADMIN', 'PUBLIC'),
-('goncalo', 'goncalo@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'PUBLIC'),
-('mattias', 'mattias@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'TRADE_ONLY'),
-('nicki', 'nicki@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'PRIVATE'),
-('holger', 'holger@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'PUBLIC');
+('Admin', 'admin@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'ADMIN', 'PUBLIC'),
+('Con Galo', 'goncalo@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'PUBLIC'),
+('Mattam Ei', 'mattias@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'TRADE_ONLY'),
+('Wicky Icki', 'nicki@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'PRIVATE'),
+('Holger Bluetooth', 'holger@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'PUBLIC'),
+('testspiller', 'test@deckforge.dk', '$2a$10$dyP3gXQFSDuHPxXWxhmod.SGFZGWsGneD0lalz2UpgywiVfiJKPMu', 'PLAYER', 'TRADE_ONLY');
 
 INSERT INTO card (name, card_type, color, set_name, rarity, rule_text, image_url) VALUES
 ('Shivan Dragon', 'CREATURE', 'RED', 'Foundations', 'UNCOMMON', 'Flying. R: This creature gets +1/+0 until end of turn.', 'https://cards.scryfall.io/normal/front/7/0/702c4781-670b-49ae-b511-90ed119841b0.jpg'),
@@ -32,23 +33,24 @@ INSERT INTO player_card (player_id, card_id, quantity, for_trade) VALUES
 (5, 3, 2, FALSE);
 
 INSERT INTO deck (player_id, name, format, visibility) VALUES
+(1, 'Admin Test Deck', 'CASUAL', 'PUBLIC'),
 (2, 'Goncalos Rod Aggro', 'STANDARD', 'PUBLIC'),
 (3, 'Mattias Commander Deck', 'COMMANDER', 'PUBLIC'),
 (4, 'Nickis Casual', 'CASUAL', 'PRIVATE'),
 (5, 'Holgers Standard', 'STANDARD', 'PUBLIC');
 
 INSERT INTO event (name, location, date, format, max_players, status) VALUES
-('Commander Aften', 'Deckforge Naestved', '2026-05-20', 'COMMANDER', 8, 'UPCOMING'),
-('Standard Turnering', 'Deckforge Naestved', '2026-05-25', 'STANDARD', 16, 'UPCOMING'),
+('Commander Aften', 'Deckforge Naestved', '2026-06-15', 'COMMANDER', 8, 'UPCOMING'),
+('Standard Turnering', 'Deckforge Naestved', '2026-06-20', 'STANDARD', 16, 'UPCOMING'),
 ('Casual Meetup', 'Deckforge Naestved', '2026-04-15', 'CASUAL', 12, 'COMPLETED'),
-('Draft Night', 'Deckforge Naestved', '2026-06-01', 'DRAFT', 8, 'UPCOMING');
+('Draft Night', 'Deckforge Naestved', '2026-06-25', 'DRAFT', 8, 'UPCOMING');
 
 INSERT INTO event_registration (player_id, event_id, deck_id, registration_date) VALUES
-(2, 1, 1, '2026-05-01'),
-(3, 1, 2, '2026-05-02'),
-(4, 3, 3, '2026-04-10'),
-(5, 3, 4, '2026-04-10'),
-(2, 3, 1, '2026-04-11');
+(2, 1, 2, '2026-05-01'),
+(3, 1, 3, '2026-05-02'),
+(4, 3, 4, '2026-04-10'),
+(5, 3, 5, '2026-04-10'),
+(2, 3, 2, '2026-04-11');
 
 INSERT INTO trade (proposer_id, receiver_id, status, created_at, expires_at) VALUES
 (2, 3, 'PENDING', '2026-05-07 10:00:00', '2026-05-08 10:00:00'),

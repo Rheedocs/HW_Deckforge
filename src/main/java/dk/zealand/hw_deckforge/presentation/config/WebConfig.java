@@ -21,6 +21,10 @@ public class WebConfig implements WebMvcConfigurer {
                         "/",
                         "/login",
                         "/players/register",
+                        "/events",
+                        "/privacy",
+                        "/about",
+                        "/contact",
                         "/css/**",
                         "/images/**",
                         "/access-denied"

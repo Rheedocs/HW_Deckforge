@@ -21,8 +21,10 @@ public class PlayerController {
     }
 
     @GetMapping
-    public String getAllPlayers(Model model) {
-        model.addAttribute("players", playerService.getAll());
+    public String getAllPlayers(Model model, HttpSession session) {
+        int loggedInId = AuthHelper.getLoggedIn(session).getId();
+        model.addAttribute("players", playerService.getAllSortedByLoggedIn(loggedInId));
+        model.addAttribute("isAdmin", AuthHelper.isAdmin(session));
         return "players/player-list";
     }
 
@@ -37,6 +39,14 @@ public class PlayerController {
                            @RequestParam String password) {
         playerService.create(username, email, password);
         return "redirect:/login";
+    }
+
+    @GetMapping("/{id}")
+    public String showProfile(@PathVariable int id, Model model, HttpSession session) {
+        Player player = playerService.getById(id);
+        model.addAttribute("player", player);
+        model.addAttribute("isSelf", AuthHelper.isSelf(session, id));
+        return "players/player-profile";
     }
 
     @GetMapping("/{id}/edit")
@@ -66,29 +76,24 @@ public class PlayerController {
         return "redirect:/players";
     }
 
-    @GetMapping("/{id}/delete")
-    public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session) {
-        if (!AuthHelper.isAdminOrSelf(session, id)) return "redirect:/access-denied";
-        if (playerService.isOnlyAdmin(id))
-            throw new IllegalArgumentException("Du kan ikke slette den eneste admin");
-        Player player = playerService.getById(id);
-        model.addAttribute("navn", player.getUsername());
-        model.addAttribute("deleteUrl", "/players/" + id + "/delete");
-        model.addAttribute("tilbage", "/players");
-        return "delete-confirm";
-    }
-
     @PostMapping("/{id}/delete")
     public String deletePlayer(@PathVariable int id, HttpSession session) {
         if (!AuthHelper.isAdminOrSelf(session, id)) return "redirect:/access-denied";
-        if (playerService.isOnlyAdmin(id))
-            throw new IllegalArgumentException("Du kan ikke slette den eneste admin");
         playerService.delete(id);
-        // Hvis spilleren slettede sig selv, log ud
         if (AuthHelper.isSelf(session, id)) {
             session.invalidate();
             return "redirect:/login";
         }
         return "redirect:/players";
+    }
+
+    @GetMapping("/{id}/delete")
+    public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session) {
+        if (!AuthHelper.isAdminOrSelf(session, id)) return "redirect:/access-denied";
+        Player player = playerService.getById(id);
+        model.addAttribute("navn", player.getUsername());
+        model.addAttribute("deleteUrl", "/players/" + id + "/delete");
+        model.addAttribute("tilbage", "/players");
+        return "delete-confirm";
     }
 }

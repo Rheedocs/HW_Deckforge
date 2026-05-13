@@ -1,7 +1,9 @@
 package dk.zealand.hw_deckforge.application.service;
 
+import dk.zealand.hw_deckforge.application.interfaces.IPlayerCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerRepository;
 import dk.zealand.hw_deckforge.domain.Player;
+import dk.zealand.hw_deckforge.domain.PlayerCard;
 import dk.zealand.hw_deckforge.domain.enums.CollectionVisibility;
 import dk.zealand.hw_deckforge.domain.enums.Role;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,10 +15,12 @@ import java.util.List;
 public class PlayerService {
 
     private final IPlayerRepository playerRepository;
+    private final IPlayerCardRepository playerCardRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public PlayerService(IPlayerRepository playerRepository, BCryptPasswordEncoder passwordEncoder) {
+    public PlayerService(IPlayerRepository playerRepository, IPlayerCardRepository playerCardRepository, BCryptPasswordEncoder passwordEncoder) {
         this.playerRepository = playerRepository;
+        this.playerCardRepository = playerCardRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -31,6 +35,18 @@ public class PlayerService {
         return player;
     }
 
+    public List<Player> getAllSortedByLoggedIn(int loggedInId) {
+        List<Player> all = playerRepository.findAll();
+        List<Player> sorted = new java.util.ArrayList<>();
+        Player self = null;
+        for (Player p : all) {
+            if (p.getId() == loggedInId) self = p;
+            else sorted.add(p);
+        }
+        if (self != null) sorted.add(0, self);
+        return sorted;
+    }
+
     /**
      * Validerer email og adgangskode mod databasen.
      * Fejlbeskeden er bevidst generisk for ikke at afsløre
@@ -40,6 +56,8 @@ public class PlayerService {
         Player player = playerRepository.findByEmail(email);
         if (player == null || !passwordEncoder.matches(password, player.getPassword()))
             throw new IllegalArgumentException("Forkert email eller adgangskode");
+        if (!player.isActive())
+            throw new IllegalArgumentException("Denne konto er deaktiveret");
         return player;
     }
 
@@ -72,8 +90,9 @@ public class PlayerService {
     }
 
     public void delete(int id) {
-        if (id <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
-        getById(id);
+        if (id <= 0) throw new IllegalArgumentException("Id skal være større end 0");
+        if (isOnlyAdmin(id)) throw new IllegalArgumentException("Du kan ikke slette den eneste admin");
+        if (playerRepository.findById(id) == null) throw new IllegalArgumentException("Spiller med id " + id + " findes ikke");
         playerRepository.delete(id);
     }
 
@@ -85,6 +104,19 @@ public class PlayerService {
         int adminCount = 0;
         for (Player player : getAll()) if (player.getRole() == Role.ADMIN) adminCount++;
         return adminCount == 1 && getById(id).getRole() == Role.ADMIN;
+    }
+
+    public void addToCollection(int playerId, int cardId) {
+        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        if (cardId <= 0) throw new IllegalArgumentException("Ugyldigt kort-id");
+        getById(playerId);
+        PlayerCard playerCard = new PlayerCard(0, playerId, cardId, 1, false);
+        playerCardRepository.save(playerCard);
+    }
+
+    public void removeFromCollection(int id) {
+        if (id <= 0) throw new IllegalArgumentException("Ugyldigt samlings-id");
+        playerCardRepository.delete(id);
     }
 
     private void validatePassword(String password) {

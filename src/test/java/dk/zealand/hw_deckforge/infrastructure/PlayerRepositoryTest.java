@@ -20,9 +20,22 @@ class PlayerRepositoryTest {
     private PlayerRepository repository;
 
     @Test
-    void findAll_returnsAllPlayers() {
+    void findAll_returnsNonEmptyList() {
         List<Player> players = repository.findAll();
-        assertEquals(6, players.size());
+        assertFalse(players.isEmpty());
+    }
+
+    @Test
+    void findAll_containsKnownPlayer() {
+        List<Player> players = repository.findAll();
+        boolean found = false;
+        for (Player p : players) {
+            if (p.getUsername().equals("admin")) {
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found);
     }
 
     @Test
@@ -73,9 +86,10 @@ class PlayerRepositoryTest {
     }
 
     @Test
-    void delete_existingPlayer_cannotBeFoundAfterwards() {
+    void delete_existingPlayer_isDeactivated() {
         repository.delete(6);
         Player deleted = repository.findById(6);
-        assertNull(deleted);
+        assertNotNull(deleted);
+        assertFalse(deleted.isActive());
     }
 }

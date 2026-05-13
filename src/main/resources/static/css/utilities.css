@@ -41,5 +41,74 @@ ul.error-list li { color: var(--error); padding: 4px 0; }
 }
 
 @media (min-width: 768px) {
-.quick-links { flex-direction: row; }
+    .quick-links { flex-direction: row; }
+}
+
+.info {
+    background-color: #eaf4fb;
+    color: #1a6a9a;
+    border: 1px solid #aed6f1;
+    border-radius: 4px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+}
+
+.info-section {
+    background-color: var(--surface);
+    border-radius: 8px;
+    padding: 24px;
+    margin-top: 16px;
+}
+
+.info-section h2 {
+    margin-top: 0;
+    color: var(--primary);
+}
+
+.info-section h3 {
+    margin-top: 0;
+    color: var(--primary);
+}
+
+.consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.consent input[type="checkbox"] {
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.consent label {
+    font-weight: normal;
+    margin: 0;
+}
+
+/* ── Profil ── */
+.profile-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.stat-box {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--text-light);
 }

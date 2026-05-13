@@ -13,6 +13,8 @@
 <header th:replace="~{fragments :: header}"></header>
 <main>
     <h2>Log ind</h2>
+    <p th:if="${param.required}" class="info">Du skal være logget ind for at se denne side.</p>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
     <div th:if="${error}" class="error" th:text="${error}"></div>
     <form th:action="@{/login}" method="post">
         <label for="email">Email:</label>
@@ -23,5 +25,6 @@
     </form>
     <p>Ikke medlem endnu? <a th:href="@{/players/register}">Opret konto</a></p>
 </main>
+<footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

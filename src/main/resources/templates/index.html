@@ -21,11 +21,12 @@
     </div>
     <div class="quick-links">
         <a class="btn" th:href="@{/events}">Se events</a>
-        <a class="btn" th:href="@{/cards}">Se kort</a>
+        <a class="btn" th:if="${session.player != null}" th:href="@{/cards}">Se kort</a>
         <a class="btn" th:if="${session.player == null}" th:href="@{/players/register}">Opret konto</a>
         <a class="btn" th:if="${session.player == null}" th:href="@{/login}">Log ind</a>
         <a class="btn" th:if="${session.player != null}" th:href="@{/trades}">Se bytninger</a>
     </div>
 </main>
+<footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

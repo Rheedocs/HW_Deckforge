@@ -35,10 +35,17 @@ INSERT INTO deck (player_id, name, format, visibility) VALUES
 (5, 'Holgers Standard', 'STANDARD', 'PUBLIC');
 
 INSERT INTO event (name, location, date, format, max_players, status) VALUES
-('Commander Aften', 'Deckforge Naestved', '2026-05-20', 'COMMANDER', 8, 'UPCOMING'),
-('Standard Turnering', 'Deckforge Naestved', '2026-05-25', 'STANDARD', 16, 'UPCOMING'),
+('Commander Aften', 'Deckforge Naestved', '2026-06-15', 'COMMANDER', 8, 'UPCOMING'),
+('Standard Turnering', 'Deckforge Naestved', '2026-06-20', 'STANDARD', 16, 'UPCOMING'),
 ('Casual Meetup', 'Deckforge Naestved', '2026-04-15', 'CASUAL', 12, 'COMPLETED'),
-('Draft Night', 'Deckforge Naestved', '2026-06-01', 'DRAFT', 8, 'UPCOMING');
+('Draft Night', 'Deckforge Naestved', '2026-06-25', 'DRAFT', 8, 'UPCOMING'),
+('FNM Standard', 'Deckforge Naestved', '2026-06-12', 'STANDARD', 16, 'UPCOMING'),
+('Commander Aften', 'Deckforge Odense', '2026-06-18', 'COMMANDER', 8, 'UPCOMING'),
+('Draft Night', 'Deckforge Odense', '2026-06-28', 'DRAFT', 12, 'UPCOMING'),
+('FNM Casual', 'Deckforge Odense', '2026-05-08', 'CASUAL', 16, 'COMPLETED'),
+('Standard Turnering', 'Deckforge Aalborg', '2026-06-22', 'STANDARD', 32, 'UPCOMING'),
+('Casual Meetup', 'Deckforge Aalborg', '2026-05-10', 'CASUAL', 12, 'COMPLETED'),
+('Commander Weekend', 'Deckforge Aalborg', '2026-07-05', 'COMMANDER', 16, 'UPCOMING');
 
 INSERT INTO event_registration (player_id, event_id, deck_id, registration_date) VALUES
 (2, 1, 1, '2026-05-01'),

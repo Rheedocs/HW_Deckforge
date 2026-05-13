@@ -49,7 +49,8 @@ table {
 
 th, td { padding: 10px; border: 1px solid var(--border); text-align: left; }
 thead { background-color: var(--primary); color: white; }
-.action-col { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.action-col { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 120px; }
+td:empty { border: none; background: transparent; }
 
 /* ── Badges ── */
 .badge {
