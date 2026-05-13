@@ -18,11 +18,9 @@
             <strong>Email:</strong>
             <span th:text="${player.email}"></span>
         </p>
-        <p th:with="s=${player.collectionVisibility.name()}">
+        <p>
             <strong>Samling:</strong>
-            <span th:text="${s == 'PUBLIC' ? 'Offentlig' :
-                            (s == 'TRADE_ONLY' ? 'Kun byttekort synlige' : 'Privat')}">
-            </span>
+            <span th:text="${player.collectionVisibility.displayName}"></span>
         </p>
     </div>
 

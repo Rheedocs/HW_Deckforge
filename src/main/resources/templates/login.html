@@ -15,7 +15,6 @@
     <h2>Log ind</h2>
     <p th:if="${param.required}" class="info">Du skal være logget ind for at se denne side.</p>
     <div th:if="${error}" class="error" th:text="${error}"></div>
-    <div th:if="${error}" class="error" th:text="${error}"></div>
     <form th:action="@{/login}" method="post">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" placeholder="navn@domæne.dk" required>

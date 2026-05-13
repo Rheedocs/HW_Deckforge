@@ -16,9 +16,9 @@
     <p>Er du sikker på at du vil slette <strong th:text="${navn}"></strong>?</p>
     <div style="margin-top: 16px; display: flex; gap: 8px; align-items: center;">
         <form th:action="${deleteUrl}" method="post">
-            <button type="submit" class="btn-danger">Ja, slet</button>
+            <button type="submit" class="btn btn-danger">Ja, slet</button>
         </form>
-        <a th:href="${tilbage}">Tilbage</a>
+        <a class="btn" th:href="${tilbage}">Tilbage</a>
     </div>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>

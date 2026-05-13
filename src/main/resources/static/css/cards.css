@@ -6,6 +6,15 @@
     display: block;
 }
 
+.card-details {
+    width: 100%;
+    max-width: 200px;
+    border-radius: 8px;
+    box-sizing: border-box;
+    display: block;
+    margin: 24px auto 0;
+}
+
 .card-img-small {
     width: 40px;
     height: auto;

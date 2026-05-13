@@ -18,7 +18,8 @@ public class PlayerService {
     private final IPlayerCardRepository playerCardRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public PlayerService(IPlayerRepository playerRepository, IPlayerCardRepository playerCardRepository, BCryptPasswordEncoder passwordEncoder) {
+    public PlayerService(IPlayerRepository playerRepository, IPlayerCardRepository playerCardRepository,
+                         BCryptPasswordEncoder passwordEncoder) {
         this.playerRepository = playerRepository;
         this.playerCardRepository = playerCardRepository;
         this.passwordEncoder = passwordEncoder;

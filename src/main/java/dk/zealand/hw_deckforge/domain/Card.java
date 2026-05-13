@@ -14,6 +14,8 @@ public class Card {
     private String ruleText;
     private String imageUrl;
 
+    public Card(){}
+
     public Card(int id, String name, CardType cardType, String setName, Color color, Rarity rarity, String ruleText, String imageUrl) {
         this.id = id;
         this.name = name;
@@ -34,6 +36,13 @@ public class Card {
     public String getRuleText() { return ruleText; }
     public String getImageUrl() { return imageUrl; }
 
+    public String getScryfallUrl() {
+        String encodedName = name.replace(" ", "+");
+        String typeFilter = cardType == CardType.CREATURE ? "" : "+-t%3Acreature";
+        return "https://scryfall.com/search?q=%21%22" + encodedName + "%22+t%3A" + cardType.name().toLowerCase()
+                + typeFilter + "&unique=cards";
+    }
+
     public void setName(String name) { this.name = name; }
     public void setId(int id){this.id = id;}
     public void setCardType(CardType cardType) { this.cardType = cardType; }
@@ -44,6 +53,8 @@ public class Card {
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     public boolean hasImage(){return imageUrl != null && !imageUrl.isBlank();}
     public boolean isLand(){return cardType == cardType.LAND;}
+
+
 
     @Override
     public String toString() {

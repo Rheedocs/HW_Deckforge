@@ -10,6 +10,8 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -22,77 +24,84 @@ public class CardRepository implements ICardRepository {
 
     @Override
     public List<Card> findAll() {
-        // Rettelse: Tilføjet alle kolonner til SELECT
-        String sql = "SELECT id, name, type, set_name, color, rarity, rule_text, image_url FROM card";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new Card(
-                rs.getInt("id"),
-                rs.getString("name"),
-                CardType.valueOf(rs.getString("type")),
-                rs.getString("set_name"),
-                Color.valueOf(rs.getString("color")),
-                Rarity.valueOf(rs.getString("rarity")),
-                rs.getString("rule_text"),
-                rs.getString("image_url")
-        ));
+        try {
+            String sql = "SELECT id, name, card_type, color, set_name, rarity, rule_text, image_url FROM card";
+            return jdbcTemplate.query(sql, this::mapRow);
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke hente kort!", e);
+        }
     }
 
     @Override
     public Card findById(int id) {
-        String sql = "SELECT id, name, type, set_name, color, rarity, rule_text, image_url FROM card WHERE id = ?";
-        List<Card> card = jdbcTemplate.query(sql, (rs, rowNum) -> new Card(
-                rs.getInt("id"),
-                rs.getString("name"),
-                CardType.valueOf(rs.getString("type")),
-                rs.getString("set_name"),
-                Color.valueOf(rs.getString("color")),
-                Rarity.valueOf(rs.getString("rarity")),
-                rs.getString("rule_text"),
-                rs.getString("image_url")
-        ), id);
-        return card.isEmpty() ? null : card.getFirst();
+        try {
+            String sql = "SELECT id, name, card_type, color, set_name, rarity, rule_text, image_url FROM card WHERE id = ?";
+            List<Card> cards = jdbcTemplate.query(sql, this::mapRow, id);
+            return cards.isEmpty() ? null : cards.getFirst();
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke hente kort med id " + id + "!", e);
+        }
     }
 
     @Override
     public void save(Card card) {
-        // Rettelse: Alle kolonner med i SQL + korrekt antal parametre
-        String sql = "INSERT INTO card (name, type, set_name, color, rarity, rule_text, image_url) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql,
-                card.getName(),
-                card.getCardType(),
-                card.getSetName(),
-                card.getColor(),
-                card.getRarity(),
-                card.getRuleText(),
-                card.getImageUrl()
-        );
+        try {
+            String sql = "INSERT INTO card (name, card_type, color, set_name, rarity, rule_text, image_url) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            jdbcTemplate.update(sql,
+                    card.getName(),
+                    card.getCardType().name(),
+                    card.getColor().name(),
+                    card.getSetName(),
+                    card.getRarity().name(),
+                    card.getRuleText(),
+                    card.getImageUrl()
+            );
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke gemme kort!", e);
+        }
     }
 
     @Override
     public void update(Card card) {
         try {
-            // Rettelse: INSERT → UPDATE, korrekte kolonner og parametre, id sidst til WHERE
-            String sql = "UPDATE card SET name = ?, type = ?, set_name = ?, color = ?, rarity = ?, " +
+            String sql = "UPDATE card SET name = ?, card_type = ?, color = ?, set_name = ?, rarity = ?, " +
                     "rule_text = ?, image_url = ? WHERE id = ?";
             jdbcTemplate.update(sql,
                     card.getName(),
-                    card.getCardType(),
+                    card.getCardType().name(),
+                    card.getColor().name(),
                     card.getSetName(),
-                    card.getColor(),
-                    card.getRarity(),
+                    card.getRarity().name(),
                     card.getRuleText(),
                     card.getImageUrl(),
                     card.getId()
             );
         } catch (DataAccessException e) {
-            e.printStackTrace();
             throw new DatabaseException("Kunne ikke opdatere kort!", e);
         }
     }
 
     @Override
     public void delete(int id) {
-        String sql = "DELETE FROM card WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        try {
+            String sql = "DELETE FROM card WHERE id = ?";
+            jdbcTemplate.update(sql, id);
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke slette kort med id " + id + "!", e);
+        }
+    }
+
+    private Card mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return new Card(
+                rs.getInt("id"),
+                rs.getString("name"),
+                CardType.valueOf(rs.getString("card_type")),
+                rs.getString("set_name"),
+                Color.valueOf(rs.getString("color")),
+                Rarity.valueOf(rs.getString("rarity")),
+                rs.getString("rule_text"),
+                rs.getString("image_url")
+        );
     }
 }

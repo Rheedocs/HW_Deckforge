@@ -34,11 +34,8 @@
                        th:text="${player.username}"></a>
                 </td>
                 <td th:if="${isAdmin}" th:text="${player.email}"></td>
-                <td th:if="${isAdmin}" th:text="${player.role}"></td>
-                <td th:with="s=${player.collectionVisibility.name()}"
-                    th:text="${s == 'PUBLIC' ? 'Offentlig' :
-                              (s == 'TRADE_ONLY' ? 'Kun byttekort' : 'Privat')}">
-                </td>
+                <td th:if="${isAdmin}" th:text="${player.role.displayName}"></td>
+                <td th:text="${player.collectionVisibility.displayName}"></td>
                 <td class="action-col">
                     <a class="btn"
                        th:if="${isAdmin or session.player.id == player.id}"
