@@ -39,8 +39,7 @@ public class CardController {
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable int id, Model model, HttpSession session) {
-        model.addAttribute("card", new Card(0, "", null, "",
-                null, null, null, null));
+        model.addAttribute("card", cardService.getById(id));
         return "cards/edit-card";
     }
 

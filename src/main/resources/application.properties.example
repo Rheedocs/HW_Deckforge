@@ -1,8 +1,8 @@
 spring.application.name=HW_Deckforge
 
 spring.datasource.url=jdbc:mysql://localhost:3306/deckforge?createDatabaseIfNotExist=true
-spring.datasource.username=DIT_BRUGERNAVN
-spring.datasource.password=DIT_PASSWORD
+spring.datasource.username=root
+spring.datasource.password=root
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 spring.thymeleaf.cache=false

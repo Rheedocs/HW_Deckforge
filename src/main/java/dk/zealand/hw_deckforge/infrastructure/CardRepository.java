@@ -5,6 +5,8 @@ import dk.zealand.hw_deckforge.domain.Card;
 import dk.zealand.hw_deckforge.domain.enums.CardType;
 import dk.zealand.hw_deckforge.domain.enums.Color;
 import dk.zealand.hw_deckforge.domain.enums.Rarity;
+import dk.zealand.hw_deckforge.domain.exceptions.DatabaseException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -20,7 +22,8 @@ public class CardRepository implements ICardRepository {
 
     @Override
     public List<Card> findAll() {
-        String sql = "SELECT id, name, type, color FROM card";
+        // Rettelse: Tilføjet alle kolonner til SELECT
+        String sql = "SELECT id, name, type, set_name, color, rarity, rule_text, image_url FROM card";
         return jdbcTemplate.query(sql, (rs, rowNum) -> new Card(
                 rs.getInt("id"),
                 rs.getString("name"),
@@ -32,6 +35,7 @@ public class CardRepository implements ICardRepository {
                 rs.getString("image_url")
         ));
     }
+
     @Override
     public Card findById(int id) {
         String sql = "SELECT id, name, type, set_name, color, rarity, rule_text, image_url FROM card WHERE id = ?";
@@ -47,18 +51,45 @@ public class CardRepository implements ICardRepository {
         ), id);
         return card.isEmpty() ? null : card.getFirst();
     }
+
     @Override
     public void save(Card card) {
-        String sql = "INSERT INTO card (id, name, color, type) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, card.getId(), card.getName(), card.getColor(), card.getCardType(),
-                card.getRuleText(), card.getImageUrl());
+        // Rettelse: Alle kolonner med i SQL + korrekt antal parametre
+        String sql = "INSERT INTO card (name, type, set_name, color, rarity, rule_text, image_url) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql,
+                card.getName(),
+                card.getCardType(),
+                card.getSetName(),
+                card.getColor(),
+                card.getRarity(),
+                card.getRuleText(),
+                card.getImageUrl()
+        );
     }
+
     @Override
     public void update(Card card) {
-        String sql = "INSERT INTO card SET id = ?, name = ?, color = ?, type = ? WHERE id = ?";
-        jdbcTemplate.update(sql, card.getId(), card.getName(), card.getColor(), card.getCardType(),
-                card.getRuleText(), card.getImageUrl());
+        try {
+            // Rettelse: INSERT → UPDATE, korrekte kolonner og parametre, id sidst til WHERE
+            String sql = "UPDATE card SET name = ?, type = ?, set_name = ?, color = ?, rarity = ?, " +
+                    "rule_text = ?, image_url = ? WHERE id = ?";
+            jdbcTemplate.update(sql,
+                    card.getName(),
+                    card.getCardType(),
+                    card.getSetName(),
+                    card.getColor(),
+                    card.getRarity(),
+                    card.getRuleText(),
+                    card.getImageUrl(),
+                    card.getId()
+            );
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            throw new DatabaseException("Kunne ikke opdatere kort!", e);
+        }
     }
+
     @Override
     public void delete(int id) {
         String sql = "DELETE FROM card WHERE id = ?";
