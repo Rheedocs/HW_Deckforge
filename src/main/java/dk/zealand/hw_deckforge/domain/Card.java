@@ -37,13 +37,17 @@ public class Card {
     public String getImageUrl() { return imageUrl; }
 
     public String getScryfallUrl() {
+        if (name == null || cardType == null) return "";
         String encodedName = name.replace(" ", "+");
         String typeFilter = cardType == CardType.CREATURE ? "" : "+-t%3Acreature";
         return "https://scryfall.com/search?q=%21%22" + encodedName + "%22+t%3A" + cardType.name().toLowerCase()
                 + typeFilter + "&unique=cards";
     }
 
-    public void setName(String name) { this.name = name; }
+    public void setName(String name) {
+        if (name == null || name.isBlank()) throw new IllegalArgumentException("Navn må ikke være tomt");
+        this.name = name;
+    }
     public void setId(int id){this.id = id;}
     public void setCardType(CardType cardType) { this.cardType = cardType; }
     public void setSetName(String setName) { this.setName = setName; }
@@ -52,7 +56,7 @@ public class Card {
     public void setRuleText(String ruleText) { this.ruleText = ruleText; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     public boolean hasImage(){return imageUrl != null && !imageUrl.isBlank();}
-    public boolean isLand(){return cardType == cardType.LAND;}
+    public boolean isLand(){return cardType == CardType.LAND;}
 
 
 

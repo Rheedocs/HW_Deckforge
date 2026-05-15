@@ -8,6 +8,9 @@ public class PlayerCard {
     private boolean forTrade;
 
     public PlayerCard(int id, int playerId, int cardId, int quantity, boolean forTrade) {
+        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        if (cardId <= 0) throw new IllegalArgumentException("Ugyldigt kort-id");
+        if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");
         this.id = id;
         this.playerId = playerId;
         this.cardId = cardId;
@@ -21,6 +24,11 @@ public class PlayerCard {
     public int getQuantity() { return quantity; }
     public boolean isForTrade() { return forTrade; }
 
-    public void setQuantity(int quantity) { this.quantity = quantity; }
-    public void setForTrade(boolean forTrade) { this.forTrade = forTrade; }
+    public void setQuantity(int quantity) {
+        if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");
+        this.quantity = quantity;
+    }
+
+    public void markForTrade() { this.forTrade = true; }
+    public void unmarkForTrade() { this.forTrade = false; }
 }

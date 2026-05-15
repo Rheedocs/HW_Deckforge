@@ -5,7 +5,6 @@ import dk.zealand.hw_deckforge.domain.Card;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class CardService {
@@ -19,11 +18,11 @@ public class CardService {
     public List<Card> getAll() {
         return cardRepository.findAll();
     }
-// Ændret Exception til NoSuchElementException da jeg fik fejl med CardNotFoundException(id)
+
     public Card getById(int id) {
         if (id <= 0) throw new IllegalArgumentException("Id skal være større end 0!");
         Card card = cardRepository.findById(id);
-        if (card == null) throw new NoSuchElementException("Kort med id " + id + " blev ikke fundet!");
+        if (card == null) throw new IllegalArgumentException("Kort med id " + id + " blev ikke fundet!");
         return card;
     }
 
@@ -35,6 +34,7 @@ public class CardService {
 
     public void update(Card card) {
         if (card == null) throw new IllegalArgumentException("Kort må ikke være null!");
+        if (card.getId() == null || card.getId() <= 0) throw new IllegalArgumentException("Ugyldigt kort-id!");
         validateCard(card);
         cardRepository.update(card);
     }
@@ -51,5 +51,7 @@ public class CardService {
             throw new IllegalArgumentException("Kortet skal have en type!");
         if (card.getColor() == null)
             throw new IllegalArgumentException("Kortet skal have en farve!");
+        if (card.getRarity() == null)
+            throw new IllegalArgumentException("Kortet skal have en sjældenhed!");
     }
 }
