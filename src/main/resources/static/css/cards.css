@@ -1,6 +1,5 @@
-/* ── Kortbilleder ── */
+/* --- Kortbilleder --- */
 
-/* Stort billede på kortdetalje-siden */
 .card-img {
     width: 100%;
     max-width: 200px;
@@ -8,7 +7,6 @@
     display: block;
 }
 
-/* Lille billede i tabellen, klikbart for at åbne modal */
 .card-img-small {
     width: 80px;
     height: auto;
@@ -17,13 +15,11 @@
     cursor: pointer;
 }
 
-/* ── Modal ── */
+/* --- Modal --- */
 
-/* Mørkt overlay der dækker hele skærmen bag modalen */
 .modal-overlay {
     display: none;
     position: fixed;
-    /* inset: 0 er shorthand for top/right/bottom/left: 0, dækker hele skærmen */
     inset: 0;
     background: rgba(0, 0, 0, 0.6);
     z-index: 100;
@@ -31,10 +27,8 @@
     align-items: center;
 }
 
-/* Tilføj .active for at vise overlay og modal */
 .modal-overlay.active { display: flex; }
 
-/* Selve modal-boksen */
 .modal {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -64,7 +58,6 @@
 .modal ul li { color: var(--text); padding: 4px 0; }
 .modal ul li strong { color: var(--primary); }
 
-/* Luk-knap øverst til højre i modalen */
 .modal-close {
     position: absolute;
     top: 12px;
@@ -74,5 +67,102 @@
     background: none;
     border: none;
     color: var(--text);
+    width: auto;
+    margin-bottom: 0;
+    padding: 0;
 }
 .modal-close:hover { color: var(--error); }
+
+/* --- Mobil-kortgrid --- */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.desktop-table { display: none; }
+
+@media (min-width: 768px) {
+    .card-grid { display: none; }
+    .desktop-table { display: block; }
+}
+
+.card-thumb {
+    cursor: pointer;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-thumb img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.card-thumb-name {
+    padding: 4px 5px;
+    font-size: 0.7rem;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.card-thumb-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    padding: 3px 5px;
+    border-top: 1px solid var(--border);
+    color: var(--text);
+}
+
+@media (max-width: 767px) {
+    .modal {
+        padding: 10px;
+        max-width: 95vw;
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+
+    .modal img {
+        max-height: 60vh;
+        width: 100%;
+        object-fit: contain;
+        margin-bottom: 8px;
+    }
+
+    .modal h3 {
+        font-size: 0.9rem;
+        margin: 0 0 6px 0;
+    }
+
+    .modal ul {
+        font-size: 0.8rem;
+        padding-left: 12px;
+        margin: 0 0 10px 0;
+    }
+
+    .modal ul li { padding: 2px 0; }
+
+    .modal-close {
+        font-size: 1.2rem;
+        background: var(--error, #c0392b);
+        color: #fff;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        top: 8px;
+        right: 8px;
+    }
+}

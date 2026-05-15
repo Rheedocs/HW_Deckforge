@@ -2,6 +2,7 @@ package dk.zealand.hw_deckforge.application.service;
 
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerCardRepository;
 import dk.zealand.hw_deckforge.domain.PlayerCard;
+import dk.zealand.hw_deckforge.domain.enums.CollectionVisibility;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,5 +44,16 @@ public class PlayerCardService {
     public void setForTrade(int id, boolean forTrade) {
         if (id <= 0) throw new IllegalArgumentException("Ugyldigt id");
         playerCardRepository.setForTrade(id, forTrade);
+    }
+
+    public int getVisibleCount(int playerId, CollectionVisibility visibility, boolean isSelf, boolean isAdmin) {
+        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        if (isSelf || isAdmin || visibility == CollectionVisibility.PUBLIC) {
+            return playerCardRepository.countByPlayerId(playerId);
+        } else if (visibility == CollectionVisibility.TRADE_ONLY) {
+            return playerCardRepository.countForTradeByPlayerId(playerId);
+        } else {
+            return 0;
+        }
     }
 }

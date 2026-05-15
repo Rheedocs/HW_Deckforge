@@ -1,4 +1,4 @@
-/* ── Knapper ── */
+/* --- Knapper --- */
 button, .btn {
     padding: 10px 20px;
     background-color: var(--primary);
@@ -10,7 +10,6 @@ button, .btn {
     display: inline-block;
     font-family: inherit;
     font-size: inherit;
-    /* Fuld bredde på mobil, auto på desktop via media query */
     width: 100%;
     margin-bottom: 8px;
 }
@@ -20,7 +19,7 @@ button:hover, .btn:hover { background-color: var(--primary-dark); }
 .btn-danger { background-color: var(--error); }
 .btn-danger:hover { background-color: #a93226; }
 
-/* ── Formularer ── */
+/* --- Formularer --- */
 label { display: block; font-weight: bold; margin-top: 8px; }
 
 input, select, textarea {
@@ -38,16 +37,20 @@ input, select, textarea {
 input[type="checkbox"] { display: inline; width: auto; }
 input#menu-toggle { display: none !important; width: auto; margin: 0; padding: 0; border: none; }
 
-/* ── Tabel ── */
+/* --- Tabel --- */
+
+/* Wrapper-div håndterer vandret scroll — mere pålidelig end display:block på selve table-elementet */
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    margin-top: 16px;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 16px;
-    /* Vandret scroll på mobil når tabellen er for bred */
-    display: block;
-    overflow-x: auto;
-    /* Smooth scroll på iOS */
-    -webkit-overflow-scrolling: touch;
+    /* Forhindrer linjebrud i celler så tabellen altid er bredere end sin wrapper når der er meget indhold */
     white-space: nowrap;
 }
 
@@ -58,13 +61,13 @@ tbody tr:nth-child(odd) { background-color: var(--surface); }
 th, td { padding: 10px; border: 1px solid var(--border); text-align: left; vertical-align: middle; height: 1px; }
 thead { background-color: var(--primary); color: white; }
 
-/* Flex så knapper i handlingskolonnen ligger på række med afstand */
-.action-col { display: flex; align-items: center; align-content: center; gap: 8px; flex-wrap: wrap; min-width: 120px; height: 100%; }
+/* Flex wrapper inde i handlingskolonnens td — må ikke sidde direkte på td */
+.action-col { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.action-col .btn, .action-col button { width: auto; margin-bottom: 0; }
 
-/* Tomme celler skal ikke vise kant eller baggrund */
 td:empty { border: none; background: transparent; }
 
-/* ── Badges ── */
+/* --- Badges --- */
 .badge {
     display: inline-block;
     padding: 4px 10px;
@@ -85,9 +88,8 @@ td:empty { border: none; background: transparent; }
 /* Røde badges: fejl og afviste tilstande */
 .badge-cancelled, .badge-declined { background-color: var(--error-bg); color: var(--error); }
 
-/* ── Desktop ── */
+/* --- Desktop --- */
 @media (min-width: 768px) {
     button, .btn { width: auto; margin-bottom: 0; }
-    table { display: table; white-space: normal; }
     input, select, textarea { width: 300px; }
 }

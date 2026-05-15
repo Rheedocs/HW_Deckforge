@@ -11,5 +11,6 @@ public interface IPlayerCardRepository {
     void delete(int id);
     void setForTrade(int id, boolean forTrade);
     int countByPlayerId(int playerId);
+    int countForTradeByPlayerId(int playerId);
 
 }

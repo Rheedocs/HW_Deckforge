@@ -47,9 +47,13 @@ public class PlayerController {
     @GetMapping("/{id}")
     public String showProfile(@PathVariable int id, Model model, HttpSession session) {
         Player player = playerService.getById(id);
+        boolean isSelf = AuthHelper.isSelf(session, id);
+        boolean isAdmin = AuthHelper.isAdmin(session);
+        int cardCount = playerCardService.getVisibleCount(id, player.getCollectionVisibility(), isSelf, isAdmin);
+
         model.addAttribute("player", player);
-        model.addAttribute("isSelf", AuthHelper.isSelf(session, id));
-        model.addAttribute("kortCount", playerCardService.countByPlayerId(id));
+        model.addAttribute("isSelf", isSelf);
+        model.addAttribute("cardCount", cardCount);
         return "players/player-profile";
     }
 

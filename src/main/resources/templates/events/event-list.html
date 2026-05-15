@@ -16,6 +16,7 @@
         <h2>Events</h2>
 
         <h3>Kommende events</h3>
+        <div class="table-wrapper">
         <table>
             <thead>
             <tr>
@@ -36,16 +37,20 @@
                 <td th:text="${event.format}"></td>
                 <td th:text="${event.maxPlayers}"></td>
                 <td><span class="badge badge-upcoming">Kommende</span></td>
-                <td class="action-col">
-                    <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
-                    <a class="btn" th:if="${isAdmin}" th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
-                    <a class="btn btn-danger" th:if="${isAdmin}" th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                <td>
+                    <div class="action-col">
+                        <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
+                        <a class="btn" th:if="${isAdmin}" th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
+                        <a class="btn btn-danger" th:if="${isAdmin}" th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                    </div>
                 </td>
             </tr>
             </tbody>
         </table>
+        </div>
 
         <h3>Tidligere events</h3>
+        <div class="table-wrapper">
         <table>
             <thead>
             <tr>
@@ -66,14 +71,17 @@
                 <td th:text="${event.format}"></td>
                 <td th:text="${event.maxPlayers}"></td>
                 <td><span class="badge badge-completed">Afsluttet</span></td>
-                <td class="action-col">
-                    <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
-                    <a class="btn" th:if="${isAdmin}" th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
-                    <a class="btn btn-danger" th:if="${isAdmin}" th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                <td>
+                    <div class="action-col">
+                        <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
+                        <a class="btn" th:if="${isAdmin}" th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
+                        <a class="btn btn-danger" th:if="${isAdmin}" th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                    </div>
                 </td>
             </tr>
             </tbody>
         </table>
+        </div>
 
         <a class="btn list-action" th:if="${isAdmin}" th:href="@{/events/create}">Opret nyt event</a>
     </div>

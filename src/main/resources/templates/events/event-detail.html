@@ -20,7 +20,8 @@
     <p><strong>Status:</strong> <span th:text="${event.status}"></span></p>
 
     <h3>Tilmeldte spillere</h3>
-    <table th:if="${registrations != null and !#lists.isEmpty(registrations)}">
+    <div class="table-wrapper" th:if="${registrations != null and !#lists.isEmpty(registrations)}">
+    <table>
         <thead>
         <tr>
             <th>Spiller</th>
@@ -36,6 +37,7 @@
         </tr>
         </tbody>
     </table>
+    </div>
     <p th:if="${registrations == null or #lists.isEmpty(registrations)}">Ingen tilmeldte endnu.</p>
 
     <div th:if="${event.upcoming and session.player != null}" style="margin-top: 24px;">
