@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<html lang="da" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deck List</title>
+    <title>Tilføj deck</title>
     <link rel="stylesheet" th:href="@{/css/base.css}">
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/components.css}">
@@ -11,35 +11,39 @@
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
-    <h2>Rediger deck</h2>
-<form th:action="@{/decks/{id}/edit}" method="post">
-    <input type="hidden" name="playerId" th:value="${session.player.id}">
-    <div>
-        <label for="name">Navn</label>
-        <input type="text" id="name" name="name" placeholder="Skriv ny deck navn..." required>
-    </div>
+<main>
+    <h2>Tilføj deck</h2>
+    <form th:action="@{/decks/{id}/edit(id=${deck.id})}" method="post">
 
-    <div>
-        <label for="format">Format</label>
-        <select id="format" name="format" required>
-            <option value="" disabled selected>Vælg format</option>
-            <option value="COMMANDER">Commander</option>
-            <option value="STANDARD">Standard</option>
-            <option value="DRAFT">Draft</option>
-            <option value="CASUAL">Casual</option>
-        </select>
-    </div>
+        <input type="hidden" name="playerId" th:value="${deck.playerId}">
 
-    <div>
-        <label for="visibility">Synlighed</label>
-        <select id="visibility" name="visibility" required>
-            <option value="" disabled selected>Vælg synlighed</option>
-            <option value="PUBLIC">Public</option>
-            <option value="PRIVATE">Private</option>
-        </select>
-    </div>
+        <div>
+            <label for="name">Navn</label>
+            <input type="text" id="name" name="name" th:value="${deck.name}" placeholder="Skriv deck navn..." required>
+        </div>
 
-    <button type="submit">Opdatere deck</button>
-</form>
+        <div>
+            <label for="format">Format</label>
+            <select id="format" name="format" required>
+                <option value="" disabled selected>Vælg format</option>
+                <option value="COMMANDER">Commander</option>
+                <option value="STANDARD">Standard</option>
+                <option value="DRAFT">Draft</option>
+                <option value="CASUAL">Casual</option>
+            </select>
+        </div>
+
+        <div>
+            <label for="visibility">Synlighed</label>
+            <select id="visibility" name="visibility" required>
+                <option value="" disabled selected>Vælg synlighed</option>
+                <option value="PUBLIC">Public</option>
+                <option value="PRIVATE">Private</option>
+            </select>
+        </div>
+
+        <button type="submit">Opdatere deck</button>
+    </form>
+</main>
 </body>
 </html>

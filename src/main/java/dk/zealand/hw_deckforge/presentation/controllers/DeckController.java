@@ -47,6 +47,8 @@ public class DeckController {
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable int id, Model model, HttpSession session) {
+        Deck deck = deckService.getById(id);
+        model.addAttribute("deck", deck);
         return "decks/edit-deck";
     }
 
