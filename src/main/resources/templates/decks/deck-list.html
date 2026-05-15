@@ -27,7 +27,7 @@
         <tbody>
         <tr th:each="deck : ${decks}">
             <td th:text="${deck.id}"></td>
-            <td th:text="${deck.name}"></td>
+            <td><a th:href="@{/decks/{id}(id=${deck.id})}" th:text="${deck.name}"></a></td>
             <td th:text="${deck.format}"></td>
             <td th:text="${deck.playerId}"></td>
             <td class="action-col">
