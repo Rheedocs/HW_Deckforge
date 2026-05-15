@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deckforge - Samling</title>
+    <link rel="stylesheet" th:href="@{/css/base.css}">
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <link rel="stylesheet" th:href="@{/css/components.css}">
+    <link rel="stylesheet" th:href="@{/css/cards.css}">
+    <link rel="stylesheet" th:href="@{/css/utilities.css}">
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+    <h2>
+        <span th:if="${isSelf}">Din samling</span>
+        <span th:unless="${isSelf}" th:text="${owner.username} + 's samling'"></span>
+    </h2>
+
+    <p th:if="${#lists.isEmpty(playerCards)}">Ingen kort i samlingen.</p>
+
+    <table th:unless="${#lists.isEmpty(playerCards)}">
+        <thead>
+        <tr>
+            <th>Billede</th>
+            <th>Navn</th>
+            <th>Type</th>
+            <th>Farve</th>
+            <th>Sjældenhed</th>
+            <th>Antal</th>
+            <th>Til bytte</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="pc : ${playerCards}" th:with="card=${cardMap[pc.cardId]}">
+            <td>
+                <img class="card-img-small"
+                     th:if="${card != null and card.imageUrl != null}"
+                     th:src="${card.imageUrl}"
+                     th:alt="${card.name}"
+                     th:data-name="${card.name}"
+                     th:data-type="${card.cardType.displayName}"
+                     th:data-color="${card.color.displayName}"
+                     th:data-rarity="${card.rarity.displayName}"
+                     th:data-set="${card.setName}"
+                     th:data-rules="${card.ruleText}"
+                     th:data-image="${card.imageUrl}"
+                     th:data-url="${card.scryfallUrl}"
+                     onclick="openModal(this)">
+            </td>
+            <td th:text="${card != null ? card.name : '–'}"></td>
+            <td th:text="${card != null ? card.cardType.displayName : '–'}"></td>
+            <td th:text="${card != null ? card.color.displayName : '–'}"></td>
+            <td th:text="${card != null ? card.rarity.displayName : '–'}"></td>
+            <td th:text="${pc.quantity}"></td>
+            <td th:text="${pc.forTrade ? 'Ja' : 'Nej'}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top: 16px;">
+        <a th:href="@{/players/{id}(id=${owner.id})}">Tilbage til profil</a>
+    </div>
+</main>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal">
+        <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+        <img id="modalImage" src="" alt="">
+        <h3 id="modalName"></h3>
+        <ul>
+            <li><strong>Type:</strong> <span id="modalType"></span></li>
+            <li><strong>Farve:</strong> <span id="modalColor"></span></li>
+            <li><strong>Sjældenhed:</strong> <span id="modalRarity"></span></li>
+            <li><strong>Sæt:</strong> <span id="modalSet"></span></li>
+            <li id="modalRulesItem"><strong>Regeltext:</strong> <span id="modalRules"></span></li>
+        </ul>
+        <a id="modalScryfall" class="btn" href="" target="_blank">Åbn i Scryfall</a>
+    </div>
+</div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<script th:src="@{/js/modal.js}"></script>
+</body>
+</html>
