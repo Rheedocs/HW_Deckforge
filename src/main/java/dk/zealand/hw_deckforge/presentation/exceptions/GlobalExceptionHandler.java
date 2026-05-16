@@ -8,10 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.List;
 
-/**
- * Fanger exceptions der bobler op fra alle lag og returnerer en brugervenlig fejlside.
- * Annotationen @ControllerAdvice betyder at handleren gælder globalt for alle controllers.
- */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 

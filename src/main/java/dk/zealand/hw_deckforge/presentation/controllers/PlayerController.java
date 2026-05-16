@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.presentation.controllers;
 
+import dk.zealand.hw_deckforge.application.service.DeckService;
 import dk.zealand.hw_deckforge.application.service.PlayerCardService;
 import dk.zealand.hw_deckforge.application.service.PlayerService;
 import dk.zealand.hw_deckforge.domain.Player;
@@ -17,10 +18,12 @@ public class PlayerController {
 
     private final PlayerService playerService;
     private final PlayerCardService playerCardService;
+    private final DeckService deckService;
 
-    public PlayerController(PlayerService playerService, PlayerCardService playerCardService) {
+    public PlayerController(PlayerService playerService, PlayerCardService playerCardService, DeckService deckService) {
         this.playerService = playerService;
         this.playerCardService = playerCardService;
+        this.deckService = deckService;
     }
 
     @GetMapping
@@ -51,9 +54,12 @@ public class PlayerController {
         boolean isAdmin = AuthHelper.isAdmin(session);
         int cardCount = playerCardService.getVisibleCount(id, player.getCollectionVisibility(), isSelf, isAdmin);
 
+        int deckCount = deckService.getDeckCount(id);
+
         model.addAttribute("player", player);
         model.addAttribute("isSelf", isSelf);
         model.addAttribute("cardCount", cardCount);
+        model.addAttribute("deckCount", deckCount);
         return "players/player-profile";
     }
 
@@ -96,12 +102,13 @@ public class PlayerController {
     }
 
     @GetMapping("/{id}/delete")
-    public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session) {
+    public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session,
+                                    @RequestHeader(value = "Referer", required = false) String referer) {
         if (!AuthHelper.isAdminOrSelf(session, id)) return "redirect:/access-denied";
         Player player = playerService.getById(id);
         model.addAttribute("navn", player.getUsername());
         model.addAttribute("deleteUrl", "/players/" + id + "/delete");
-        model.addAttribute("tilbage", "/players");
+        model.addAttribute("tilbage", referer != null ? referer : "/players");
         return "delete-confirm";
     }
 }

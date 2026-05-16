@@ -4,7 +4,9 @@ import dk.zealand.hw_deckforge.application.interfaces.ICardRepository;
 import dk.zealand.hw_deckforge.domain.Card;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CardService {
@@ -17,6 +19,14 @@ public class CardService {
 
     public List<Card> getAll() {
         return cardRepository.findAll();
+    }
+
+    public Map<Integer, Card> getCardMap() {
+        Map<Integer, Card> map = new HashMap<>();
+        for (Card card : cardRepository.findAll()) {
+            map.put(card.getId(), card);
+        }
+        return map;
     }
 
     public Card getById(int id) {

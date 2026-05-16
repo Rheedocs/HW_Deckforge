@@ -5,6 +5,8 @@ import java.util.List;
 
 public interface IPlayerCardRepository {
     List<PlayerCard> findByPlayerId(int playerId);
+    PlayerCard findById(int id);
+    PlayerCard findByPlayerIdAndCardId(int playerId, int cardId);
     List<PlayerCard> findForTradeByPlayerId(int playerId);
     void save(PlayerCard playerCard);
     void update(PlayerCard playerCard);

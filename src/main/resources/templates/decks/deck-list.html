@@ -28,11 +28,13 @@
         <tr th:each="deck : ${decks}">
             <td th:text="${deck.id}"></td>
             <td><a th:href="@{/decks/{id}(id=${deck.id})}" th:text="${deck.name}"></a></td>
-            <td th:text="${deck.format}"></td>
+            <td th:text="${deck.format.displayName}"></td>
             <td th:text="${deck.playerId}"></td>
-            <td class="action-col">
-                <a class="btn" th:href="@{/decks/{id}/edit(id=${deck.id})}">Rediger</a>
-                <a class="btn btn-danger" th:href="@{/decks/{id}/delete(id=${deck.id})}">Slet</a>
+            <td>
+                <div class="action-col">
+                    <a class="btn" th:href="@{/decks/{id}/edit(id=${deck.id})}">Rediger</a>
+                    <a class="btn btn-danger" th:href="@{/decks/{id}/delete(id=${deck.id})}">Slet</a>
+                </div>
             </td>
         </tr>
         </tbody>

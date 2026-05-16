@@ -13,7 +13,7 @@
 <body>
 <header th:replace="~{fragments :: header}"></header>
 <main>
-    <div th:with="isAdmin=${session.player != null and session.player.role.name() == 'ADMIN'}">
+    <div>
         <h2>Kort</h2>
         <!-- Mobil: kortgrid med thumbnails -->
         <div class="card-grid">
@@ -27,6 +27,8 @@
                  th:data-rules="${card.ruleText}"
                  th:data-image="${card.imageUrl}"
                  th:data-url="${card.scryfallUrl}"
+                 th:data-edit-url="${isAdmin ? '/cards/' + card.id + '/edit' : null}"
+                 th:data-delete-url="${isAdmin ? '/cards/' + card.id + '/delete' : null}"
                  onclick="openModal(this)">
                 <img th:if="${card.imageUrl != null}" th:src="${card.imageUrl}" th:alt="${card.name}">
                 <div class="card-thumb-name" th:text="${card.name}"></div>
@@ -45,7 +47,7 @@
                 <th>Farve</th>
                 <th>Sjældenhed</th>
                 <th>Sæt</th>
-                <th>Handlinger</th>
+                <th th:if="${isAdmin}">Handlinger</th>
             </tr>
             </thead>
             <tbody>
@@ -63,6 +65,8 @@
                          th:data-rules="${card.ruleText}"
                          th:data-image="${card.imageUrl}"
                          th:data-url="${card.scryfallUrl}"
+                         th:data-edit-url="${isAdmin ? '/cards/' + card.id + '/edit' : null}"
+                         th:data-delete-url="${isAdmin ? '/cards/' + card.id + '/delete' : null}"
                          onclick="openModal(this)">
                 </td>
                 <td th:text="${card.name}"></td>
@@ -70,11 +74,10 @@
                 <td th:text="${card.color.displayName}"></td>
                 <td th:text="${card.rarity.displayName}"></td>
                 <td th:text="${card.setName}"></td>
-                <td>
+                <td th:if="${isAdmin}">
                     <div class="action-col">
-                        <a class="btn" th:href="${card.scryfallUrl}" target="_blank">Åbn i Scryfall</a>
-                        <a class="btn" th:if="${isAdmin}" th:href="@{/cards/{id}/edit(id=${card.id})}">Rediger</a>
-                        <a class="btn btn-danger" th:if="${isAdmin}" th:href="@{/cards/{id}/delete(id=${card.id})}">Slet</a>
+                        <a class="btn" th:href="@{/cards/{id}/edit(id=${card.id})}">Rediger</a>
+                        <a class="btn btn-danger" th:href="@{/cards/{id}/delete(id=${card.id})}">Slet</a>
                     </div>
                 </td>
             </tr>
@@ -98,6 +101,10 @@
             <li id="modalRulesItem"><strong>Regeltext:</strong> <span id="modalRules"></span></li>
         </ul>
         <a id="modalScryfall" class="btn" href="" target="_blank">Åbn i Scryfall</a>
+        <div id="modalAdminHandlinger" class="modal-handlinger modal-action-row">
+            <a id="modalRediger" class="btn" href="">Rediger</a>
+            <a id="modalSlet" class="btn btn-danger" href="">Slet</a>
+        </div>
     </div>
 </div>
 

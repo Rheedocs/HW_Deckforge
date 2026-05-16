@@ -15,11 +15,31 @@ public class EventService {
         this.eventRepository = eventRepository;
     }
 
-    public List<Event> getAll() { return eventRepository.findAll(); }
-    public Event getById(int id) { return eventRepository.findById(id); }
-    public List<Event> getUpcoming() { return eventRepository.findUpcoming(); }
-    public void create(Event event) { eventRepository.save(event); }
-    public void update(Event event) { eventRepository.update(event); }
-    public void delete(int id) { eventRepository.delete(id); }
-    public void registerPlayer(int playerId, int eventId, int deckId) { eventRepository.registerPlayer(playerId, eventId, deckId); }
+    public List<Event> getAll() {
+        return eventRepository.findAll();
+    }
+
+    public Event getById(int id) {
+        return eventRepository.findById(id);
+    }
+
+    public List<Event> getUpcoming() {
+        return eventRepository.findUpcoming();
+    }
+
+    public void create(Event event) {
+        eventRepository.save(event);
+    }
+
+    public void update(Event event) {
+        eventRepository.update(event);
+    }
+
+    public void delete(int id) {
+        eventRepository.delete(id);
+    }
+
+    public void registerPlayer(int playerId, int eventId, int deckId) {
+        eventRepository.registerPlayer(playerId, eventId, deckId);
+    }
 }

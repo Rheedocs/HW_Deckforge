@@ -13,6 +13,7 @@
         </label>
         <nav class="nav">
             <a th:href="@{/cards}">Kort</a>
+            <a th:if="${session.player != null}" th:href="@{/cards/player/{id}(id=${session.player.id})}">Samling</a>
             <a th:href="@{/decks}">Decks</a>
             <a th:href="@{/events}">Events</a>
             <a th:href="@{/trades}">Bytning</a>

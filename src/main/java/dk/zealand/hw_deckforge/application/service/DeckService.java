@@ -1,9 +1,13 @@
 package dk.zealand.hw_deckforge.application.service;
 
+import dk.zealand.hw_deckforge.application.interfaces.ICardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.IDeckCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.IDeckRepository;
+import dk.zealand.hw_deckforge.domain.Card;
 import dk.zealand.hw_deckforge.domain.Deck;
 import dk.zealand.hw_deckforge.domain.DeckCard;
+import dk.zealand.hw_deckforge.domain.enums.CardType;
+import dk.zealand.hw_deckforge.domain.enums.Format;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,12 +15,17 @@ import java.util.List;
 @Service
 public class DeckService {
 
+    private static final String[] BASIC_LAND_NAMES = {"Forest", "Island", "Mountain", "Plains", "Swamp"};
+
     private final IDeckRepository deckRepository;
     private final IDeckCardRepository deckCardRepository;
+    private final ICardRepository cardRepository;
 
-    public DeckService(IDeckRepository deckRepository, IDeckCardRepository deckCardRepository) {
+    public DeckService(IDeckRepository deckRepository, IDeckCardRepository deckCardRepository,
+                       ICardRepository cardRepository) {
         this.deckRepository = deckRepository;
         this.deckCardRepository = deckCardRepository;
+        this.cardRepository = cardRepository;
     }
 
     // --- Deck CRUD ---
@@ -80,7 +89,14 @@ public class DeckService {
         if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");
         Deck deck = getById(deckId);
         if (deck.getPlayerId() != requestingPlayerId) throw new IllegalArgumentException("Du har ikke adgang til dette deck");
+
         DeckCard existing = deckCardRepository.findByDeckIdAndCardId(deckId, cardId);
+        int alreadyInDeck = existing != null ? existing.getQuantity() : 0;
+
+        // Tjek format-begrænsning
+        Card card = cardRepository.findById(cardId);
+        validateFormatLimit(deck.getFormat(), card, alreadyInDeck, quantity);
+
         if (existing != null) {
             existing.setQuantity(existing.getQuantity() + quantity);
             deckCardRepository.update(existing);
@@ -89,11 +105,52 @@ public class DeckService {
         }
     }
 
-    public void removeCard(int deckCardId, int deckId, int requestingPlayerId) {
+    private void validateFormatLimit(Format format, Card card, int alreadyInDeck, int quantity) {
+        if (format == Format.COMMANDER && !isBasicLand(card)) {
+            if (alreadyInDeck + quantity > 1)
+                throw new IllegalArgumentException(
+                        "Commander tillader max 1 eksemplar af hvert kort (undtagen basic lands)");
+        } else if (format == Format.STANDARD) {
+            if (alreadyInDeck + quantity > 4)
+                throw new IllegalArgumentException(
+                        "Standard tillader max 4 eksemplarer af hvert kort");
+        }
+    }
+
+    private boolean isBasicLand(Card card) {
+        if (card == null || card.getCardType() != CardType.LAND) return false;
+        for (String name : BASIC_LAND_NAMES) {
+            if (name.equals(card.getName())) return true;
+        }
+        return false;
+    }
+
+    public void removeCard(int deckCardId, int deckId, int quantity, int requestingPlayerId) {
         if (deckCardId <= 0) throw new IllegalArgumentException("Ugyldigt deck-kort-id");
+        if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");
         Deck deck = getById(deckId);
         if (deck.getPlayerId() != requestingPlayerId) throw new IllegalArgumentException("Du har ikke adgang til dette deck");
-        deckCardRepository.delete(deckCardId);
+        DeckCard deckCard = deckCardRepository.findById(deckCardId);
+        if (deckCard == null) throw new IllegalArgumentException("Kortet findes ikke i decket");
+        if (quantity >= deckCard.getQuantity()) {
+            deckCardRepository.delete(deckCardId);
+        } else {
+            deckCard.setQuantity(deckCard.getQuantity() - quantity);
+            deckCardRepository.update(deckCard);
+        }
+    }
+
+    public int getTotalCardCount(int deckId) {
+        int total = 0;
+        for (DeckCard dc : getDeckCards(deckId)) {
+            total += dc.getQuantity();
+        }
+        return total;
+    }
+
+    public int getDeckCount(int playerId) {
+        if (playerId <= 0) throw new IllegalArgumentException("PlayerId skal være større end nul");
+        return deckRepository.findByPlayerId(playerId).size();
     }
 
     // --- Validering ---

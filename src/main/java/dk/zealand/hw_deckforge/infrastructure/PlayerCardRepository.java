@@ -47,10 +47,72 @@ public class PlayerCardRepository implements IPlayerCardRepository {
             throw new DatabaseException("Kunne ikke hente byttekort for spiller!", e);
         }
     }
-    @Override public void save(PlayerCard playerCard) {}
-    @Override public void update(PlayerCard playerCard) {}
-    @Override public void delete(int id) {}
-    @Override public void setForTrade(int id, boolean forTrade) {}
+    @Override
+    public PlayerCard findById(int id) {
+        try {
+            String sql = "SELECT id, player_id, card_id, quantity, for_trade FROM player_card WHERE id = ?";
+            List<PlayerCard> results = jdbcTemplate.query(sql, (rs, rowNum) -> new PlayerCard(
+                    rs.getInt("id"), rs.getInt("player_id"), rs.getInt("card_id"),
+                    rs.getInt("quantity"), rs.getBoolean("for_trade")), id);
+            return results.isEmpty() ? null : results.getFirst();
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke hente spillerkort med id: " + id, e);
+        }
+    }
+
+    @Override
+    public PlayerCard findByPlayerIdAndCardId(int playerId, int cardId) {
+        try {
+            String sql = "SELECT id, player_id, card_id, quantity, for_trade FROM player_card WHERE player_id = ? AND card_id = ?";
+            List<PlayerCard> results = jdbcTemplate.query(sql, (rs, rowNum) -> new PlayerCard(
+                    rs.getInt("id"), rs.getInt("player_id"), rs.getInt("card_id"),
+                    rs.getInt("quantity"), rs.getBoolean("for_trade")), playerId, cardId);
+            return results.isEmpty() ? null : results.getFirst();
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke hente spillerkort", e);
+        }
+    }
+
+    @Override
+    public void save(PlayerCard playerCard) {
+        try {
+            String sql = "INSERT INTO player_card (player_id, card_id, quantity, for_trade) VALUES (?, ?, ?, ?)";
+            jdbcTemplate.update(sql, playerCard.getPlayerId(), playerCard.getCardId(),
+                    playerCard.getQuantity(), playerCard.isForTrade());
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke tilføje kort til samling", e);
+        }
+    }
+
+    @Override
+    public void update(PlayerCard playerCard) {
+        try {
+            String sql = "UPDATE player_card SET quantity = ?, for_trade = ? WHERE id = ?";
+            jdbcTemplate.update(sql, playerCard.getQuantity(), playerCard.isForTrade(), playerCard.getId());
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke opdatere spillerkort", e);
+        }
+    }
+
+    @Override
+    public void delete(int id) {
+        try {
+            String sql = "DELETE FROM player_card WHERE id = ?";
+            jdbcTemplate.update(sql, id);
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke fjerne kort fra samling", e);
+        }
+    }
+
+    @Override
+    public void setForTrade(int id, boolean forTrade) {
+        try {
+            String sql = "UPDATE player_card SET for_trade = ? WHERE id = ?";
+            jdbcTemplate.update(sql, forTrade, id);
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke opdatere byttemarkering", e);
+        }
+    }
 
     @Override
     public int countByPlayerId(int playerId) {

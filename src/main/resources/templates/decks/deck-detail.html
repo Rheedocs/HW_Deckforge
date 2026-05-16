@@ -15,12 +15,19 @@
 <main>
     <h2 th:text="${deck.name}"></h2>
     <p>
-        <strong>Format:</strong> <span th:text="${deck.format}"></span> &nbsp;|&nbsp;
+        <strong>Format:</strong> <span th:text="${deck.format.displayName}"></span> &nbsp;|&nbsp;
         <strong>Synlighed:</strong> <span th:text="${deck.isPublic() ? 'Offentlig' : 'Privat'}"></span> &nbsp;|&nbsp;
-        <strong>Kort i decket:</strong> <span th:text="${#lists.size(deckCards)}"></span>
+        <strong>Kort i decket:</strong> <span th:text="${totalCardCount}"></span>
     </p>
 
-    <div th:if="${isSelf}" style="margin-bottom: 16px;">
+    <div th:if="${deck.format.minSize > 0 and totalCardCount < deck.format.minSize}" class="warning-box">
+        <strong>Advarsel:</strong>
+        <span th:text="${deck.format.displayName}"></span> kræver minimum
+        <span th:text="${deck.format.minSize}"></span> kort — decket mangler
+        <span th:text="${deck.format.minSize - totalCardCount}"></span>.
+    </div>
+
+    <div th:if="${isSelf}" class="deck-actions">
         <a class="btn" th:href="@{/decks/{id}/edit(id=${deck.id})}">Rediger deck</a>
         <a class="btn btn-danger" th:href="@{/decks/{id}/delete(id=${deck.id})}">Slet deck</a>
     </div>
@@ -39,9 +46,14 @@
              th:data-rules="${card != null ? card.ruleText : ''}"
              th:data-image="${card != null ? card.imageUrl : ''}"
              th:data-url="${card != null ? card.scryfallUrl : ''}"
-             onclick="openModal(this)">
+             th:data-card-id="${dc.cardId}"
+             th:data-quantity="${dc.quantity}"
+             th:data-add-url="${isSelf ? '/decks/' + deck.id + '/cards/add' : ''}"
+             th:data-remove-url="${isSelf ? '/decks/' + deck.id + '/cards/' + dc.id + '/remove' : ''}"
+             onclick="åbnDeckKortModal(this)">
             <img th:if="${card != null and card.imageUrl != null}" th:src="${card.imageUrl}" th:alt="${card.name}">
             <div class="card-thumb-name" th:text="${card != null ? card.name : '–'}"></div>
+            <div th:if="${playerCardMap[dc.cardId] == null}" class="card-thumb-unowned">Ejer ikke</div>
             <div class="card-thumb-meta">
                 <span th:text="'×' + ${dc.quantity}"></span>
             </div>
@@ -79,14 +91,25 @@
                          th:data-url="${card.scryfallUrl}"
                          onclick="openModal(this)">
                 </td>
-                <td th:text="${card != null ? card.name : '–'}"></td>
+                <td>
+                    <span th:text="${card != null ? card.name : '–'}"></span>
+                    <span th:if="${playerCardMap[dc.cardId] == null}" class="badge badge-declined">Ejer ikke</span>
+                </td>
                 <td th:text="${card != null ? card.cardType.displayName : '–'}"></td>
                 <td th:text="${card != null ? card.color.displayName : '–'}"></td>
                 <td th:text="${card != null ? card.rarity.displayName : '–'}"></td>
                 <td th:text="${dc.quantity}"></td>
                 <td th:if="${isSelf}">
-                    <form th:action="@{/decks/{id}/cards/{dcId}/remove(id=${deck.id},dcId=${dc.id})}" method="post">
-                        <button class="btn btn-danger" type="submit">Fjern</button>
+                    <form method="post">
+                        <div class="action-col">
+                            <input type="hidden" name="cardId" th:value="${dc.cardId}">
+                            <input type="number" name="quantity" value="1" min="1"
+                                   class="quantity-input-compact">
+                            <button class="btn" type="submit"
+                                    th:formaction="@{/decks/{id}/cards/add(id=${deck.id})}">+</button>
+                            <button class="btn btn-danger" type="submit"
+                                    th:formaction="@{/decks/{id}/cards/{dcId}/remove(id=${deck.id},dcId=${dc.id})}">Fjern</button>
+                        </div>
                     </form>
                 </td>
             </tr>
@@ -95,27 +118,56 @@
     </div>
 
     <!-- Tilføj kort (kun ejer) -->
-    <div th:if="${isSelf}" style="margin-top: 24px;">
+    <div th:if="${isSelf}" class="section-add">
         <h3>Tilføj kort</h3>
-        <form th:action="@{/decks/{id}/cards/add(id=${deck.id})}" method="post">
-            <div>
-                <label for="cardId">Kort</label>
-                <select id="cardId" name="cardId" required>
-                    <option value="" disabled selected>Vælg kort</option>
-                    <option th:each="card : ${allCards}"
-                            th:value="${card.id}"
-                            th:text="${card.name}"></option>
-                </select>
+        <form th:action="@{/decks/{id}/cards/add(id=${deck.id})}" method="post" id="addCardForm">
+            <input type="hidden" id="selectedCardId" name="cardId">
+            <!-- Sticky bar: vises kun på desktop når et kort er valgt -->
+            <div class="picker-sticky-bar" id="deckPickerStickyBar">
+                <div class="picker-sticky-preview">
+                    <img id="deckPickerPreviewImg" src="" alt="">
+                    <span id="deckPickerPreviewNavn"></span>
+                </div>
+                <div class="picker-sticky-actions">
+                    <label for="quantity">Antal</label>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="4" required>
+                    <button class="btn" type="submit">Tilføj</button>
+                </div>
             </div>
-            <div>
-                <label for="quantity">Antal</label>
-                <input type="number" id="quantity" name="quantity" value="1" min="1" max="4" required>
+            <p id="deckPickerAdvarsel" class="warning-box" style="display:none;"></p>
+            <p id="kortVælgerLabel" class="card-picker-selected-label picker-label">Intet kort valgt — klik et kort herunder</p>
+            <div class="filter-knappe">
+                <button type="button" class="btn" id="filterAlle" onclick="filterKortVælger(false)">Alle kort</button>
+                <button type="button" class="btn btn-secondary" id="filterEgne" onclick="filterKortVælger(true)">Kun egne</button>
             </div>
-            <button class="btn" type="submit">Tilføj</button>
+            <div class="card-picker" id="deckKortPicker">
+                <div th:each="card : ${allCards}"
+                     class="card-picker-item"
+                     th:data-id="${card.id}"
+                     th:data-name="${card.name}"
+                     th:data-owned="${playerCardMap[card.id] != null}"
+                     th:data-quantity="${playerCardMap[card.id] != null ? playerCardMap[card.id].quantity : 0}"
+                     th:data-image="${card.imageUrl}"
+                     onclick="vælgKort(this)">
+                    <img th:if="${card.imageUrl != null}" th:src="${card.imageUrl}" th:alt="${card.name}">
+                    <div th:if="${card.imageUrl == null}" class="card-picker-no-img" th:text="${card.name}"></div>
+                    <div class="card-picker-item-name" th:text="${card.name}"></div>
+                    <div th:with="pc=${playerCardMap[card.id]}" th:if="${pc != null}"
+                         class="card-picker-item-owned"
+                         th:text="${pc.quantity} + ' ejet' + (${pc.forTrade} ? ' / til bytte' : '')"></div>
+                </div>
+            </div>
+            <div class="paginering-controls" id="deckKortPaginering" data-picker="deckKortPicker">
+                <button type="button" class="btn btn-secondary" id="deckKortPagineringForrige"
+                        onclick="skiftSide(this,-1)">&#8592;</button>
+                <span class="paginering-info" id="deckKortPagineringInfo"></span>
+                <button type="button" class="btn btn-secondary" id="deckKortPagineringNæste"
+                        onclick="skiftSide(this,1)">&#8594;</button>
+            </div>
         </form>
     </div>
 
-    <div style="margin-top: 16px;">
+    <div class="back-link-wrapper">
         <a th:href="@{/decks/player/{id}(id=${deck.playerId})}">Tilbage til deckliste</a>
     </div>
 </main>
@@ -133,6 +185,57 @@
             <li id="modalRulesItem"><strong>Regeltext:</strong> <span id="modalRules"></span></li>
         </ul>
         <a id="modalScryfall" class="btn" href="" target="_blank">Åbn i Scryfall</a>
+    </div>
+</div>
+
+<!-- Deck-kort-modal: se detaljer og administrer (mobil) -->
+<div class="modal-overlay" id="deckKortModalOverlay" onclick="lukDeckKortModal(event)">
+    <div class="modal">
+        <button class="modal-close" onclick="lukDeckKortModal()">&#x2715;</button>
+        <img id="dkModalBillede" src="" alt="">
+        <h3 id="dkModalNavn"></h3>
+        <ul>
+            <li><strong>Type:</strong> <span id="dkModalType"></span></li>
+            <li><strong>Farve:</strong> <span id="dkModalColor"></span></li>
+            <li><strong>Sjældenhed:</strong> <span id="dkModalRarity"></span></li>
+            <li><strong>Sæt:</strong> <span id="dkModalSet"></span></li>
+            <li id="dkModalRulesItem"><strong>Regeltext:</strong> <span id="dkModalRules"></span></li>
+        </ul>
+        <p id="dkModalAntal" class="modal-card-antal"></p>
+        <div id="dkModalHandlinger" class="modal-handlinger">
+            <div class="antal-stepper">
+                <button type="button" class="btn btn-secondary" onclick="justerDkAntal(-1)">−</button>
+                <span class="antal-stepper-vis" id="dkAntal">1</span>
+                <button type="button" class="btn btn-secondary" onclick="justerDkAntal(1)">+</button>
+            </div>
+            <div class="modal-action-row">
+                <form id="dkTilføjForm" method="post" class="modal-action-form">
+                    <input type="hidden" name="cardId" id="dkCardId">
+                    <input type="hidden" name="quantity" id="dkTilføjQuantity" value="1">
+                    <button class="btn modal-form-btn" type="submit">Tilføj</button>
+                </form>
+                <form id="dkFjernForm" method="post" class="modal-action-form">
+                    <input type="hidden" name="quantity" id="dkFjernQuantity" value="1">
+                    <button class="btn btn-danger modal-form-btn" type="submit">Fjern</button>
+                </form>
+            </div>
+        </div>
+        <a id="dkModalScryfall" class="btn btn-secondary modal-scryfall-btn" href="" target="_blank">Åbn i Scryfall</a>
+    </div>
+</div>
+
+<div class="modal-overlay" id="kortVælgerModalOverlay" onclick="lukKortVælgerModal(event)">
+    <div class="modal kortVælger-modal">
+        <button class="modal-close" onclick="lukKortVælgerModal()">&#x2715;</button>
+        <img id="kvModalBillede" src="" alt="">
+        <h3 id="kvModalNavn"></h3>
+        <div class="antal-stepper">
+            <button type="button" class="btn btn-secondary" onclick="justerKvAntal(-1)">−</button>
+            <span class="antal-stepper-vis" id="kvAntal">1</span>
+            <button type="button" class="btn btn-secondary" onclick="justerKvAntal(1)">+</button>
+        </div>
+        <p id="kvAdvarsel" class="warning-box" style="display:none;"></p>
+        <button type="button" class="btn kv-tilføj-knap" onclick="tilføjFraPicker()">Tilføj til deck</button>
     </div>
 </div>
 

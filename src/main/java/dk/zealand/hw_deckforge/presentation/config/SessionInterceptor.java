@@ -7,11 +7,6 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-/**
- * Interceptor der kører før hver request og sikrer at brugeren er logget ind.
- * Hvis sessionen ikke indeholder et player-objekt, sendes brugeren til login.
- * Hvis spilleren er deaktiveret, invalideres sessionen og brugeren sendes til login.
- */
 @Component
 public class SessionInterceptor implements HandlerInterceptor {
 

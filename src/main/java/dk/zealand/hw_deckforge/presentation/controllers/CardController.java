@@ -5,7 +5,6 @@ import dk.zealand.hw_deckforge.application.service.PlayerCardService;
 import dk.zealand.hw_deckforge.application.service.PlayerService;
 import dk.zealand.hw_deckforge.domain.Card;
 import dk.zealand.hw_deckforge.domain.Player;
-import dk.zealand.hw_deckforge.domain.PlayerCard;
 import dk.zealand.hw_deckforge.domain.enums.CardType;
 import dk.zealand.hw_deckforge.domain.enums.CollectionVisibility;
 import dk.zealand.hw_deckforge.domain.enums.Color;
@@ -16,10 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/cards")
@@ -36,8 +32,9 @@ public class CardController {
     }
 
     @GetMapping
-    public String getAllCards(Model model) {
+    public String getAllCards(Model model, HttpSession session) {
         model.addAttribute("cards", cardService.getAll());
+        model.addAttribute("isAdmin", AuthHelper.isAdmin(session));
         return "cards/card-list";
     }
 
@@ -77,12 +74,13 @@ public class CardController {
     }
 
     @GetMapping("/{id}/delete")
-    public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session) {
+    public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session,
+                                    @RequestHeader(value = "Referer", required = false) String referer) {
         if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
         Card card = cardService.getById(id);
         model.addAttribute("navn", card.getName());
         model.addAttribute("deleteUrl", "/cards/" + id + "/delete");
-        model.addAttribute("tilbage", "/cards");
+        model.addAttribute("tilbage", referer != null ? referer : "/cards");
         return "delete-confirm";
     }
 
@@ -99,28 +97,50 @@ public class CardController {
         boolean isSelf = AuthHelper.isSelf(session, playerId);
         boolean isAdmin = AuthHelper.isAdmin(session);
 
-        CollectionVisibility visibility = owner.getCollectionVisibility();
-        if (visibility == CollectionVisibility.PRIVATE && !isSelf && !isAdmin)
+        if (owner.getCollectionVisibility() == CollectionVisibility.PRIVATE && !isSelf && !isAdmin)
             return "redirect:/access-denied";
 
-        List<PlayerCard> playerCards = playerCardService.getByPlayerId(playerId);
-        if (visibility == CollectionVisibility.TRADE_ONLY && !isSelf && !isAdmin) {
-            List<PlayerCard> filtered = new ArrayList<>();
-            for (PlayerCard pc : playerCards) {
-                if (pc.isForTrade()) filtered.add(pc);
-            }
-            playerCards = filtered;
-        }
-
-        Map<Integer, Card> cardMap = new HashMap<>();
-        for (Card c : cardService.getAll()) {
-            cardMap.put(c.getId(), c);
-        }
-
-        model.addAttribute("playerCards", playerCards);
-        model.addAttribute("cardMap", cardMap);
+        model.addAttribute("playerCards", playerCardService.getVisibleCards(
+                playerId, owner.getCollectionVisibility(), isSelf, isAdmin));
+        model.addAttribute("cardMap", cardService.getCardMap());
+        boolean canManage = isSelf || isAdmin;
         model.addAttribute("owner", owner);
         model.addAttribute("isSelf", isSelf);
+        model.addAttribute("canManage", canManage);
+        if (canManage) {
+            model.addAttribute("allCards", cardService.getAll());
+            model.addAttribute("collectionMap", playerCardService.getPlayerCardMap(playerId));
+        }
         return "cards/player-collection";
+    }
+
+    @PostMapping("/player/{playerId}/add")
+    public String addToCollection(@PathVariable int playerId,
+                                  @RequestParam int cardId,
+                                  @RequestParam int quantity,
+                                  HttpSession session) {
+        if (!AuthHelper.isAdminOrSelf(session, playerId)) return "redirect:/access-denied";
+        playerCardService.addCard(playerId, cardId, quantity);
+        return "redirect:/cards/player/" + playerId;
+    }
+
+    @PostMapping("/player/{playerId}/{playerCardId}/remove")
+    public String removeFromCollection(@PathVariable int playerId,
+                                       @PathVariable int playerCardId,
+                                       @RequestParam(defaultValue = "1") int quantity,
+                                       HttpSession session) {
+        if (!AuthHelper.isAdminOrSelf(session, playerId)) return "redirect:/access-denied";
+        playerCardService.removeCard(playerCardId, quantity);
+        return "redirect:/cards/player/" + playerId;
+    }
+
+    @PostMapping("/player/{playerId}/{playerCardId}/set-trade")
+    public String setForTrade(@PathVariable int playerId,
+                              @PathVariable int playerCardId,
+                              @RequestParam boolean forTrade,
+                              HttpSession session) {
+        if (!AuthHelper.isAdminOrSelf(session, playerId)) return "redirect:/access-denied";
+        playerCardService.setForTrade(playerCardId, forTrade);
+        return "redirect:/cards/player/" + playerId;
     }
 }

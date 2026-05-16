@@ -22,6 +22,4 @@ public class EventRegistration {
     public int getEventId() { return eventId; }
     public int getDeckId() { return deckId; }
     public LocalDate getRegistrationDate() { return registrationDate; }
-
-    public void setId(){}
 }

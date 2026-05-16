@@ -1,4 +1,4 @@
-/* ── Beskedbokse ── */
+/* --- Beskedbokse --- */
 .error {
     background-color: var(--error-bg);
     color: var(--error);
@@ -26,12 +26,12 @@
     margin-bottom: 16px;
 }
 
-/* ── Fejlside ── */
+/* --- Fejlside --- */
 .error-container { max-width: 500px; margin: 60px auto; text-align: center; }
 ul.error-list { list-style: none; padding: 0; }
 ul.error-list li { color: var(--error); padding: 4px 0; }
 
-/* ── Indholdsbokse ── */
+/* --- Indholdsbokse --- */
 .welcome-box {
     background-color: var(--surface);
     border-radius: 8px;
@@ -50,7 +50,7 @@ ul.error-list li { color: var(--error); padding: 4px 0; }
 
 .info-section h2, .info-section h3 { margin-top: 0; color: var(--primary); }
 
-/* ── Links og handlinger ── */
+/* --- Links og handlinger --- */
 .list-action { margin-top: 16px; }
 
 .quick-links {
@@ -64,7 +64,7 @@ ul.error-list li { color: var(--error); padding: 4px 0; }
     .quick-links { flex-direction: row; }
 }
 
-/* ── Samtykke checkbox ── */
+/* --- Samtykke checkbox --- */
 .consent {
     display: flex;
     align-items: flex-start;
@@ -82,7 +82,7 @@ ul.error-list li { color: var(--error); padding: 4px 0; }
     margin: 0;
 }
 
-/* ── Profilstatistik ── */
+/* --- Profilstatistik --- */
 .profile-stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

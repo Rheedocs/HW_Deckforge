@@ -4,11 +4,6 @@ import dk.zealand.hw_deckforge.domain.Player;
 import dk.zealand.hw_deckforge.domain.enums.Role;
 import jakarta.servlet.http.HttpSession;
 
-/**
- * Statisk hjælpeklasse til session-baseret adgangskontrol.
- * Bruges af controllers til at tjekke om en bruger er logget ind,
- * har admin-rolle, eller forsøger at tilgå sine egne data.
- */
 public class AuthHelper {
 
     public static Player getLoggedIn(HttpSession session) {
@@ -27,5 +22,9 @@ public class AuthHelper {
 
     public static boolean isAdminOrSelf(HttpSession session, int id) {
         return isAdmin(session) || isSelf(session, id);
+    }
+
+    public static int resolveOwnerId(HttpSession session, int resourceOwnerId) {
+        return isAdmin(session) ? resourceOwnerId : getLoggedIn(session).getId();
     }
 }

@@ -4,9 +4,9 @@ import dk.zealand.hw_deckforge.domain.Card;
 import java.util.List;
 
 public interface ICardRepository {
-    List<Card>findAll();
-     Card findById(int id);
-     void save(Card card);
-     void update(Card card);
-     void delete(int id);
+    List<Card> findAll();
+    Card findById(int id);
+    void save(Card card);
+    void update(Card card);
+    void delete(int id);
 }

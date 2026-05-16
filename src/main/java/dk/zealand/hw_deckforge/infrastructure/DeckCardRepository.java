@@ -39,6 +39,16 @@ public class DeckCardRepository implements IDeckCardRepository {
     }
 
     @Override
+    public DeckCard findById(int id) {
+        try {
+            List<DeckCard> results = jdbcTemplate.query(BASE_SQL + " WHERE id = ?", deckCardRowMapper, id);
+            return results.isEmpty() ? null : results.getFirst();
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke hente deck-kort med id: " + id, e);
+        }
+    }
+
+    @Override
     public DeckCard findByDeckIdAndCardId(int deckId, int cardId) {
         try {
             List<DeckCard> results = jdbcTemplate.query(

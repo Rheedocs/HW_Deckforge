@@ -1,4 +1,4 @@
-/* ── Header ── */
+/* --- Header --- */
 header {
     background-color: var(--primary);
     padding: 16px 20px;
@@ -20,9 +20,12 @@ header h1 a {
     color: white;
     text-decoration: none;
     font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
-/* ── Footer ── */
+/* --- Footer --- */
 footer {
     background-color: var(--primary);
     color: white;
@@ -39,7 +42,7 @@ footer a { color: white; text-decoration: none; }
 footer a:hover { text-decoration: underline; }
 footer p { margin: 0; }
 
-/* ── Navigation ── */
+/* --- Navigation --- */
 nav {
     display: flex;
     align-items: center;
@@ -51,12 +54,11 @@ nav > span { display: flex; gap: 4px; color: white; }
 nav a:hover, nav span a:hover { text-decoration: underline; }
 .nav-separator { color: rgba(255,255,255,0.4); }
 
-/* ── Burger menu (mobil) ── */
+/* --- Burger menu (mobil) --- */
 
-/* Den usynlige checkbox der styrer om menuen er åben eller lukket */
+/* den usynlige checkbox der styrer om menuen er åben eller lukket */
 .menu-toggle { display: none; }
 
-/* De tre vandrette streger der udgør burger-ikonet */
 .burger {
     display: flex;
     flex-direction: column;
@@ -72,9 +74,9 @@ nav a:hover, nav span a:hover { text-decoration: underline; }
     display: block;
 }
 
-/* ── Body og Main ── */
+/* --- Body og Main --- */
 
-/* Flex kolonne så footer altid sidder i bunden */
+/* flex kolonne så footer altid sidder i bunden */
 body {
     display: flex;
     flex-direction: column;
@@ -89,7 +91,7 @@ main {
     width: 100%;
 }
 
-/* ── Desktop ── */
+/* --- Desktop --- */
 @media (min-width: 768px) {
     .burger { display: none; }
 
@@ -107,11 +109,11 @@ main {
     main { padding: 0 24px; margin: 40px auto; }
 }
 
-/* ── Mobil nav ── */
+/* --- Mobil nav --- */
 @media (max-width: 768px) {
     nav.nav span.nav-separator { display: none; }
 
-    /* Nav folder ud nedad fra headeren som en dropdown */
+    /* nav folder ud nedad fra headeren som en dropdown */
     nav.nav {
         position: absolute;
         top: 70px;

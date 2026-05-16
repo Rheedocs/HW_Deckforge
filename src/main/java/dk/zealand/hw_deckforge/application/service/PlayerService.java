@@ -25,6 +25,8 @@ public class PlayerService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // --- Forespørgsler ---
+
     public List<Player> getAll() {
         return playerRepository.findAll();
     }
@@ -48,11 +50,9 @@ public class PlayerService {
         return sorted;
     }
 
-    /**
-     * Validerer email og adgangskode mod databasen.
-     * Fejlbeskeden er bevidst generisk for ikke at afsløre
-     * om det er email eller adgangskode der er forkert.
-     */
+    // --- Auth og livscyklus ---
+
+    // fejlbesked er bevidst generisk — afslører ikke om email eller adgangskode er forkert
     public Player login(String email, String password) {
         Player player = playerRepository.findByEmail(email);
         if (player == null || !passwordEncoder.matches(password, player.getPassword()))
@@ -62,10 +62,6 @@ public class PlayerService {
         return player;
     }
 
-    /**
-     * Opretter en ny spiller med BCrypt-hashet adgangskode.
-     * Tjekker at email ikke allerede er i brug.
-     */
     public void create(String username, String email, String password) {
         if (playerRepository.findByEmail(email) != null)
             throw new IllegalArgumentException("Email er allerede i brug");
@@ -97,15 +93,13 @@ public class PlayerService {
         playerRepository.delete(id);
     }
 
-    /**
-     * Tjekker om en given spiller er den eneste admin i systemet.
-     * Bruges til at forhindre sletning af den sidste admin.
-     */
     public boolean isOnlyAdmin(int id) {
         int adminCount = 0;
         for (Player player : getAll()) if (player.getRole() == Role.ADMIN) adminCount++;
         return adminCount == 1 && getById(id).getRole() == Role.ADMIN;
     }
+
+    // --- Samling ---
 
     public void addToCollection(int playerId, int cardId) {
         if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
@@ -119,6 +113,8 @@ public class PlayerService {
         if (id <= 0) throw new IllegalArgumentException("Ugyldigt samlings-id");
         playerCardRepository.delete(id);
     }
+
+    // --- Validering ---
 
     private void validatePassword(String password) {
         if (password == null || password.isBlank())

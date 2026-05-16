@@ -1,4 +1,4 @@
-/* ── Farvepalette ── */
+/* --- Farvepalette --- */
 :root {
     --primary: #3a3a3a;
     --primary-dark: #1a1a1a;
@@ -14,10 +14,10 @@
     --success-bg: #eafaf1;
 }
 
-/* ── Reset ── */
+/* --- Reset --- */
 * { box-sizing: border-box; }
 
-/* ── Grundlæggende typografi og baggrund ── */
+/* --- Typografi --- */
 body {
     font-family: Arial, sans-serif;
     background-color: var(--background);
@@ -28,3 +28,15 @@ body {
 
 h1, h2 { color: var(--primary); }
 a { color: var(--primary); }
+
+/* --- Mobil touch-mål (min 44px) --- */
+@media (max-width: 767px) {
+    .btn,
+    input[type="number"],
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select {
+        min-height: 44px;
+    }
+}

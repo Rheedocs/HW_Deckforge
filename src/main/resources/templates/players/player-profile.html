@@ -36,8 +36,10 @@
             </a>
         </div>
         <div class="info-section stat-box">
-            <span class="stat-number">0</span>
-            <span class="stat-label">Decks</span>
+            <a th:href="@{/decks/player/{id}(id=${player.id})}">
+                <span class="stat-number" th:text="${deckCount}">0</span>
+                <span class="stat-label">Decks</span>
+            </a>
         </div>
     </div>
 
