@@ -36,6 +36,5 @@ build/
 **/application.properties
 !**/src/test/**/application.properties
 
-CLAUDE.md
-docs/
 .claude/
+docs/changelog.md
