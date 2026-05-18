@@ -15,7 +15,22 @@ public class ResultService {
         this.resultRepository = resultRepository;
     }
 
-    public List<Result> getByEventId(int eventId) { return resultRepository.findByEventId(eventId); }
-    public List<Result> getByPlayerId(int playerId) { return resultRepository.findByPlayerId(playerId); }
-    public void save(Result result) { resultRepository.save(result); }
+    public List<Result> getByEventId(int eventId) {
+        if (eventId <= 0) throw new IllegalArgumentException("Id skal være større end nul!");
+        List<Result> results = resultRepository.findByEventId(eventId);
+        if (results == null || results.isEmpty()) throw new IllegalArgumentException(
+                "Ingen resultater fundet for id: " + eventId);
+        return results;
+    }
+    public List<Result> getByPlayerId(int playerId) {
+        if (playerId <= 0) throw new IllegalArgumentException("Id skal være større end nul!");
+        List<Result> results = resultRepository.findByPlayerId(playerId);
+        if (results == null || results.isEmpty()) throw new IllegalArgumentException(
+                "Ingen resultater for spiller fundet!");
+        return results;
+    }
+    public void save(Result result) {
+        if (result == null) throw new IllegalArgumentException("Resultat må ikke være nul!");
+        resultRepository.save(result);
+    }
 }

@@ -22,13 +22,20 @@ public class ResultController {
 
     @GetMapping("/event/{eventId}")
     public String showResults(@PathVariable int eventId, Model model, HttpSession session) {
-        return "results/result-list"; }
+        model.addAttribute("result", resultService.getByEventId(eventId));
+        return "results/result-list";
+    }
 
     @GetMapping("/event/{eventId}/register")
     public String showRegisterForm(@PathVariable int eventId, Model model, HttpSession session) {
-        return "results/result-register"; }
+        return "results/result-register";
+    }
 
     @PostMapping("/event/{eventId}/register")
-    public String save(@PathVariable int eventId, @ModelAttribute List<Result> results, HttpSession session) {
-        return "redirect:/results/event/" + eventId; }
+    public String save(@PathVariable int eventId, @ModelAttribute Result result, HttpSession session) {
+        if (session.getAttribute("user") == null) return "redirect:/login";
+        result.setEventId(eventId);
+        resultService.save(result);
+        return "redirect:/results/event/" + eventId;
+    }
 }

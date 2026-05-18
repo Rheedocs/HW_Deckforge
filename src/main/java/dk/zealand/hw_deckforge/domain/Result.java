@@ -19,4 +19,5 @@ public class Result {
     public int getPlacement() { return placement; }
 
     public void setPlacement(int placement) { this.placement = placement; }
+    public void setEventId(int eventId){this.eventId = eventId;}
 }
