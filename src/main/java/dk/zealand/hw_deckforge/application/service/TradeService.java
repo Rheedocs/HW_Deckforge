@@ -104,7 +104,7 @@ public class TradeService {
             throw new IllegalArgumentException("Modtagerens kort er ikke markeret til bytte");
         }
 
-        // Forventer at save() sætter det genererede id på trade
+        // Save() sætter det genererede id på trade
         tradeRepository.save(trade);
 
         tradeCardRepository.save(new TradeCard(0, trade.getId(), proposerCardId, TradeRole.PROPOSER));
