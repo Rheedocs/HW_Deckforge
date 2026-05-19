@@ -12,7 +12,22 @@
 <body>
 <header th:replace="~{fragments :: header}"></header>
 <main>
-    <h2>Registrer resultat</h2>
+    <h2>Registrer resultat for <span th:text="${event.name}"></span></h2>
+    <form th:action="@{/results/event/{eventId}/register(eventId=${event.id})}" th:object="${result}" method="post">
+
+        <label for="playerId">Spiller</label>
+        <select id="playerId" name="playerId">
+            <option th:each="player : ${players}"
+                    th:value="${player.id}"
+                    th:text="${player.name}">
+            </option>
+        </select>
+
+        <label for="placement">Placering</label>
+        <input type="number" id="placement" name="placement" min="1" required>
+
+        <button type="submit">Gem resultat</button>
+    </form>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>

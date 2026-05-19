@@ -1,9 +1,12 @@
 package dk.zealand.hw_deckforge.presentation.controllers;
 
+import dk.zealand.hw_deckforge.application.service.EventService;
+import dk.zealand.hw_deckforge.application.service.PlayerService;
 import dk.zealand.hw_deckforge.application.service.ResultService;
 import dk.zealand.hw_deckforge.domain.Result;
 import dk.zealand.hw_deckforge.presentation.helpers.AuthHelper;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +17,14 @@ import java.util.List;
 @RequestMapping("/results")
 public class ResultController {
 
-    private final ResultService resultService;
+    @Autowired
+    private EventService eventService;
 
-    public ResultController(ResultService resultService) {
-        this.resultService = resultService;
-    }
+    @Autowired
+    private PlayerService playerService;
+
+    @Autowired
+    private ResultService resultService;
 
     @GetMapping("/event/{eventId}")
     public String showResults(@PathVariable int eventId, Model model, HttpSession session) {
@@ -28,6 +34,10 @@ public class ResultController {
 
     @GetMapping("/event/{eventId}/register")
     public String showRegisterForm(@PathVariable int eventId, Model model, HttpSession session) {
+        if (session.getAttribute("user") == null) return "redirect:/login";
+        model.addAttribute("event", eventService.getById(eventId));
+        model.addAttribute("players", playerService.getAll());
+        model.addAttribute("result", new Result());
         return "results/result-register";
     }
 

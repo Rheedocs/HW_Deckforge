@@ -13,6 +13,22 @@
 <header th:replace="~{fragments :: header}"></header>
 <main>
     <h2>Resultater</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Event</th>
+            <th>Navn</th>
+            <th>Placering</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="result : ${result}">
+            <td th:text="${result.eventId}"></td>
+            <td th:text="${result.playerId}"></td>
+            <td th:text="${result.placement}"></td>
+        </tr>
+        </tbody>
+    </table>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>

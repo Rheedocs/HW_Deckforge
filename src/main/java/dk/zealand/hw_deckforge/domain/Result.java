@@ -6,6 +6,8 @@ public class Result {
     private int eventId;
     private int placement;
 
+    public Result(){}
+
     public Result(int id, int playerId, int eventId, int placement) {
         this.id = id;
         this.playerId = playerId;
