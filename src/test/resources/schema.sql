@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS result;
 DROP TABLE IF EXISTS trade_card;
 DROP TABLE IF EXISTS trade;
 DROP TABLE IF EXISTS event_registration;
+DROP TABLE IF EXISTS deck_card;
 DROP TABLE IF EXISTS deck;
 DROP TABLE IF EXISTS player_card;
 DROP TABLE IF EXISTS event;
@@ -46,6 +47,15 @@ CREATE TABLE deck (
     format VARCHAR(20) NOT NULL,
     visibility VARCHAR(20) NOT NULL DEFAULT 'PRIVATE',
     FOREIGN KEY (player_id) REFERENCES player(id) ON DELETE CASCADE
+);
+
+CREATE TABLE deck_card (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    deck_id INT NOT NULL,
+    card_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    CONSTRAINT fk_deck_card_deck FOREIGN KEY (deck_id) REFERENCES deck(id) ON DELETE CASCADE,
+    CONSTRAINT fk_deck_card_card FOREIGN KEY (card_id) REFERENCES card(id) ON DELETE CASCADE
 );
 
 CREATE TABLE event (

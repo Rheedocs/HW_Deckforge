@@ -21,12 +21,16 @@ public class Trade {
         this.expiresAt = expiresAt;
     }
 
+    // --- Getters ---
+
     public int getId() { return id; }
     public int getProposerId() { return proposerId; }
     public int getReceiverId() { return receiverId; }
     public TradeStatus getStatus() { return status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getExpiresAt() { return expiresAt; }
+
+    // --- Statushandlinger ---
 
     public boolean isExpired() { return expiresAt.isBefore(LocalDateTime.now()); }
     public void accept() { this.status = TradeStatus.ACCEPTED; }

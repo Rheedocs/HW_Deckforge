@@ -24,6 +24,8 @@ public class Event {
         this.format = format;
     }
 
+    // --- Getters ---
+
     public int getId() { return id; }
     public String getName() { return name; }
     public String getLocation() { return location; }
@@ -32,12 +34,16 @@ public class Event {
     public EventStatus getStatus() { return status; }
     public Format getFormat() { return format; }
 
+    // --- Setters ---
+
     public void setName(String name) { this.name = name; }
     public void setLocation(String location) { this.location = location; }
     public void setDate(LocalDate date) { this.date = date; }
     public void setMaxPlayers(int maxPlayers) { this.maxPlayers = maxPlayers; }
     public void setFormat(Format format) { this.format = format; }
     public void setStatus(EventStatus status) { this.status = status; }
+
+    // --- Statustjek ---
 
     public boolean isUpcoming() { return this.status == EventStatus.UPCOMING; }
     public boolean isOngoing() { return this.status == EventStatus.ONGOING; }

@@ -1,0 +1,27 @@
+/* --- Kortopret/rediger layout --- */
+
+.card-form-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.card-form-fields { width: 100%; }
+
+.card-form-preview { display: flex; justify-content: center; }
+
+.card-form-preview img {
+    max-width: 200px;
+    height: auto;
+    border-radius: 8px;
+    display: none;
+}
+
+/* --- Desktop --- */
+
+@media (min-width: 768px) {
+    .card-form-layout { flex-direction: row; align-items: flex-start; }
+    .card-form-fields { flex: 1; }
+    .card-form-preview { width: 240px; flex-shrink: 0; }
+    .card-form-preview img { display: block; width: 100%; max-width: none; }
+}

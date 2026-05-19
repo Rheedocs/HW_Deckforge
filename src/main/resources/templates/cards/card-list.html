@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="da">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/components.css}">
     <link rel="stylesheet" th:href="@{/css/cards.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/card-picker.css}">
+    <link rel="stylesheet" th:href="@{/css/card-form.css}">
     <link rel="stylesheet" th:href="@{/css/utilities.css}">
 </head>
 <body>
@@ -15,6 +18,17 @@
 <main>
     <div>
         <h2>Kort</h2>
+        <a class="btn list-action" th:if="${isAdmin}" th:href="@{/cards/create}">Opret nyt kort</a>
+        <div class="filter-buttons">
+            <input type="text" id="cardListSearch" placeholder="Søg kortnavne..."
+                   oninput="filterCardList()" style="flex:1;min-width:120px;width:auto;margin:0;">
+            <select id="cardListColor" onchange="filterCardList()" style="width:auto;margin:0;">
+                <option value="">Alle farver</option>
+            </select>
+            <select id="cardListType" onchange="filterCardList()" style="width:auto;margin:0;">
+                <option value="">Alle typer</option>
+            </select>
+        </div>
         <!-- Mobil: kortgrid med thumbnails -->
         <div class="card-grid">
             <div th:each="card : ${cards}"
@@ -30,7 +44,7 @@
                  th:data-edit-url="${isAdmin ? '/cards/' + card.id + '/edit' : null}"
                  th:data-delete-url="${isAdmin ? '/cards/' + card.id + '/delete' : null}"
                  onclick="openModal(this)">
-                <img th:if="${card.imageUrl != null}" th:src="${card.imageUrl}" th:alt="${card.name}">
+                <img th:if="${card.hasImage()}" th:src="${card.imageUrl}" th:alt="${card.name}">
                 <div class="card-thumb-name" th:text="${card.name}"></div>
             </div>
         </div>
@@ -54,7 +68,7 @@
             <tr th:each="card : ${cards}">
                 <td>
                     <img class="card-img-small"
-                         th:if="${card.imageUrl != null}"
+                         th:if="${card.hasImage()}"
                          th:src="${card.imageUrl}"
                          th:alt="${card.name}"
                          th:data-name="${card.name}"
@@ -84,7 +98,6 @@
             </tbody>
         </table>
         </div>
-        <a class="btn list-action" th:if="${isAdmin}" th:href="@{/cards/create}">Opret nyt kort</a>
     </div>
 </main>
 
@@ -101,14 +114,19 @@
             <li id="modalRulesItem"><strong>Regeltext:</strong> <span id="modalRules"></span></li>
         </ul>
         <a id="modalScryfall" class="btn" href="" target="_blank">Åbn i Scryfall</a>
-        <div id="modalAdminHandlinger" class="modal-handlinger modal-action-row">
+        <div id="modalAdminHandlinger" class="modal-actions modal-action-row">
             <a id="modalRediger" class="btn" href="">Rediger</a>
             <a id="modalSlet" class="btn btn-danger" href="">Slet</a>
         </div>
+        <button class="btn btn-secondary modal-close-btn" onclick="closeModal()">Luk</button>
     </div>
 </div>
 
 <footer th:replace="~{fragments :: footer}"></footer>
 <script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/deck-modal.js}"></script>
+<script th:src="@{/js/collection-modal.js}"></script>
+<script th:src="@{/js/card-picker.js}"></script>
+<script th:src="@{/js/pagination.js}"></script>
 </body>
 </html>

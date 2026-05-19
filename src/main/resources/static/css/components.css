@@ -87,9 +87,3 @@ td:empty { border: none; background: transparent; }
 
 /* Røde badges: fejl og afviste tilstande */
 .badge-cancelled, .badge-declined { background-color: var(--error-bg); color: var(--error); }
-
-/* --- Desktop --- */
-@media (min-width: 768px) {
-    button, .btn { width: auto; margin-bottom: 0; }
-    input, select, textarea { width: 300px; }
-}

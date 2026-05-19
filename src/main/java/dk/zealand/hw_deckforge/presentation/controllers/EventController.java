@@ -18,8 +18,15 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    // --- Liste og detalje ---
+
     @GetMapping
     public String getAllEvents(Model model, HttpSession session) { return "events/event-list"; }
+
+    @GetMapping("/{id}")
+    public String showDetail(@PathVariable int id, Model model, HttpSession session) { return "events/event-detail"; }
+
+    // --- Opret og rediger ---
 
     @GetMapping("/create")
     public String showCreateForm(Model model, HttpSession session) {
@@ -31,18 +38,18 @@ public class EventController {
     @PostMapping("/create")
     public String create(@ModelAttribute Event event, HttpSession session) { return "redirect:/events"; }
 
-    @GetMapping("/{id}")
-    public String showDetail(@PathVariable int id, Model model, HttpSession session) { return "events/event-detail"; }
-
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable int id, Model model, HttpSession session) {
         model.addAttribute("event", new Event(0, "", "",
                 null, 0, null, null));
         return "events/edit-event";
     }
+
     @PostMapping("/{id}/edit")
     public String update(@PathVariable int id, @ModelAttribute Event event, HttpSession session) {
         return "redirect:/events"; }
+
+    // --- Tilmelding og slet ---
 
     @PostMapping("/{id}/register")
     public String register(@PathVariable int id, @RequestParam int deckId, HttpSession session) {

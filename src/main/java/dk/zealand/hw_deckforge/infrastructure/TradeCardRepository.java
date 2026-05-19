@@ -15,7 +15,12 @@ public class TradeCardRepository implements ITradeCardRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // --- Forespørgsler ---
+
     @Override public List<TradeCard> findByTradeId(int tradeId) { return null; }
+
+    // --- Skriveoperationer ---
+
     @Override public void save(TradeCard tradeCard) {}
     @Override public void deleteByTradeId(int tradeId) {}
 }

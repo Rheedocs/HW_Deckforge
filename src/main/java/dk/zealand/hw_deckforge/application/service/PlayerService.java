@@ -6,6 +6,7 @@ import dk.zealand.hw_deckforge.domain.Player;
 import dk.zealand.hw_deckforge.domain.PlayerCard;
 import dk.zealand.hw_deckforge.domain.enums.CollectionVisibility;
 import dk.zealand.hw_deckforge.domain.enums.Role;
+import dk.zealand.hw_deckforge.domain.exceptions.AccessDeniedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,10 @@ public class PlayerService {
         return playerRepository.findAll();
     }
 
+    public List<Player> getAllIncludingInactive() {
+        return playerRepository.findAllIncludingInactive();
+    }
+
     public Player getById(int id) {
         if (id <= 0) throw new IllegalArgumentException("Id skal være større end nul");
         Player player = playerRepository.findById(id);
@@ -38,15 +43,17 @@ public class PlayerService {
         return player;
     }
 
-    public List<Player> getAllSortedByLoggedIn(int loggedInId) {
-        List<Player> all = playerRepository.findAll();
+    public List<Player> getAllSortedByLoggedIn(int loggedInId, boolean isAdmin) {
+        List<Player> all = isAdmin
+                ? playerRepository.findAllIncludingInactive()
+                : playerRepository.findAll();
         List<Player> sorted = new java.util.ArrayList<>();
         Player self = null;
         for (Player p : all) {
             if (p.getId() == loggedInId) self = p;
             else sorted.add(p);
         }
-        if (self != null) sorted.add(0, self);
+        if (self != null) sorted.addFirst(self);
         return sorted;
     }
 
@@ -72,16 +79,11 @@ public class PlayerService {
         playerRepository.save(player);
     }
 
-    public void update(Player player, String newPassword) {
+    public void update(Player player, String newPassword, boolean isAdmin, boolean isSelf) {
         Player existing = getById(player.getId());
-        existing.setUsername(player.getUsername());
-        existing.setEmail(player.getEmail());
-        existing.changeVisibility(player.getCollectionVisibility());
-        if (player.isAdmin()) existing.promoteToAdmin(); else existing.demoteToPlayer();
-        if (newPassword != null && !newPassword.isBlank()) {
-            validatePassword(newPassword);
-            existing.changePassword(passwordEncoder.encode(newPassword));
-        }
+        applyProfileChanges(existing, player);
+        applyRoleAndStatus(existing, player, isAdmin, isSelf);
+        applyPasswordChange(existing, newPassword);
         validatePlayer(existing);
         playerRepository.update(existing);
     }
@@ -89,7 +91,8 @@ public class PlayerService {
     public void delete(int id) {
         if (id <= 0) throw new IllegalArgumentException("Id skal være større end 0");
         if (isOnlyAdmin(id)) throw new IllegalArgumentException("Du kan ikke slette den eneste admin");
-        if (playerRepository.findById(id) == null) throw new IllegalArgumentException("Spiller med id " + id + " findes ikke");
+        if (playerRepository.findById(id) == null) throw new IllegalArgumentException("Spiller med id " + id
+                + " findes ikke");
         playerRepository.delete(id);
     }
 
@@ -97,6 +100,37 @@ public class PlayerService {
         int adminCount = 0;
         for (Player player : getAll()) if (player.getRole() == Role.ADMIN) adminCount++;
         return adminCount == 1 && getById(id).getRole() == Role.ADMIN;
+    }
+
+    public void checkCollectionAccess(int playerId, boolean isSelf, boolean isAdmin) {
+        Player owner = getById(playerId);
+        if (!isSelf && !isAdmin && owner.getCollectionVisibility() == CollectionVisibility.PRIVATE)
+            throw new AccessDeniedException("Denne spillers profil er privat");
+    }
+
+    // --- Opdateringshjælpere ---
+
+    private void applyProfileChanges(Player existing, Player updated) {
+        existing.setUsername(updated.getUsername());
+        existing.setEmail(updated.getEmail());
+        existing.changeVisibility(updated.getCollectionVisibility());
+    }
+
+    private void applyRoleAndStatus(Player existing, Player updated, boolean isAdmin, boolean isSelf) {
+        if (!isAdmin) {
+            existing.demoteToPlayer();
+            return;
+        }
+        if (isSelf && isOnlyAdmin(existing.getId())) existing.promoteToAdmin();
+        else if (updated.isAdmin()) existing.promoteToAdmin();
+        else existing.demoteToPlayer();
+        existing.setActive(updated.isActive());
+    }
+
+    private void applyPasswordChange(Player existing, String newPassword) {
+        if (newPassword == null || newPassword.isBlank()) return;
+        validatePassword(newPassword);
+        existing.changePassword(passwordEncoder.encode(newPassword));
     }
 
     // --- Samling ---

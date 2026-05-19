@@ -18,11 +18,15 @@ public class Deck {
         this.visibility = visibility;
     }
 
+    // --- Getters ---
+
     public int getId() { return id; }
     public int getPlayerId() { return playerId; }
     public String getName() { return name; }
     public Format getFormat() { return format; }
     public DeckVisibility getVisibility() { return visibility; }
+
+    // --- Setters ---
 
     public void setId(Integer id) { this.id = id; }
     public void setPlayerId(int playerId) { this.playerId = playerId; }
@@ -32,6 +36,8 @@ public class Deck {
     }
     public void setFormat(Format format) { this.format = format; }
     public void setVisibility(DeckVisibility visibility) { this.visibility = visibility; }
+
+    // --- Synlighed ---
 
     public boolean isPublic() {
         return this.visibility == DeckVisibility.PUBLIC;

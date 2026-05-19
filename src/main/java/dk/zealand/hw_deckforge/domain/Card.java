@@ -27,6 +27,8 @@ public class Card {
         this.imageUrl = imageUrl;
     }
 
+    // --- Getters ---
+
     public Integer getId() { return id; }
     public String getName() { return name; }
     public CardType getCardType() { return cardType; }
@@ -36,13 +38,15 @@ public class Card {
     public String getRuleText() { return ruleText; }
     public String getImageUrl() { return imageUrl; }
 
+    // --- Adfærd ---
+
     public String getScryfallUrl() {
-        if (name == null || cardType == null) return "";
-        String encodedName = name.replace(" ", "+");
-        String typeFilter = cardType == CardType.CREATURE ? "" : "+-t%3Acreature";
-        return "https://scryfall.com/search?q=%21%22" + encodedName + "%22+t%3A" + cardType.name().toLowerCase()
-                + typeFilter + "&unique=cards";
+        if (name == null || name.isBlank()) return "";
+        return "https://scryfall.com/search?q=%21%22" + name.replace(" ", "+") + "%22&unique=cards";
     }
+    public boolean hasImage(){ return imageUrl != null && !imageUrl.isBlank();}
+
+    // --- Setters ---
 
     public void setName(String name) {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("Navn må ikke være tomt");
@@ -55,10 +59,8 @@ public class Card {
     public void setRarity(Rarity rarity) { this.rarity = rarity; }
     public void setRuleText(String ruleText) { this.ruleText = ruleText; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-    public boolean hasImage(){return imageUrl != null && !imageUrl.isBlank();}
-    public boolean isLand(){return cardType == CardType.LAND;}
 
-
+    // --- Hjælpemetoder ---
 
     @Override
     public String toString() {

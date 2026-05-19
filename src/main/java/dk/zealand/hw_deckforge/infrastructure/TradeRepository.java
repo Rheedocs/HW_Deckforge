@@ -15,9 +15,14 @@ public class TradeRepository implements ITradeRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // --- Forespørgsler ---
+
     @Override public Trade findById(int id) { return null; }
     @Override public List<Trade> findByPlayerId(int playerId) { return null; }
     @Override public List<Trade> findIncomingByPlayerId(int playerId) { return null; }
+
+    // --- Skriveoperationer ---
+
     @Override public void save(Trade trade) {}
     @Override public void update(Trade trade) {}
     @Override public void expireOldTrades() {}

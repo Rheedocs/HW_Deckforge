@@ -1,5 +1,8 @@
 SET SQL_SAFE_UPDATES = 0;
 
+CREATE DATABASE IF NOT EXISTS deckforge;
+USE deckforge;
+
 DROP TABLE IF EXISTS result;
 DROP TABLE IF EXISTS trade_card;
 DROP TABLE IF EXISTS trade;
@@ -10,9 +13,6 @@ DROP TABLE IF EXISTS player_card;
 DROP TABLE IF EXISTS event;
 DROP TABLE IF EXISTS card;
 DROP TABLE IF EXISTS player;
-
-CREATE DATABASE IF NOT EXISTS deckforge;
-USE deckforge;
 
 CREATE TABLE player (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -59,8 +59,8 @@ CREATE TABLE deck_card (
     deck_id INT NOT NULL,
     card_id INT NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
-    FOREIGN KEY (deck_id) REFERENCES deck(id) ON DELETE CASCADE,
-    FOREIGN KEY (card_id) REFERENCES card(id) ON DELETE CASCADE
+    CONSTRAINT fk_deck_card_deck FOREIGN KEY (deck_id) REFERENCES deck(id) ON DELETE CASCADE,
+    CONSTRAINT fk_deck_card_card FOREIGN KEY (card_id) REFERENCES card(id) ON DELETE CASCADE
 );
 
 CREATE TABLE event (

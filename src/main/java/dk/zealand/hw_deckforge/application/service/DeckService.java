@@ -8,6 +8,7 @@ import dk.zealand.hw_deckforge.domain.Deck;
 import dk.zealand.hw_deckforge.domain.DeckCard;
 import dk.zealand.hw_deckforge.domain.enums.CardType;
 import dk.zealand.hw_deckforge.domain.enums.Format;
+import dk.zealand.hw_deckforge.domain.exceptions.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,10 +31,6 @@ public class DeckService {
 
     // --- Deck CRUD ---
 
-    public List<Deck> getAll() {
-        return deckRepository.findAll();
-    }
-
     public Deck getById(int id) {
         if (id <= 0) throw new IllegalArgumentException("Id skal være større end nul");
         Deck deck = deckRepository.findById(id);
@@ -44,6 +41,22 @@ public class DeckService {
     public List<Deck> getByPlayerId(int playerId) {
         if (playerId <= 0) throw new IllegalArgumentException("PlayerId skal være større end nul");
         return deckRepository.findByPlayerId(playerId);
+    }
+
+    public List<Deck> getVisibleDecks(int playerId, boolean isSelf, boolean isAdmin) {
+        if (playerId <= 0) throw new IllegalArgumentException("PlayerId skal være større end nul");
+        List<Deck> all = deckRepository.findByPlayerId(playerId);
+        if (isSelf || isAdmin) return all;
+        List<Deck> visible = new java.util.ArrayList<>();
+        for (Deck deck : all) {
+            if (deck.isPublic()) visible.add(deck);
+        }
+        return visible;
+    }
+
+    public void checkAccess(Deck deck, boolean isSelf, boolean isAdmin) {
+        if (!deck.isPublic() && !isSelf && !isAdmin)
+            throw new AccessDeniedException("Du har ikke adgang til dette deck");
     }
 
     public void create(Deck deck) {
@@ -89,14 +102,11 @@ public class DeckService {
         if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");
         Deck deck = getById(deckId);
         if (deck.getPlayerId() != requestingPlayerId) throw new IllegalArgumentException("Du har ikke adgang til dette deck");
-
         DeckCard existing = deckCardRepository.findByDeckIdAndCardId(deckId, cardId);
         int alreadyInDeck = existing != null ? existing.getQuantity() : 0;
-
         // Tjek format-begrænsning
         Card card = cardRepository.findById(cardId);
         validateFormatLimit(deck.getFormat(), card, alreadyInDeck, quantity);
-
         if (existing != null) {
             existing.setQuantity(existing.getQuantity() + quantity);
             deckCardRepository.update(existing);

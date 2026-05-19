@@ -19,11 +19,18 @@ public class TradeController {
         this.tradeService = tradeService;
     }
 
+    // --- Oversigt ---
+
     @GetMapping
     public String showTradePage(Model model, HttpSession session) { return "trades/trade-overview"; }
 
     @GetMapping("/incoming")
     public String showIncoming(Model model, HttpSession session) { return "trades/trade-incoming"; }
+
+    @GetMapping("/history")
+    public String showHistory(Model model, HttpSession session) { return "trades/trade-history"; }
+
+    // --- Forslag ---
 
     @GetMapping("/propose/{receiverId}")
     public String showProposalForm(@PathVariable int receiverId, Model model, HttpSession session) {
@@ -34,6 +41,8 @@ public class TradeController {
                           @RequestParam List<Integer> receiverCardIds, HttpSession session) {
         return "redirect:/trades"; }
 
+    // --- Handlinger ---
+
     @PostMapping("/{tradeId}/accept")
     public String accept(@PathVariable int tradeId, HttpSession session) { return "redirect:/trades/incoming"; }
 
@@ -42,7 +51,4 @@ public class TradeController {
 
     @PostMapping("/{tradeId}/cancel")
     public String cancel(@PathVariable int tradeId, HttpSession session) { return "redirect:/trades"; }
-
-    @GetMapping("/history")
-    public String showHistory(Model model, HttpSession session) { return "trades/trade-history"; }
 }

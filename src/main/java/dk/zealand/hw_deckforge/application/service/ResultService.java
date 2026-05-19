@@ -15,7 +15,11 @@ public class ResultService {
         this.resultRepository = resultRepository;
     }
 
+    // --- Forespørgsler ---
+
     public List<Result> getByEventId(int eventId) { return resultRepository.findByEventId(eventId); }
     public List<Result> getByPlayerId(int playerId) { return resultRepository.findByPlayerId(playerId); }
+    // --- Livscyklus ---
+
     public void save(Result result) { resultRepository.save(result); }
 }

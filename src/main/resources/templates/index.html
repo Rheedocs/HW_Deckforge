@@ -8,6 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/components.css}">
     <link rel="stylesheet" th:href="@{/css/cards.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/card-picker.css}">
+    <link rel="stylesheet" th:href="@{/css/card-form.css}">
     <link rel="stylesheet" th:href="@{/css/utilities.css}">
 </head>
 <body>
@@ -17,7 +20,8 @@
     <div class="welcome-box">
         <p>Deckforge er en platform for Magic: The Gathering spillere i Næstved og omegn.</p>
         <p>Administrer din kortsamling, byg decks, tilmeld dig events og byt kort med andre spillere.</p>
-        <p th:if="${session.player == null}">Har du ikke en konto endnu? <a th:href="@{/players/register}">Opret en konto</a> og kom med i fællesskabet.</p>
+        <p th:if="${session.player == null}">Har du ikke en konto endnu? <a th:href="@{/players/register}">Opret en
+            konto</a> og kom med i fællesskabet.</p>
     </div>
     <div class="quick-links">
         <a class="btn" th:href="@{/events}">Se events</a>

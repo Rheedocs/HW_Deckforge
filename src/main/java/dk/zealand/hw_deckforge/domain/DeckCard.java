@@ -16,10 +16,14 @@ public class DeckCard {
         this.quantity = quantity;
     }
 
+    // --- Getters ---
+
     public int getId() { return id; }
     public int getDeckId() { return deckId; }
     public int getCardId() { return cardId; }
     public int getQuantity() { return quantity; }
+
+    // --- Adfærd ---
 
     public void setQuantity(int quantity) {
         if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");

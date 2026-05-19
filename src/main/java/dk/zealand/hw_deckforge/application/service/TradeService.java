@@ -21,9 +21,13 @@ public class TradeService {
         this.tradeCardRepository = tradeCardRepository;
     }
 
+    // --- Forespørgsler ---
+
     public Trade getById(int id) { return tradeRepository.findById(id); }
     public List<Trade> getByPlayerId(int playerId) { return tradeRepository.findByPlayerId(playerId); }
     public List<Trade> getIncomingByPlayerId(int playerId) { return tradeRepository.findIncomingByPlayerId(playerId); }
+    // --- Livscyklus ---
+
     public void accept(int tradeId) {}
     public void decline(int tradeId) {}
     public void cancel(int tradeId) {}
