@@ -4,6 +4,7 @@ import dk.zealand.hw_deckforge.application.interfaces.ITradeRepository;
 import dk.zealand.hw_deckforge.domain.Trade;
 import dk.zealand.hw_deckforge.domain.enums.TradeStatus;
 import dk.zealand.hw_deckforge.domain.exceptions.DatabaseException;
+import dk.zealand.hw_deckforge.presentation.controllers.TradeController;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -55,7 +56,7 @@ public class TradeRepository implements ITradeRepository {
     @Override
     public List<Trade> findIncomingByPlayerId(int playerId) {
         try {
-            return jdbcTemplate.query(BASE_SQL + " WHERE receiver_id = ?", tradeRowMapper, playerId);
+            return jdbcTemplate.query(BASE_SQL + " WHERE receiver_id = ? AND status = ?", tradeRowMapper, playerId, TradeStatus.PENDING.name());
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke hente kommende trades for spiller: " + playerId, e);
         }
@@ -73,18 +74,18 @@ public class TradeRepository implements ITradeRepository {
                     trade.getCreatedAt(),
                     trade.getExpiresAt());
         } catch (DataAccessException e) {
-            throw new DatabaseException("Kunne ikke gemme trades", e);
+            throw new DatabaseException("Kunne ikke gemme trades", e.getCause());
         }
     }
 
     @Override
     public void update(Trade trade) {
         try {
-            String sql = "UPDATE trade proposer_id = ?, receiver_id = ?, status = ?, created_at = ?, expires_at = ? WHERE id = ?";
+            String sql = "UPDATE trade set proposer_id = ?, receiver_id = ?, status = ?, created_at = ?, expires_at = ? WHERE id = ?";
             jdbcTemplate.update(sql,
                     trade.getProposerId(),
                     trade.getReceiverId(),
-                    trade.getStatus(),
+                    trade.getStatus().name(),
                     trade.getCreatedAt(),
                     trade.getExpiresAt(),
                     trade.getId());

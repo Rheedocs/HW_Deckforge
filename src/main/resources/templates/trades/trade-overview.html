@@ -13,6 +13,9 @@
 <header th:replace="~{fragments :: header}"></header>
 <main>
     <h2>Bytning</h2>
+    <a th:href="@{/trades/history}"><button>Se byttehistorik</button></a>
+    <a th:href="@{/trades/incoming}"><button>Se kommende bytte</button></a>
+    <a th:href="@{/trades/incoming}"><button>Se foreslået bytte</button></a>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>

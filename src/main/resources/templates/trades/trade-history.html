@@ -13,6 +13,31 @@
 <header th:replace="~{fragments :: header}"></header>
 <main>
     <h2>Byttehistorik</h2>
+
+    <p th:if="${trades.isEmpty()}">Du har ingen afsluttede handler endnu.</p>
+
+    <table th:if="${!trades.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Handel ID</th>
+            <th>Foreslået af (ID)</th>
+            <th>Modtager (ID)</th>
+            <th>Status</th>
+            <th>Oprettet</th>
+            <th>Udløber</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="trade : ${trades}">
+            <td th:text="${trade.id}"></td>
+            <td th:text="${trade.proposerId}"></td>
+            <td th:text="${trade.receiverId}"></td>
+            <td th:text="${trade.status.getDisplayName()}"></td>
+            <td th:text="${#temporals.format(trade.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+            <td th:text="${#temporals.format(trade.expiresAt, 'dd-MM-yyyy HH:mm')}"></td>
+        </tr>
+        </tbody>
+    </table>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>
