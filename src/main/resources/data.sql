@@ -264,7 +264,13 @@ INSERT INTO player_card (
       (5, 17, 2, FALSE), -- Vampire Nighthawk
       (5, 21, 2, TRUE),  -- Kodama's Reach
       (5, 23, 1, FALSE), -- Command Tower
-      (5, 6, 1, FALSE);  -- Sol Ring
+      (5, 6, 1, FALSE),  -- Sol Ring
+      -- testspiller (id 6) - til bytte test:
+      (6, 3, 2, TRUE),   -- Lightning Bolt
+      (6, 6, 1, TRUE),   -- Sol Ring
+      (6, 12, 2, TRUE),  -- Swords to Plowshares
+      (6, 5, 2, FALSE),  -- Counterspell
+      (6, 24, 4, FALSE); -- Plains
 
 INSERT INTO deck (
     player_id, name, format, visibility

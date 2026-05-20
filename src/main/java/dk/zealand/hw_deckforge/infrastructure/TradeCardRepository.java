@@ -1,9 +1,7 @@
 package dk.zealand.hw_deckforge.infrastructure;
 
 import dk.zealand.hw_deckforge.application.interfaces.ITradeCardRepository;
-import dk.zealand.hw_deckforge.domain.PlayerCard;
 import dk.zealand.hw_deckforge.domain.TradeCard;
-import dk.zealand.hw_deckforge.domain.enums.Role;
 import dk.zealand.hw_deckforge.domain.enums.TradeRole;
 import dk.zealand.hw_deckforge.domain.exceptions.DatabaseException;
 import org.springframework.dao.DataAccessException;
@@ -20,6 +18,8 @@ public class TradeCardRepository implements ITradeCardRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // --- Forespørgsler ---
+
     @Override
     public List<TradeCard> findByTradeId(int tradeId) {
         try {
@@ -31,17 +31,22 @@ public class TradeCardRepository implements ITradeCardRepository {
                     TradeRole.valueOf(rs.getString("role"))
             ), tradeId);
         } catch (DataAccessException e) {
-            throw new DatabaseException("Kunne ikke hente kort for spiller!", e);
+            throw new DatabaseException("Kunne ikke hente kort for trade!", e);
         }
     }
+
+    // --- Skriveoperationer ---
 
     @Override
     public void save(TradeCard tradeCard) {
         try {
-            String sql = "INSERT INTO trade_card (id, trade_id, player_card_id, role) VALUES (?, ?, ?, ?)";
-            jdbcTemplate.update(sql, tradeCard.getId(), tradeCard.getTradeId(), tradeCard.getPlayerCardId(), tradeCard.getRole());
+            String sql = "INSERT INTO trade_card (trade_id, player_card_id, role) VALUES (?, ?, ?)";
+            jdbcTemplate.update(sql,
+                    tradeCard.getTradeId(),
+                    tradeCard.getPlayerCardId(),
+                    tradeCard.getRole().name());
         } catch (DataAccessException e) {
-            throw new DatabaseException("Kunne ikke gemme trades", e.getCause());
+            throw new DatabaseException("Kunne ikke gemme trade kort", e.getCause());
         }
     }
 

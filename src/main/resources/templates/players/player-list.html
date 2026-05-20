@@ -38,14 +38,16 @@
                        th:if="${isAdmin or session.player.id == player.id}"
                        th:href="@{/players/{id}/delete(id=${player.id})}">Slet</a>
                     <a class="btn btn-secondary card-thumb-action"
-                       th:if="${session.player.id != player.id}"
+                       th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
                        th:href="@{/cards/player/{id}(id=${player.id})}">Samling</a>
                     <a class="btn btn-secondary card-thumb-action"
-                       th:if="${session.player.id != player.id}"
+                       th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
                        th:href="@{/decks/player/{id}(id=${player.id})}">Decks</a>
                     <a class="btn btn-secondary card-thumb-action"
-                       th:if="${!isAdmin and session.player.id != player.id}"
-                       th:href="@{/trades/propose}">Bytte</a>
+                       th:if="${!isAdmin and session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
+                       th:href="@{/trades/propose/{id}(id=${player.id})}">Bytte</a>
+                    <span th:if="${player.collectionVisibility.name() == 'PRIVATE' and session.player.id != player.id}"
+                          class="badge badge-completed">Privat profil</span>
                 </div>
             </div>
         </div>
@@ -93,7 +95,7 @@
                                th:href="@{/decks/player/{id}(id=${player.id})}">Decks</a>
                             <a class="btn btn-secondary card-thumb-action"
                                th:if="${!isAdmin and session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
-                               th:href="@{/trades/propose}">Bytte</a>
+                               th:href="@{/trades/propose/{id}(id=${player.id})}">Bytte</a>
                             <span th:if="${player.collectionVisibility.name() == 'PRIVATE' and session.player.id != player.id}"
                                   class="badge badge-completed">Privat profil</span>
                         </div>

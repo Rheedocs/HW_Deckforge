@@ -45,6 +45,15 @@ public class PlayerCardService {
         return map;
     }
 
+    public Map<Integer, PlayerCard> getPlayerCardMapByIds(List<Integer> playerCardIds) {
+        Map<Integer, PlayerCard> map = new HashMap<>();
+        for (int id : playerCardIds) {
+            PlayerCard pc = playerCardRepository.findById(id);
+            if (pc != null) map.put(id, pc);
+        }
+        return map;
+    }
+
     // --- Synlighed ---
 
     public List<PlayerCard> getVisibleCards(int playerId, CollectionVisibility visibility, boolean isSelf, boolean isAdmin) {

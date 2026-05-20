@@ -13,9 +13,113 @@
 <header th:replace="~{fragments :: header}"></header>
 <main>
     <h2>Bytning</h2>
-    <a th:href="@{/trades/history}"><button>Se byttehistorik</button></a>
-    <a th:href="@{/trades/incoming}"><button>Se kommende bytte</button></a>
-    <a th:href="@{/trades/proposed}"><button>Foreslå bytte</button></a>
+
+    <!-- Kræver handling -->
+    <h3>Kræver handling</h3>
+    <p th:if="${received.isEmpty()}">Du har ingen indkommende bytteforslag.</p>
+    <table th:if="${!received.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Status</th>
+            <th>Oprettet</th>
+            <th>Udløber</th>
+            <th>Kort</th>
+            <th>Handlinger</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="trade : ${received}">
+            <td th:text="${trade.status.getDisplayName()}"></td>
+            <td th:text="${#temporals.format(trade.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+            <td th:text="${#temporals.format(trade.expiresAt, 'dd-MM-yyyy HH:mm')}"></td>
+            <td>
+                <span th:each="tc, iterStat : ${tradeCardMap[trade.id]}">
+                    <span th:if="${playerCardMap[tc.playerCardId] != null}"
+                          th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null
+                                    ? cardMap[playerCardMap[tc.playerCardId].cardId].name
+                                    : '?'}"></span>
+                    <span th:unless="${iterStat.last}"> / </span>
+                </span>
+            </td>
+            <td>
+                <div style="display:flex; gap:4px;">
+                    <form th:action="@{/trades/{id}/accept(id=${trade.id})}" method="post">
+                        <button type="submit">Accepter</button>
+                    </form>
+                    <form th:action="@{/trades/{id}/decline(id=${trade.id})}" method="post">
+                        <button type="submit">Afvis</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Dine forslag -->
+    <h3>Dine forslag</h3>
+    <p th:if="${sent.isEmpty()}">Du har ingen aktive bytteforslag.</p>
+    <table th:if="${!sent.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Status</th>
+            <th>Oprettet</th>
+            <th>Udløber</th>
+            <th>Kort</th>
+            <th>Handlinger</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="trade : ${sent}">
+            <td th:text="${trade.status.getDisplayName()}"></td>
+            <td th:text="${#temporals.format(trade.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+            <td th:text="${#temporals.format(trade.expiresAt, 'dd-MM-yyyy HH:mm')}"></td>
+            <td>
+                <span th:each="tc, iterStat : ${tradeCardMap[trade.id]}">
+                    <span th:if="${playerCardMap[tc.playerCardId] != null}"
+                          th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null
+                                    ? cardMap[playerCardMap[tc.playerCardId].cardId].name
+                                    : '?'}"></span>
+                    <span th:unless="${iterStat.last}"> / </span>
+                </span>
+            </td>
+            <td>
+                <form th:action="@{/trades/{id}/cancel(id=${trade.id})}" method="post">
+                    <button type="submit">Annuller</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Historik -->
+    <h3>Historik</h3>
+    <p th:if="${history.isEmpty()}">Du har ingen afsluttede handler endnu.</p>
+    <table th:if="${!history.isEmpty()}">
+        <thead>
+        <tr>
+            <th>Status</th>
+            <th>Oprettet</th>
+            <th>Udløber</th>
+            <th>Kort</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="trade : ${history}">
+            <td th:text="${trade.status.getDisplayName()}"></td>
+            <td th:text="${#temporals.format(trade.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+            <td th:text="${#temporals.format(trade.expiresAt, 'dd-MM-yyyy HH:mm')}"></td>
+            <td>
+                <span th:each="tc, iterStat : ${tradeCardMap[trade.id]}">
+                    <span th:if="${playerCardMap[tc.playerCardId] != null}"
+                          th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null
+                                    ? cardMap[playerCardMap[tc.playerCardId].cardId].name
+                                    : '?'}"></span>
+                    <span th:unless="${iterStat.last}"> / </span>
+                </span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>

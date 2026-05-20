@@ -7,7 +7,12 @@ import dk.zealand.hw_deckforge.domain.exceptions.DatabaseException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -61,17 +66,22 @@ public class TradeRepository implements ITradeRepository {
     }
 
     @Override
-    public void save(Trade trade) {
+    public int save(Trade trade) {
         try {
             String sql = "INSERT INTO trade (proposer_id, receiver_id, status, created_at, expires_at) VALUES (?, ?, ?, ?, ?)";
-            jdbcTemplate.update(sql,
-                    trade.getProposerId(),
-                    trade.getReceiverId(),
-                    trade.getStatus().name(),
-                    trade.getCreatedAt(),
-                    trade.getExpiresAt());
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setInt(1, trade.getProposerId());
+                ps.setInt(2, trade.getReceiverId());
+                ps.setString(3, trade.getStatus().name());
+                ps.setObject(4, trade.getCreatedAt());
+                ps.setObject(5, trade.getExpiresAt());
+                return ps;
+            }, keyHolder);
+            return keyHolder.getKey().intValue();
         } catch (DataAccessException e) {
-            throw new DatabaseException("Kunne ikke gemme trades", e.getCause());
+            throw new DatabaseException("Kunne ikke gemme trade", e);
         }
     }
 
@@ -89,7 +99,6 @@ public class TradeRepository implements ITradeRepository {
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke opdatere trades", e);
         }
-
     }
 
     @Override

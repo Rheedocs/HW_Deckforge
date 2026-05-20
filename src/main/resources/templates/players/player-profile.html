@@ -45,7 +45,7 @@
 
     <div th:if="${!isSelf and !isPrivate}" class="info-section">
         <h3>Handlinger</h3>
-        <a class="btn" th:href="@{/trades/propose}">Foreslå bytte</a>
+        <a class="btn" th:href="@{/trades/propose/{id}(id=${player.id})}">Foreslå bytte</a>
     </div>
 
     <div th:if="${isSelf}" class="info-section">

@@ -15,27 +15,26 @@
     <h2>Foreslå bytte</h2>
     <form th:action="@{/trades/propose/{receiverId}(receiverId=${receiverId})}" method="post">
 
-        <label>Dit kort:</label>
-        <select name="proposerCardIds" required>
+        <label for="proposerCardIds">Dit kort:</label>
+        <select id="proposerCardIds" name="proposerCardIds" required>
             <option value="" disabled selected>Vælg dit kort</option>
             <option th:each="card : ${proposerCards}"
                     th:value="${card.id}"
-                    th:text="${card.card.name}"></option>
+                    th:text="${cardMap[card.cardId] != null ? cardMap[card.cardId].name : card.cardId}"></option>
         </select>
 
-        <label>Modtagerens kort:</label>
-        <select name="receiverCardIds" required>
+        <label for="receiverCardIds">Modtagerens kort:</label>
+        <select id="receiverCardIds" name="receiverCardIds" required>
             <option value="" disabled selected>Vælg modtagerens kort</option>
             <option th:each="card : ${receiverCards}"
                     th:value="${card.id}"
-                    th:text="${card.card.name}"></option>
+                    th:text="${cardMap[card.cardId] != null ? cardMap[card.cardId].name : card.cardId}"></option>
         </select>
 
         <button type="submit">Send bytteforslag</button>
     </form>
-    <div style="margin-top: 16px;">
-        <a th:href="@{/trades}">Tilbage</a>
-    </div>
+
+    <a class="btn" th:href="@{/trades}">Tilbage</a>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>
