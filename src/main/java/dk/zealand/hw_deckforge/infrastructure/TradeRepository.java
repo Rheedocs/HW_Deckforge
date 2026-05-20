@@ -104,9 +104,10 @@ public class TradeRepository implements ITradeRepository {
     @Override
     public void expireOldTrades() {
         try {
-            String sql = "UPDATE trade SET status = ? WHERE expires_at < ? AND status = ?";
+            String sql = "UPDATE trade SET status = ? WHERE id IN " +
+                    "(SELECT id FROM (SELECT id FROM trade WHERE expires_at < ? AND status = ?) AS t)";
             jdbcTemplate.update(sql,
-                    TradeStatus.CANCELLED.name(),
+                    TradeStatus.EXPIRED.name(),
                     LocalDateTime.now(),
                     TradeStatus.PENDING.name()
             );

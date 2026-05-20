@@ -1,11 +1,9 @@
 package dk.zealand.hw_deckforge.application.service;
 
-import dk.zealand.hw_deckforge.application.interfaces.ICardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerCardRepository;
+import dk.zealand.hw_deckforge.application.interfaces.ITradeCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.ITradeRepository;
-import dk.zealand.hw_deckforge.domain.Card;
 import dk.zealand.hw_deckforge.domain.Trade;
-import dk.zealand.hw_deckforge.infrastructure.PlayerCardRepository;
 import dk.zealand.hw_deckforge.domain.enums.TradeStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +27,9 @@ class TradeServiceTest {
     @Mock
     private IPlayerCardRepository playerCardRepository;
 
+    @Mock
+    private ITradeCardRepository tradeCardRepository;
+
     @InjectMocks
     private TradeService tradeService;
 
@@ -36,11 +37,25 @@ class TradeServiceTest {
 
     @BeforeEach
     void setup() {
-        testTrade = new Trade(1,20,30, TradeStatus.PENDING, LocalDateTime.now(), LocalDateTime.now().plusHours(24));
+        testTrade = new Trade(1, 20, 30, TradeStatus.PENDING, LocalDateTime.now(), LocalDateTime.now().plusHours(24));
+    }
+
+    // --- Forespørgsler ---
+
+    @Test
+    void getAllByPlayerId_idIsZero_throwsIllegalArgument() {
+        assertThrows(IllegalArgumentException.class, () -> tradeService.getAllByPlayerId(0));
     }
 
     @Test
-    void accept_shouldSetStatusToAccepted() {
+    void getAllByPlayerId_idIsNegative_throwsIllegalArgument() {
+        assertThrows(IllegalArgumentException.class, () -> tradeService.getAllByPlayerId(-1));
+    }
+
+    // --- Livscyklus ---
+
+    @Test
+    void accept_pendingTrade_setsStatusAccepted() {
         when(tradeRepository.findById(1)).thenReturn(testTrade);
 
         tradeService.accept(1);
@@ -48,8 +63,9 @@ class TradeServiceTest {
         assertEquals(TradeStatus.ACCEPTED, testTrade.getStatus());
         verify(tradeRepository).update(testTrade);
     }
+
     @Test
-    void cancel_shouldUpdateStatus() {
+    void cancel_pendingTrade_setsStatusCancelled() {
         when(tradeRepository.findById(1)).thenReturn(testTrade);
 
         tradeService.cancel(1);
@@ -57,25 +73,53 @@ class TradeServiceTest {
         assertEquals(TradeStatus.CANCELLED, testTrade.getStatus());
         verify(tradeRepository).update(testTrade);
     }
-    @Test // Tjekker om ugyldig trade ikke bliver gemt i databasen hvor proposeren ikke har et valid card
-    void propose_shouldFailIfProposerCardNotTradeable() {
-        when(playerCardRepository.findForTradeByPlayerId(20))
-                .thenReturn(List.of()); // empty
+
+    @Test
+    void decline_pendingTrade_setsStatusDeclined() {
+        when(tradeRepository.findById(1)).thenReturn(testTrade);
+
+        tradeService.decline(1);
+
+        assertEquals(TradeStatus.DECLINED, testTrade.getStatus());
+        verify(tradeRepository).update(testTrade);
+    }
+
+    @Test
+    void accept_alreadyAcceptedTrade_throwsIllegalArgument() {
+        testTrade.accept();
+        when(tradeRepository.findById(1)).thenReturn(testTrade);
+
+        assertThrows(IllegalArgumentException.class, () -> tradeService.accept(1));
+        verify(tradeRepository, never()).update(any());
+    }
+
+    @Test
+    void cancel_alreadyCancelledTrade_throwsIllegalArgument() {
+        testTrade.cancel();
+        when(tradeRepository.findById(1)).thenReturn(testTrade);
+
+        assertThrows(IllegalArgumentException.class, () -> tradeService.cancel(1));
+        verify(tradeRepository, never()).update(any());
+    }
+
+    // --- Validering ---
+
+    @Test
+    void propose_proposerCardNotTradeable_throwsIllegalArgument() {
+        when(playerCardRepository.findForTradeByPlayerId(20)).thenReturn(List.of());
 
         assertThrows(IllegalArgumentException.class,
-                () -> tradeService.propose(testTrade, List.of(10), List.of(20)));
+                () -> tradeService.propose(20, 30, List.of(10), List.of(20)));
 
         verify(tradeRepository, never()).save(any());
     }
-    @Test
-    void getByPlayerId_idIsZero_throwsIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> tradeService.getByPlayerId(0));
-    }
+
+    // --- Scheduler ---
 
     @Test
-    void getByPlayerId_idIsNegative_throwsIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> tradeService.getByPlayerId(-1));
+    void expireOldTrades_kalderRepository() {
+        tradeService.expireOldTrades();
+
+        verify(tradeRepository).expireOldTrades();
     }
-
-
 }

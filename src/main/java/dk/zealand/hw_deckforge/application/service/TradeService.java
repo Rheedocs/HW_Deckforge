@@ -116,7 +116,7 @@ public class TradeService {
         tradeRepository.update(trade);
     }
 
-    @Scheduled(fixedRate = 86400000)
+    @Scheduled(fixedRate = 10000)
     public void expireOldTrades() {
         tradeRepository.expireOldTrades();
     }
