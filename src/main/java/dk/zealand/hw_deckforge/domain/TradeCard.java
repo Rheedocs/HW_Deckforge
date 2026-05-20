@@ -19,4 +19,10 @@ public class TradeCard {
     public int getTradeId() { return tradeId; }
     public int getPlayerCardId() { return playerCardId; }
     public TradeRole getRole() { return role; }
+
+    public void setId(int id){this.id = id;}
+    public void setTradeId(int tradeId){this.tradeId = tradeId;}
+    public void setPlayerCardId(int playerCardId){this.playerCardId = playerCardId;}
+    public void setRole(TradeRole role){this.role = role;}
+
 }

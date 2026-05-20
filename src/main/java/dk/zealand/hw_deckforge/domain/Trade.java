@@ -21,6 +21,8 @@ public class Trade {
         this.expiresAt = expiresAt;
     }
 
+    public Trade() {}
+
     public int getId() { return id; }
     public int getProposerId() { return proposerId; }
     public int getReceiverId() { return receiverId; }

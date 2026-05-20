@@ -13,6 +13,29 @@
 <header th:replace="~{fragments :: header}"></header>
 <main>
     <h2>Foreslå bytte</h2>
+    <form th:action="@{/trades/propose/{receiverId}(receiverId=${receiverId})}" method="post">
+
+        <label>Dit kort:</label>
+        <select name="proposerCardIds" required>
+            <option value="" disabled selected>Vælg dit kort</option>
+            <option th:each="card : ${proposerCards}"
+                    th:value="${card.id}"
+                    th:text="${card.card.name}"></option>
+        </select>
+
+        <label>Modtagerens kort:</label>
+        <select name="receiverCardIds" required>
+            <option value="" disabled selected>Vælg modtagerens kort</option>
+            <option th:each="card : ${receiverCards}"
+                    th:value="${card.id}"
+                    th:text="${card.card.name}"></option>
+        </select>
+
+        <button type="submit">Send bytteforslag</button>
+    </form>
+    <div style="margin-top: 16px;">
+        <a th:href="@{/trades}">Tilbage</a>
+    </div>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>

@@ -27,16 +27,19 @@ public class TradeService {
     }
 
     public Trade getById(int id) {
-        if (id <= 0 ) throw new IllegalArgumentException("Id skal være større end 0");
-        return tradeRepository.findById(id); }
+        if (id <= 0) throw new IllegalArgumentException("Id skal være større end 0");
+        return tradeRepository.findById(id);
+    }
 
     public List<Trade> getByPlayerId(int playerId) {
         if (playerId <= 0) throw new IllegalArgumentException("Player id  skal være større end 0");
-        return tradeRepository.findByPlayerId(playerId); }
+        return tradeRepository.findByPlayerId(playerId);
+    }
 
     public List<Trade> getIncomingByPlayerId(int playerId) {
         if (playerId <= 0) throw new IllegalArgumentException("Player id  skal være større end 0");
-        return tradeRepository.findIncomingByPlayerId(playerId); }
+        return tradeRepository.findIncomingByPlayerId(playerId);
+    }
 
     public void accept(int tradeId) {
         Trade trade = getById(tradeId);
@@ -109,6 +112,5 @@ public class TradeService {
 
         tradeCardRepository.save(new TradeCard(0, trade.getId(), proposerCardId, TradeRole.PROPOSER));
         tradeCardRepository.save(new TradeCard(0, trade.getId(), receiverCardId, TradeRole.RECEIVER));
-
     }
 }

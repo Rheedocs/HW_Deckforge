@@ -39,6 +39,10 @@ public class TradeController {
     @GetMapping("/propose/{receiverId}")
     public String showProposalForm(@PathVariable int receiverId, Model model, HttpSession session) {
         int proposerId = AuthHelper.getLoggedIn(session).getId();
+        model.addAttribute("trade", new Trade());
+        model.addAttribute("proposerCards", tradeService.getByPlayerId(proposerId));
+        model.addAttribute("receiverCards", tradeService.getIncomingByPlayerId(receiverId));
+        model.addAttribute("receiverId", receiverId);
         return "trades/trade-propose";
     }
 

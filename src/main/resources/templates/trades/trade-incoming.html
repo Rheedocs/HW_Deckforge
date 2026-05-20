@@ -19,9 +19,6 @@
     <table th:if="${!trades.isEmpty()}">
         <thead>
         <tr>
-            <th>Handel ID</th>
-            <th>Foreslået af (ID)</th>
-            <th>Modtager (ID)</th>
             <th>Status</th>
             <th>Oprettet</th>
             <th>Udløber</th>
@@ -29,9 +26,6 @@
         </thead>
         <tbody>
         <tr th:each="trade : ${trades}">
-            <td th:text="${trade.id}"></td>
-            <td th:text="${trade.proposerId}"></td>
-            <td th:text="${trade.receiverId}"></td>
             <td th:text="${trade.status.getDisplayName()}"></td>
             <td th:text="${#temporals.format(trade.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
             <td th:text="${#temporals.format(trade.expiresAt, 'dd-MM-yyyy HH:mm')}"></td>

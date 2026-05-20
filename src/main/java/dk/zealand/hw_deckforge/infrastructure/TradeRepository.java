@@ -4,12 +4,10 @@ import dk.zealand.hw_deckforge.application.interfaces.ITradeRepository;
 import dk.zealand.hw_deckforge.domain.Trade;
 import dk.zealand.hw_deckforge.domain.enums.TradeStatus;
 import dk.zealand.hw_deckforge.domain.exceptions.DatabaseException;
-import dk.zealand.hw_deckforge.presentation.controllers.TradeController;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -65,9 +63,8 @@ public class TradeRepository implements ITradeRepository {
     @Override
     public void save(Trade trade) {
         try {
-            String sql = "INSERT INTO trade (id, proposer_id, receiver_id, status, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO trade (proposer_id, receiver_id, status, created_at, expires_at) VALUES (?, ?, ?, ?, ?)";
             jdbcTemplate.update(sql,
-                    trade.getId(),
                     trade.getProposerId(),
                     trade.getReceiverId(),
                     trade.getStatus().name(),
