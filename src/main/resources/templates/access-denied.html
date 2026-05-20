@@ -13,10 +13,9 @@
 <header th:replace="~{fragments :: header}"></header>
 <main>
     <div class="error-container">
-        <h2>Denne side kræver login</h2>
-        <p>Du skal være logget ind for at se denne side.</p>
-        <a class="btn" th:href="@{/login}">Log ind</a>
-        <a class="btn" th:href="@{/players/register}">Opret konto</a>
+        <h2>Adgang nægtet</h2>
+        <p>Du har ikke adgang til denne side.</p>
+        <a class="btn" th:href="@{/players}">Tilbage til spillere</a>
     </div>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>

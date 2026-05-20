@@ -15,7 +15,12 @@ public class ResultRepository implements IResultRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // --- Forespørgsler ---
+
     @Override public List<Result> findByEventId(int eventId) { return null; }
     @Override public List<Result> findByPlayerId(int playerId) { return null; }
+
+    // --- Skriveoperationer ---
+
     @Override public void save(Result result) {}
 }

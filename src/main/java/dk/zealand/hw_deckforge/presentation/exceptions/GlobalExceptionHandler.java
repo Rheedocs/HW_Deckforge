@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.presentation.exceptions;
 
+import dk.zealand.hw_deckforge.domain.exceptions.AccessDeniedException;
 import dk.zealand.hw_deckforge.domain.exceptions.DatabaseException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.ui.Model;
@@ -10,6 +11,13 @@ import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    // --- Fejlhåndtering ---
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public String handleAccessDenied(AccessDeniedException ex) {
+        return "redirect:/access-denied";
+    }
 
     @ExceptionHandler(DatabaseException.class)
     public String handleDatabaseException(DatabaseException ex, Model model) {

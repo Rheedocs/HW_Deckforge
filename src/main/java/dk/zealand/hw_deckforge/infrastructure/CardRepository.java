@@ -22,10 +22,12 @@ public class CardRepository implements ICardRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // --- Forespørgsler ---
+
     @Override
     public List<Card> findAll() {
         try {
-            String sql = "SELECT id, name, card_type, color, set_name, rarity, rule_text, image_url FROM card";
+            String sql = "SELECT id, name, card_type, color, set_name, rarity, rule_text, image_url FROM card ORDER BY name";
             return jdbcTemplate.query(sql, this::mapRow);
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke hente kort!", e);
@@ -42,6 +44,8 @@ public class CardRepository implements ICardRepository {
             throw new DatabaseException("Kunne ikke hente kort med id " + id + "!", e);
         }
     }
+
+    // --- Skriveoperationer ---
 
     @Override
     public void save(Card card) {
@@ -91,6 +95,8 @@ public class CardRepository implements ICardRepository {
             throw new DatabaseException("Kunne ikke slette kort med id " + id + "!", e);
         }
     }
+
+    // --- Mapping ---
 
     private Card mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new Card(

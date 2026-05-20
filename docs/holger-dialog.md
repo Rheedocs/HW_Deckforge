@@ -19,17 +19,20 @@ Wireframes laves i Figma, mobile first.
 ### Valg af use cases
 
 Gruppen valgte:
+
 1. Deckoprettelse
 2. Eventtilmelding
 3. Bytteforløb (skiftede fra "Slet Event" efter Holgers anbefaling)
 
-Holger begrundelse: Bytning viser community-værdi, status-flow, reservation og historik, og er langt stærkere end slet-funktionalitet til eksamen.
+Holger begrundelse: Bytning viser community-værdi, status-flow, reservation og historik, og er langt stærkere end
+slet-funktionalitet til eksamen.
 
 ---
 
 ### Bytteflow – afklaring
 
-**Beslutning:** Spiller A foreslår bytte → kort reserveres → Spiller B accepterer/afviser inden 24 timer → spillere mødes fysisk → begge bekræfter i systemet → samlinger opdateres.
+**Beslutning:** Spiller A foreslår bytte → kort reserveres → Spiller B accepterer/afviser inden 24 timer → spillere
+mødes fysisk → begge bekræfter i systemet → samlinger opdateres.
 
 Holger understregede at accept alene ikke er nok. Byttet er fysisk og bekræftelsen sker i systemet efterfølgende.
 
@@ -65,11 +68,13 @@ Tre niveauer: Privat / Kun byttekort / Offentlig.
 ### Admin vs. spiller – hvad må hvad
 
 **Admin:**
+
 - Se, rediger og slet/deaktiver spillere
 - Se samling, decks og byttehistorik (read-only)
 - Må ikke foreslå bytter (admin er systemrolle, ikke spillerrolle)
 
 **Spiller:**
+
 - Kan se andre spilleres profiler og synlige samlinger
 - Kan foreslå bytter
 - Kan redigere og slette/deaktivere sin egen konto (soft delete anbefalet)
@@ -78,9 +83,11 @@ Tre niveauer: Privat / Kun byttekort / Offentlig.
 
 ### Wireframe feedback (godkendt af Holger)
 
-**Event flow:** Events liste → Event detalje → Vælg deck → Bekræftelse. "Registered" og "Full" badges. Fejlbesked og disabled knap ved fuldt event eller allerede tilmeldt.
+**Event flow:** Events liste → Event detalje → Vælg deck → Bekræftelse. "Registered" og "Full" badges. Fejlbesked og
+disabled knap ved fuldt event eller allerede tilmeldt.
 
-**Bytteflow:** Collection → Mark for Trade → Opret bytte → Bekræftelse. Spiller B modtager notifikation. Accept/Decline med tydelig feedback. Udløbne forslag vises med advarsel og disabled knapper.
+**Bytteflow:** Collection → Mark for Trade → Opret bytte → Bekræftelse. Spiller B modtager notifikation. Accept/Decline
+med tydelig feedback. Udløbne forslag vises med advarsel og disabled knapper.
 
 **Deck flow:** Deck liste → Deck detalje → Tilføj kort.
 
@@ -95,9 +102,12 @@ Clean Architecture med fire lag. Data persisteres i MySQL via repositories med J
 
 ### IT&F modeller (godkendt med feedback)
 
-**BMC:** Value proposition skærpes til "Nem og tryg platform til at bytte kort og deltage i events". Revenue streams kan udvides med fee pr. event og premium features. Customer relationships skal inkludere in-app feedback og community engagement.
+**BMC:** Value proposition skærpes til "Nem og tryg platform til at bytte kort og deltage i events". Revenue streams kan
+udvides med fee pr. event og premium features. Customer relationships skal inkludere in-app feedback og community
+engagement.
 
-**SWOT:** Reservationsfunktionen som styrke er spot on. Brugeradoption er den største reelle risiko. AI i opportunities skal knyttes konkret til kortgenkendelse og prisestimering, ikke bare buzzwords.
+**SWOT:** Reservationsfunktionen som styrke er spot on. Brugeradoption er den største reelle risiko. AI i opportunities
+skal knyttes konkret til kortgenkendelse og prisestimering, ikke bare buzzwords.
 
 **TOWS:** Stærkeste del. Fokus på trust via reservation og samarbejde med community er korrekt differentiering.
 
@@ -160,18 +170,22 @@ Nice-to-have. Hvis implementeret: URL til eksternt billede, ikke filupload.
 ### Trade – nye afklaringer (15. maj 2026)
 
 **Efter gennemført bytte:**
-Kortet fjernes automatisk fra byttelisten (forTrade sættes til false). Ejeren har ændret sig, den nye ejer har ikke nødvendigvis tænkt det som byttekort.
+Kortet fjernes automatisk fra byttelisten (forTrade sættes til false). Ejeren har ændret sig, den nye ejer har ikke
+nødvendigvis tænkt det som byttekort.
 
 **Hvilke kort kan foreslås i bytte:**
-Spiller A kan kun vælge kort markeret "til bytte" fra Spiller B's samling. Respekterer spillerens intention, undgår spam og gør systemet mere troværdigt.
+Spiller A kan kun vælge kort markeret "til bytte" fra Spiller B's samling. Respekterer spillerens intention, undgår spam
+og gør systemet mere troværdigt.
 
 Holgers vigtigste pointe: "Bytte skal føles trygt og kontrolleret – ikke som alle kan bytte alt."
 
 **Multi-kort bytter:**
-Nej i første version. Hold det 1:1. Multi-kort bytter øger kompleksiteten markant i UI, logik og reservation. Kan udvides senere.
+Nej i første version. Hold det 1:1. Multi-kort bytter øger kompleksiteten markant i UI, logik og reservation. Kan
+udvides senere.
 
 **Vis antal til bytte:**
-Ja, vigtigt. Vis "X ejet / Y til bytte" på hvert kort i trade-siden og kortbillede-vælgeren. Giver overblik og undgår frustration.
+Ja, vigtigt. Vis "X ejet / Y til bytte" på hvert kort i trade-siden og kortbillede-vælgeren. Giver overblik og undgår
+frustration.
 
 ---
 
@@ -193,12 +207,39 @@ Ja, vigtigt. Vis "X ejet / Y til bytte" på hvert kort i trade-siden og kortbill
 - Funktionalitet før fancy
 
 **Typografi og logo:**
+
 - Standard system-fonte er fint i MVP
 - "Deckforge" som tekst-logo er nok for nu
 - På sigt ønskes et rigtigt logo der giver identitet
 - Prioritering: 1) Funktionalitet, 2) Klart UI, 3) Konsistent design
 
 ---
+## Sprint 3 – UI og sikkerhed
+
+### Privat profil (19. maj 2026)
+
+- Privat profil viser kun navn til andre spillere
+- Ingen kortantal, deckantal, turneringer eller handlinger
+- Privat spiller vises stadig i spillerlisten med "Privat profil" badge
+- Decks er skjulte for andre spillere ved privat profil
+
+### Sortering (19. maj 2026)
+
+- Spillerliste: alfabetisk på navn, logget ind bruger øverst
+- Kortliste: alfabetisk på navn
+- Deckliste: alfabetisk på navn
+- Kortsamling: alfabetisk på kortnavn
+
+### Søgning og filter (19. maj 2026)
+
+- Kortliste: fritekst søgning + farve og type filter
+- Deck-vælger: fritekst søgning + farve og type filter
+- Kortsamling: fritekst søgning + farve og type filter
+- Spillerliste: fritekst søgning på navn, email og rolle
+- Ingen toggle mellem grid og tabel på desktop
+
+---
+
 
 ## Generelle principper fra Holger
 

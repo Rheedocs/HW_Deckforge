@@ -44,7 +44,8 @@ class PlayerServiceTest {
                 Role.PLAYER, CollectionVisibility.TRADE_ONLY);
     }
 
-    // getById
+    // --- getById ---
+
     @Test
     void getById_ifValidId_returnsPlayer() {
         when(playerRepository.findById(1)).thenReturn(player);
@@ -63,7 +64,8 @@ class PlayerServiceTest {
         assertThrows(IllegalArgumentException.class, () -> playerService.getById(0));
     }
 
-    // getAll
+    // --- getAll ---
+
     @Test
     void getAll_returnsAllPlayers() {
         when(playerRepository.findAll()).thenReturn(List.of(player));
@@ -71,7 +73,8 @@ class PlayerServiceTest {
         assertEquals(1, result.size());
     }
 
-    // login
+    // --- login ---
+
     @Test
     void login_withCorrectCredentials_returnsPlayer() {
         when(playerRepository.findByEmail("test@mail.dk")).thenReturn(player);
@@ -93,7 +96,8 @@ class PlayerServiceTest {
         assertThrows(IllegalArgumentException.class, () -> playerService.login("ingen@mail.dk", "password123"));
     }
 
-    // create
+    // --- create ---
+
     @Test
     void create_withValidData_savesPlayer() {
         when(playerRepository.findByEmail("test@mail.dk")).thenReturn(null);
@@ -137,7 +141,8 @@ class PlayerServiceTest {
                 () -> playerService.create("TestSpiller", "test@mail.dk", ""));
     }
 
-    // delete
+    // --- delete ---
+
     @Test
     void delete_withValidId_deletesPlayer() {
         when(playerRepository.findById(1)).thenReturn(player);
@@ -156,7 +161,8 @@ class PlayerServiceTest {
         assertThrows(IllegalArgumentException.class, () -> playerService.delete(99));
     }
 
-    // isOnlyAdmin
+    // --- isOnlyAdmin ---
+
     @Test
     void isOnlyAdmin_ifOneAdmin_returnsTrue() {
         player.promoteToAdmin();
@@ -180,7 +186,8 @@ class PlayerServiceTest {
         assertFalse(playerService.isOnlyAdmin(1));
     }
 
-    // addToCollection
+    // --- addToCollection ---
+
     @Test
     void addToCollection_validInput_callsSave() {
         when(playerRepository.findById(1)).thenReturn(player);
@@ -204,7 +211,8 @@ class PlayerServiceTest {
         assertThrows(IllegalArgumentException.class, () -> playerService.addToCollection(1, 1));
     }
 
-    // removeFromCollection
+    // --- removeFromCollection ---
+
     @Test
     void removeFromCollection_validId_callsDelete() {
         playerService.removeFromCollection(1);

@@ -6,7 +6,6 @@ import dk.zealand.hw_deckforge.application.service.PlayerService;
 import dk.zealand.hw_deckforge.domain.Card;
 import dk.zealand.hw_deckforge.domain.Player;
 import dk.zealand.hw_deckforge.domain.enums.CardType;
-import dk.zealand.hw_deckforge.domain.enums.CollectionVisibility;
 import dk.zealand.hw_deckforge.domain.enums.Color;
 import dk.zealand.hw_deckforge.domain.enums.Rarity;
 import dk.zealand.hw_deckforge.presentation.helpers.AuthHelper;
@@ -14,8 +13,6 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/cards")
@@ -25,11 +22,14 @@ public class CardController {
     private final PlayerCardService playerCardService;
     private final PlayerService playerService;
 
-    public CardController(CardService cardService, PlayerCardService playerCardService, PlayerService playerService) {
+    public CardController(CardService cardService, PlayerCardService playerCardService,
+                          PlayerService playerService) {
         this.cardService = cardService;
         this.playerCardService = playerCardService;
         this.playerService = playerService;
     }
+
+    // --- Kortliste ---
 
     @GetMapping
     public String getAllCards(Model model, HttpSession session) {
@@ -37,6 +37,8 @@ public class CardController {
         model.addAttribute("isAdmin", AuthHelper.isAdmin(session));
         return "cards/card-list";
     }
+
+    // --- Kortadministration ---
 
     @GetMapping("/create")
     public String showCreateForm(Model model, HttpSession session) {
@@ -49,9 +51,11 @@ public class CardController {
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute Card card, HttpSession session) {
+    public String create(@ModelAttribute Card card,
+                         @RequestParam(required = false) String scryfallUrl,
+                         HttpSession session) {
         if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
-        cardService.create(card);
+        cardService.create(card, scryfallUrl);
         return "redirect:/cards";
     }
 
@@ -66,10 +70,13 @@ public class CardController {
     }
 
     @PostMapping("/{id}/edit")
-    public String update(@PathVariable int id, @ModelAttribute Card card, HttpSession session) {
+    public String update(@PathVariable int id,
+                         @ModelAttribute Card card,
+                         @RequestParam(required = false) String scryfallUrl,
+                         HttpSession session) {
         if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
         card.setId(id);
-        cardService.update(card);
+        cardService.update(card, scryfallUrl);
         return "redirect:/cards";
     }
 
@@ -91,15 +98,14 @@ public class CardController {
         return "redirect:/cards";
     }
 
+    // --- Spillersamling ---
+
     @GetMapping("/player/{playerId}")
     public String getPlayerCollection(@PathVariable int playerId, Model model, HttpSession session) {
         Player owner = playerService.getById(playerId);
         boolean isSelf = AuthHelper.isSelf(session, playerId);
         boolean isAdmin = AuthHelper.isAdmin(session);
-
-        if (owner.getCollectionVisibility() == CollectionVisibility.PRIVATE && !isSelf && !isAdmin)
-            return "redirect:/access-denied";
-
+        playerService.checkCollectionAccess(playerId, isSelf, isAdmin);
         model.addAttribute("playerCards", playerCardService.getVisibleCards(
                 playerId, owner.getCollectionVisibility(), isSelf, isAdmin));
         model.addAttribute("cardMap", cardService.getCardMap());

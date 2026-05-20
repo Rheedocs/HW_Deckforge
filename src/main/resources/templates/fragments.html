@@ -23,7 +23,8 @@
             <a th:if="${session.player == null}" th:href="@{/players/register}">Opret konto</a>
             <a th:if="${session.player != null}" th:href="@{/players/{id}(id=${session.player.id})}">Profil</a>
             <a th:if="${session.player != null}" th:href="@{/logout}">Log ud</a>
-            <span th:if="${session.player != null}">Logget ind som: <strong th:text="${session.player.username}"></strong></span>
+            <span th:if="${session.player != null}">Logget ind som: <strong
+                    th:text="${session.player.username}"></strong></span>
         </nav>
     </div>
 </header>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="da">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/components.css}">
     <link rel="stylesheet" th:href="@{/css/cards.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/card-picker.css}">
+    <link rel="stylesheet" th:href="@{/css/card-form.css}">
     <link rel="stylesheet" th:href="@{/css/utilities.css}">
 </head>
 <body>
@@ -17,6 +20,9 @@
         <span th:if="${isSelf}">Din samling</span>
         <span th:unless="${isSelf}" th:text="${owner.username} + 's samling'"></span>
     </h2>
+    <p th:if="${!isSelf and owner.collectionVisibility.name() == 'TRADE_ONLY'}" class="warning-box">
+        Viser kun kort markeret til bytte.
+    </p>
 
     <p th:if="${#lists.isEmpty(playerCards)}">Ingen kort i samlingen.</p>
 
@@ -38,8 +44,9 @@
              th:data-add-url="${canManage ? '/cards/player/' + owner.id + '/add' : ''}"
              th:data-remove-url="${canManage ? '/cards/player/' + owner.id + '/' + pc.id + '/remove' : ''}"
              th:data-trade-url="${canManage ? '/cards/player/' + owner.id + '/' + pc.id + '/set-trade' : ''}"
-             onclick="åbnSamlingsKortModal(this)">
-            <img th:if="${card != null and card.imageUrl != null}" th:src="${card.imageUrl}" th:alt="${card != null ? card.name : ''}">
+             onclick="openCollectionCardModal(this)">
+            <img th:if="${card != null and card.imageUrl != null}" th:src="${card.imageUrl}"
+                 th:alt="${card != null ? card.name : ''}">
             <div class="card-thumb-name" th:text="${card != null ? card.name : '–'}"></div>
             <div th:if="${pc.forTrade}" class="card-thumb-trade">Til bytte</div>
             <div class="card-thumb-meta">
@@ -50,67 +57,70 @@
 
     <!-- Desktop: tabel -->
     <div class="table-wrapper desktop-table" th:unless="${#lists.isEmpty(playerCards)}">
-    <table>
-        <thead>
-        <tr>
-            <th>Billede</th>
-            <th>Navn</th>
-            <th>Type</th>
-            <th>Farve</th>
-            <th>Sjældenhed</th>
-            <th>Antal</th>
-            <th>Til bytte</th>
-            <th th:if="${canManage}">Handlinger</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="pc : ${playerCards}" th:with="card=${cardMap[pc.cardId]}">
-            <td>
-                <img class="card-img-small"
-                     th:if="${card != null and card.imageUrl != null}"
-                     th:src="${card.imageUrl}"
-                     th:alt="${card.name}"
-                     th:data-name="${card.name}"
-                     th:data-type="${card.cardType.displayName}"
-                     th:data-color="${card.color.displayName}"
-                     th:data-rarity="${card.rarity.displayName}"
-                     th:data-set="${card.setName}"
-                     th:data-rules="${card.ruleText}"
-                     th:data-image="${card.imageUrl}"
-                     th:data-url="${card.scryfallUrl}"
-                     onclick="openModal(this)">
-            </td>
-            <td th:text="${card != null ? card.name : '–'}"></td>
-            <td th:text="${card != null ? card.cardType.displayName : '–'}"></td>
-            <td th:text="${card != null ? card.color.displayName : '–'}"></td>
-            <td th:text="${card != null ? card.rarity.displayName : '–'}"></td>
-            <td th:text="${pc.quantity}"></td>
-            <td>
-                <span th:unless="${canManage}" th:text="${pc.forTrade ? 'Ja' : 'Nej'}"></span>
-                <form th:if="${canManage}"
-                      th:action="@{/cards/player/{pid}/{pcId}/set-trade(pid=${owner.id},pcId=${pc.id})}"
-                      method="post">
-                    <input type="hidden" name="forTrade" th:value="${!pc.forTrade}">
-                    <button class="btn" th:classappend="${pc.forTrade ? ' btn-secondary' : ''}" type="submit"
-                            th:text="${pc.forTrade ? 'Fjern fra bytte' : 'Markér til bytte'}"></button>
-                </form>
-            </td>
-            <td th:if="${canManage}">
-                <form method="post">
-                    <div class="action-col">
-                        <input type="hidden" name="cardId" th:value="${pc.cardId}">
-                        <input type="number" name="quantity" value="1" min="1"
-                               class="quantity-input-compact">
-                        <button class="btn" type="submit"
-                                th:formaction="@{/cards/player/{pid}/add(pid=${owner.id})}">+</button>
-                        <button class="btn btn-danger" type="submit"
-                                th:formaction="@{/cards/player/{pid}/{pcId}/remove(pid=${owner.id},pcId=${pc.id})}">Fjern</button>
-                    </div>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+        <table>
+            <thead>
+            <tr>
+                <th>Billede</th>
+                <th>Navn</th>
+                <th>Type</th>
+                <th>Farve</th>
+                <th>Sjældenhed</th>
+                <th>Antal</th>
+                <th>Til bytte</th>
+                <th th:if="${canManage}">Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="pc : ${playerCards}" th:with="card=${cardMap[pc.cardId]}">
+                <td>
+                    <img class="card-img-small"
+                         th:if="${card != null and card.imageUrl != null}"
+                         th:src="${card.imageUrl}"
+                         th:alt="${card.name}"
+                         th:data-name="${card.name}"
+                         th:data-type="${card.cardType.displayName}"
+                         th:data-color="${card.color.displayName}"
+                         th:data-rarity="${card.rarity.displayName}"
+                         th:data-set="${card.setName}"
+                         th:data-rules="${card.ruleText}"
+                         th:data-image="${card.imageUrl}"
+                         th:data-url="${card.scryfallUrl}"
+                         onclick="openModal(this)">
+                </td>
+                <td th:text="${card != null ? card.name : '–'}"></td>
+                <td th:text="${card != null ? card.cardType.displayName : '–'}"></td>
+                <td th:text="${card != null ? card.color.displayName : '–'}"></td>
+                <td th:text="${card != null ? card.rarity.displayName : '–'}"></td>
+                <td th:text="${pc.quantity}"></td>
+                <td>
+                    <span th:unless="${canManage}" th:text="${pc.forTrade ? 'Ja' : 'Nej'}"></span>
+                    <form th:if="${canManage}"
+                          th:action="@{/cards/player/{pid}/{pcId}/set-trade(pid=${owner.id},pcId=${pc.id})}"
+                          method="post">
+                        <input type="hidden" name="forTrade" th:value="${!pc.forTrade}">
+                        <button class="btn" th:classappend="${pc.forTrade ? ' btn-secondary' : ''}" type="submit"
+                                th:text="${pc.forTrade ? 'Fjern fra bytte' : 'Markér til bytte'}"></button>
+                    </form>
+                </td>
+                <td th:if="${canManage}">
+                    <form method="post">
+                        <div class="action-col">
+                            <input type="hidden" name="cardId" th:value="${pc.cardId}">
+                            <input type="number" name="quantity" value="1" min="1"
+                                   class="quantity-input-compact">
+                            <button class="btn" type="submit"
+                                    th:formaction="@{/cards/player/{pid}/add(pid=${owner.id})}">+
+                            </button>
+                            <button class="btn btn-danger" type="submit"
+                                    th:formaction="@{/cards/player/{pid}/{pcId}/remove(pid=${owner.id},pcId=${pc.id})}">
+                                Fjern
+                            </button>
+                        </div>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
     <!-- Tilføj kort til samling (ejer eller admin) -->
@@ -119,10 +129,10 @@
         <form th:action="@{/cards/player/{pid}/add(pid=${owner.id})}" method="post" id="addCollectionCardForm">
             <input type="hidden" id="collectionCardId" name="cardId">
             <!-- Sticky bar: vises kun på desktop når et kort er valgt -->
-            <div class="picker-sticky-bar" id="samlingsPickerStickyBar">
+            <div class="picker-sticky-bar" id="collectionPickerStickyBar">
                 <div class="picker-sticky-preview">
-                    <img id="samlingsPickerPreviewImg" src="" alt="">
-                    <span id="samlingsPickerPreviewNavn"></span>
+                    <img id="collectionPickerPreviewImg" src="" alt="">
+                    <span id="collectionPickerPreviewName"></span>
                 </div>
                 <div class="picker-sticky-actions">
                     <label for="collectionQuantity">Antal</label>
@@ -130,14 +140,27 @@
                     <button class="btn" type="submit">Tilføj til samling</button>
                 </div>
             </div>
-            <p id="collectionKortLabel" class="card-picker-selected-label picker-label">Intet kort valgt — klik et kort herunder</p>
-            <div class="card-picker" id="samlingsKortPicker">
+            <p id="collectionCardLabel" class="card-picker-selected-label picker-label">Intet kort valgt — klik et kort
+                herunder</p>
+            <div class="filter-buttons">
+                <input type="text" id="collectionCardSearch" placeholder="Søg kortnavne..."
+                       oninput="filterCollectionCards()" style="flex:1;min-width:120px;width:auto;margin:0;">
+                <select id="collectionCardColor" onchange="filterCollectionCards()" style="width:auto;margin:0;">
+                    <option value="">Alle farver</option>
+                </select>
+                <select id="collectionCardType" onchange="filterCollectionCards()" style="width:auto;margin:0;">
+                    <option value="">Alle typer</option>
+                </select>
+            </div>
+            <div class="card-picker" id="collectionCardPicker">
                 <div th:each="card : ${allCards}"
                      class="card-picker-item"
                      th:data-id="${card.id}"
                      th:data-name="${card.name}"
+                     th:data-color="${card.color.displayName}"
+                     th:data-type="${card.cardType.displayName}"
                      th:data-image="${card.imageUrl}"
-                     onclick="vælgSamlingsKort(this)">
+                     onclick="selectCollectionCard(this)">
                     <img th:if="${card.imageUrl != null}" th:src="${card.imageUrl}" th:alt="${card.name}">
                     <div th:if="${card.imageUrl == null}" class="card-picker-no-img" th:text="${card.name}"></div>
                     <div class="card-picker-item-name" th:text="${card.name}"></div>
@@ -146,12 +169,14 @@
                          th:text="${pc.quantity} + ' ejet' + (${pc.forTrade} ? ' / til bytte' : '')"></div>
                 </div>
             </div>
-            <div class="paginering-controls" id="samlingsKortPaginering" data-picker="samlingsKortPicker">
-                <button type="button" class="btn btn-secondary" id="samlingsKortPagineringForrige"
-                        onclick="skiftSide(this,-1)">&#8592;</button>
-                <span class="paginering-info" id="samlingsKortPagineringInfo"></span>
-                <button type="button" class="btn btn-secondary" id="samlingsKortPagineringNæste"
-                        onclick="skiftSide(this,1)">&#8594;</button>
+            <div class="pagination-controls" id="collectionCardPagination" data-picker="collectionCardPicker">
+                <button type="button" class="btn btn-secondary" id="collectionCardPaginationForrige"
+                        onclick="changePage(this,-1)">&#8592;
+                </button>
+                <span class="pagination-info" id="collectionCardPaginationInfo"></span>
+                <button type="button" class="btn btn-secondary" id="collectionCardPaginationNæste"
+                        onclick="changePage(this,1)">&#8594;
+                </button>
             </div>
         </form>
     </div>
@@ -175,13 +200,14 @@
             <li id="modalRulesItem"><strong>Regeltext:</strong> <span id="modalRules"></span></li>
         </ul>
         <a id="modalScryfall" class="btn" href="" target="_blank">Åbn i Scryfall</a>
+        <button class="btn btn-secondary modal-close-btn" onclick="closeModal()">Luk</button>
     </div>
 </div>
 
 <!-- Samlings-kort-modal: se detaljer og administrer (mobil) -->
-<div class="modal-overlay" id="samlingsKortModalOverlay" onclick="lukSamlingsKortModal(event)">
+<div class="modal-overlay" id="collectionCardModalOverlay" onclick="closeCollectionCardModal(event)">
     <div class="modal">
-        <button class="modal-close" onclick="lukSamlingsKortModal()">&#x2715;</button>
+        <button class="modal-close" onclick="closeCollectionCardModal()">&#x2715;</button>
         <img id="skModalBillede" src="" alt="">
         <h3 id="skModalNavn"></h3>
         <ul>
@@ -191,12 +217,12 @@
             <li><strong>Sæt:</strong> <span id="skModalSet"></span></li>
             <li id="skModalRulesItem"><strong>Regeltext:</strong> <span id="skModalRules"></span></li>
         </ul>
-        <p id="skModalAntal" class="modal-card-antal"></p>
-        <div id="skModalHandlinger" class="modal-handlinger">
-            <div class="antal-stepper">
-                <button type="button" class="btn btn-secondary" onclick="justerSkAntal(-1)">−</button>
-                <span class="antal-stepper-vis" id="skAntal">1</span>
-                <button type="button" class="btn btn-secondary" onclick="justerSkAntal(1)">+</button>
+        <p id="skModalAntal" class="modal-card-quantity"></p>
+        <div id="skModalHandlinger" class="modal-actions">
+            <div class="quantity-stepper">
+                <button type="button" class="btn btn-secondary" onclick="adjustCollectionQuantity(-1)">−</button>
+                <span class="quantity-stepper-display" id="skAntal">1</span>
+                <button type="button" class="btn btn-secondary" onclick="adjustCollectionQuantity(1)">+</button>
             </div>
             <div class="modal-action-row">
                 <form id="skTilføjForm" method="post" class="modal-action-form">
@@ -215,25 +241,31 @@
             </form>
         </div>
         <a id="skModalScryfall" class="btn btn-secondary modal-scryfall-btn" href="" target="_blank">Åbn i Scryfall</a>
+        <button class="btn btn-secondary modal-close-btn" onclick="closeCollectionCardModal()">Luk</button>
     </div>
 </div>
 
 <!-- Kortbillede-vælger-modal: vælg og tilføj kort (mobil) -->
-<div class="modal-overlay" id="kortVælgerModalOverlay" onclick="lukKortVælgerModal(event)">
-    <div class="modal kortVælger-modal">
-        <button class="modal-close" onclick="lukKortVælgerModal()">&#x2715;</button>
+<div class="modal-overlay" id="cardPickerModalOverlay" onclick="closeCardPickerModal(event)">
+    <div class="modal card-picker-modal">
+        <button class="modal-close" onclick="closeCardPickerModal()">&#x2715;</button>
         <img id="kvModalBillede" src="" alt="">
         <h3 id="kvModalNavn"></h3>
-        <div class="antal-stepper">
-            <button type="button" class="btn btn-secondary" onclick="justerKvAntal(-1)">−</button>
-            <span class="antal-stepper-vis" id="kvAntal">1</span>
-            <button type="button" class="btn btn-secondary" onclick="justerKvAntal(1)">+</button>
+        <div class="quantity-stepper">
+            <button type="button" class="btn btn-secondary" onclick="adjustPickerQuantity(-1)">−</button>
+            <span class="quantity-stepper-display" id="kvAntal">1</span>
+            <button type="button" class="btn btn-secondary" onclick="adjustPickerQuantity(1)">+</button>
         </div>
-        <button type="button" class="btn kv-tilføj-knap" onclick="tilføjFraPicker()">Tilføj til samling</button>
+        <button type="button" class="btn card-picker-add-btn" onclick="addFromPicker()">Tilføj til samling</button>
+        <button class="btn btn-secondary modal-close-btn" onclick="closeCardPickerModal()">Luk</button>
     </div>
 </div>
 
 <footer th:replace="~{fragments :: footer}"></footer>
 <script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/deck-modal.js}"></script>
+<script th:src="@{/js/collection-modal.js}"></script>
+<script th:src="@{/js/card-picker.js}"></script>
+<script th:src="@{/js/pagination.js}"></script>
 </body>
 </html>

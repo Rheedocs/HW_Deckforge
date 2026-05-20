@@ -18,11 +18,15 @@ public class PlayerCard {
         this.forTrade = forTrade;
     }
 
+    // --- Getters ---
+
     public int getId() { return id; }
     public int getPlayerId() { return playerId; }
     public int getCardId() { return cardId; }
     public int getQuantity() { return quantity; }
     public boolean isForTrade() { return forTrade; }
+
+    // --- Adfærd ---
 
     public void setQuantity(int quantity) {
         if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");

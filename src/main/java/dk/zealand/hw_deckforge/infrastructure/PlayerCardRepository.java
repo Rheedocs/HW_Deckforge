@@ -17,10 +17,16 @@ public class PlayerCardRepository implements IPlayerCardRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // --- Forespørgsler ---
+
     @Override
     public List<PlayerCard> findByPlayerId(int playerId) {
         try {
-            String sql = "SELECT id, player_id, card_id, quantity, for_trade FROM player_card WHERE player_id = ?";
+            String sql = "SELECT pc.id, pc.player_id, pc.card_id, pc.quantity, pc.for_trade " +
+                    "FROM player_card pc " +
+                    "JOIN card c ON pc.card_id = c.id " +
+                    "WHERE pc.player_id = ? " +
+                    "ORDER BY c.name";
             return jdbcTemplate.query(sql, (rs, rowNum) -> new PlayerCard(
                     rs.getInt("id"),
                     rs.getInt("player_id"),
@@ -32,6 +38,7 @@ public class PlayerCardRepository implements IPlayerCardRepository {
             throw new DatabaseException("Kunne ikke hente kort for spiller!", e);
         }
     }
+
     @Override
     public List<PlayerCard> findForTradeByPlayerId(int playerId) {
         try {
@@ -47,6 +54,7 @@ public class PlayerCardRepository implements IPlayerCardRepository {
             throw new DatabaseException("Kunne ikke hente byttekort for spiller!", e);
         }
     }
+
     @Override
     public PlayerCard findById(int id) {
         try {
@@ -72,6 +80,8 @@ public class PlayerCardRepository implements IPlayerCardRepository {
             throw new DatabaseException("Kunne ikke hente spillerkort", e);
         }
     }
+
+    // --- Skriveoperationer ---
 
     @Override
     public void save(PlayerCard playerCard) {
@@ -104,15 +114,7 @@ public class PlayerCardRepository implements IPlayerCardRepository {
         }
     }
 
-    @Override
-    public void setForTrade(int id, boolean forTrade) {
-        try {
-            String sql = "UPDATE player_card SET for_trade = ? WHERE id = ?";
-            jdbcTemplate.update(sql, forTrade, id);
-        } catch (DataAccessException e) {
-            throw new DatabaseException("Kunne ikke opdatere byttemarkering", e);
-        }
-    }
+    // --- Optælling ---
 
     @Override
     public int countByPlayerId(int playerId) {

@@ -26,13 +26,18 @@ public class PlayerController {
         this.deckService = deckService;
     }
 
+    // --- Liste ---
+
     @GetMapping
     public String getAllPlayers(Model model, HttpSession session) {
         int loggedInId = AuthHelper.getLoggedIn(session).getId();
-        model.addAttribute("players", playerService.getAllSortedByLoggedIn(loggedInId));
-        model.addAttribute("isAdmin", AuthHelper.isAdmin(session));
+        boolean isAdmin = AuthHelper.isAdmin(session);
+        model.addAttribute("players", playerService.getAllSortedByLoggedIn(loggedInId, isAdmin));
+        model.addAttribute("isAdmin", isAdmin);
         return "players/player-list";
     }
+
+    // --- Registrering ---
 
     @GetMapping("/register")
     public String showRegisterForm() {
@@ -47,17 +52,19 @@ public class PlayerController {
         return "redirect:/login";
     }
 
+    // --- Profil og redigering ---
+
     @GetMapping("/{id}")
     public String showProfile(@PathVariable int id, Model model, HttpSession session) {
         Player player = playerService.getById(id);
         boolean isSelf = AuthHelper.isSelf(session, id);
         boolean isAdmin = AuthHelper.isAdmin(session);
         int cardCount = playerCardService.getVisibleCount(id, player.getCollectionVisibility(), isSelf, isAdmin);
-
         int deckCount = deckService.getDeckCount(id);
-
         model.addAttribute("player", player);
         model.addAttribute("isSelf", isSelf);
+        model.addAttribute("isPrivate", !isSelf && !isAdmin
+                && player.getCollectionVisibility().name().equals("PRIVATE"));
         model.addAttribute("cardCount", cardCount);
         model.addAttribute("deckCount", deckCount);
         return "players/player-profile";
@@ -75,19 +82,27 @@ public class PlayerController {
     @PostMapping("/{id}/edit")
     public String update(@PathVariable int id, @ModelAttribute Player player,
                          @RequestParam(required = false) String newPassword,
+                         @RequestParam(required = false, defaultValue = "true") boolean active,
                          HttpSession session) {
         if (!AuthHelper.isAdminOrSelf(session, id)) return "redirect:/access-denied";
         player.setId(id);
-        if (!AuthHelper.isAdmin(session)) {
-            player.demoteToPlayer();
-        } else if (AuthHelper.isSelf(session, id) && playerService.isOnlyAdmin(id)) {
-            player.promoteToAdmin();
-        }
-        playerService.update(player, newPassword);
-        if (AuthHelper.isSelf(session, id)) {
-            session.setAttribute("player", playerService.getById(id));
-        }
+        player.setActive(active);
+        playerService.update(player, newPassword, AuthHelper.isAdmin(session), AuthHelper.isSelf(session, id));
+        if (AuthHelper.isSelf(session, id)) session.setAttribute("player", playerService.getById(id));
         return "redirect:/players";
+    }
+
+    // --- Slet ---
+
+    @GetMapping("/{id}/delete")
+    public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session,
+                                    @RequestHeader(value = "Referer", required = false) String referer) {
+        if (!AuthHelper.isAdminOrSelf(session, id)) return "redirect:/access-denied";
+        Player player = playerService.getById(id);
+        model.addAttribute("navn", player.getUsername());
+        model.addAttribute("deleteUrl", "/players/" + id + "/delete");
+        model.addAttribute("tilbage", referer != null ? referer : "/players");
+        return "delete-confirm";
     }
 
     @PostMapping("/{id}/delete")
@@ -99,16 +114,5 @@ public class PlayerController {
             return "redirect:/login";
         }
         return "redirect:/players";
-    }
-
-    @GetMapping("/{id}/delete")
-    public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session,
-                                    @RequestHeader(value = "Referer", required = false) String referer) {
-        if (!AuthHelper.isAdminOrSelf(session, id)) return "redirect:/access-denied";
-        Player player = playerService.getById(id);
-        model.addAttribute("navn", player.getUsername());
-        model.addAttribute("deleteUrl", "/players/" + id + "/delete");
-        model.addAttribute("tilbage", referer != null ? referer : "/players");
-        return "delete-confirm";
     }
 }

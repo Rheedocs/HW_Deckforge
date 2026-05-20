@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="da">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/components.css}">
     <link rel="stylesheet" th:href="@{/css/cards.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/card-picker.css}">
+    <link rel="stylesheet" th:href="@{/css/card-form.css}">
     <link rel="stylesheet" th:href="@{/css/utilities.css}">
 </head>
 <body>
@@ -50,7 +53,7 @@
              th:data-quantity="${dc.quantity}"
              th:data-add-url="${isSelf ? '/decks/' + deck.id + '/cards/add' : ''}"
              th:data-remove-url="${isSelf ? '/decks/' + deck.id + '/cards/' + dc.id + '/remove' : ''}"
-             onclick="åbnDeckKortModal(this)">
+             onclick="openDeckCardModal(this)">
             <img th:if="${card != null and card.imageUrl != null}" th:src="${card.imageUrl}" th:alt="${card.name}">
             <div class="card-thumb-name" th:text="${card != null ? card.name : '–'}"></div>
             <div th:if="${playerCardMap[dc.cardId] == null}" class="card-thumb-unowned">Ejer ikke</div>
@@ -106,9 +109,12 @@
                             <input type="number" name="quantity" value="1" min="1"
                                    class="quantity-input-compact">
                             <button class="btn" type="submit"
-                                    th:formaction="@{/decks/{id}/cards/add(id=${deck.id})}">+</button>
+                                    th:formaction="@{/decks/{id}/cards/add(id=${deck.id})}">+
+                            </button>
                             <button class="btn btn-danger" type="submit"
-                                    th:formaction="@{/decks/{id}/cards/{dcId}/remove(id=${deck.id},dcId=${dc.id})}">Fjern</button>
+                                    th:formaction="@{/decks/{id}/cards/{dcId}/remove(id=${deck.id},dcId=${dc.id})}">
+                                Fjern
+                            </button>
                         </div>
                     </form>
                 </td>
@@ -135,20 +141,33 @@
                 </div>
             </div>
             <p id="deckPickerAdvarsel" class="warning-box" style="display:none;"></p>
-            <p id="kortVælgerLabel" class="card-picker-selected-label picker-label">Intet kort valgt — klik et kort herunder</p>
-            <div class="filter-knappe">
-                <button type="button" class="btn" id="filterAlle" onclick="filterKortVælger(false)">Alle kort</button>
-                <button type="button" class="btn btn-secondary" id="filterEgne" onclick="filterKortVælger(true)">Kun egne</button>
+            <p id="cardPickerLabel" class="card-picker-selected-label picker-label">Intet kort valgt — klik et kort
+                herunder</p>
+            <div class="filter-buttons">
+                <input type="text" id="deckCardSearch" placeholder="Søg kortnavne..."
+                       oninput="applyDeckFilter()" style="flex:1;min-width:120px;width:auto;margin:0;">
+                <select id="deckCardColor" onchange="applyDeckFilter()" style="width:auto;margin:0;">
+                    <option value="">Alle farver</option>
+                </select>
+                <select id="deckCardType" onchange="applyDeckFilter()" style="width:auto;margin:0;">
+                    <option value="">Alle typer</option>
+                </select>
+                <button type="button" class="btn" id="filterAlle" onclick="filterCardPicker(false)">Alle kort</button>
+                <button type="button" class="btn btn-secondary" id="filterOwn" onclick="filterCardPicker(true)">Kun
+                    egne
+                </button>
             </div>
-            <div class="card-picker" id="deckKortPicker">
+            <div class="card-picker" id="deckCardPicker">
                 <div th:each="card : ${allCards}"
                      class="card-picker-item"
                      th:data-id="${card.id}"
                      th:data-name="${card.name}"
+                     th:data-color="${card.color.displayName}"
+                     th:data-type="${card.cardType.displayName}"
                      th:data-owned="${playerCardMap[card.id] != null}"
                      th:data-quantity="${playerCardMap[card.id] != null ? playerCardMap[card.id].quantity : 0}"
                      th:data-image="${card.imageUrl}"
-                     onclick="vælgKort(this)">
+                     onclick="selectCard(this)">
                     <img th:if="${card.imageUrl != null}" th:src="${card.imageUrl}" th:alt="${card.name}">
                     <div th:if="${card.imageUrl == null}" class="card-picker-no-img" th:text="${card.name}"></div>
                     <div class="card-picker-item-name" th:text="${card.name}"></div>
@@ -157,12 +176,14 @@
                          th:text="${pc.quantity} + ' ejet' + (${pc.forTrade} ? ' / til bytte' : '')"></div>
                 </div>
             </div>
-            <div class="paginering-controls" id="deckKortPaginering" data-picker="deckKortPicker">
-                <button type="button" class="btn btn-secondary" id="deckKortPagineringForrige"
-                        onclick="skiftSide(this,-1)">&#8592;</button>
-                <span class="paginering-info" id="deckKortPagineringInfo"></span>
-                <button type="button" class="btn btn-secondary" id="deckKortPagineringNæste"
-                        onclick="skiftSide(this,1)">&#8594;</button>
+            <div class="pagination-controls" id="deckCardPagination" data-picker="deckCardPicker">
+                <button type="button" class="btn btn-secondary" id="deckCardPaginationForrige"
+                        onclick="changePage(this,-1)">&#8592;
+                </button>
+                <span class="pagination-info" id="deckCardPaginationInfo"></span>
+                <button type="button" class="btn btn-secondary" id="deckCardPaginationNæste"
+                        onclick="changePage(this,1)">&#8594;
+                </button>
             </div>
         </form>
     </div>
@@ -185,13 +206,14 @@
             <li id="modalRulesItem"><strong>Regeltext:</strong> <span id="modalRules"></span></li>
         </ul>
         <a id="modalScryfall" class="btn" href="" target="_blank">Åbn i Scryfall</a>
+        <button class="btn btn-secondary modal-close-btn" onclick="closeModal()">Luk</button>
     </div>
 </div>
 
 <!-- Deck-kort-modal: se detaljer og administrer (mobil) -->
-<div class="modal-overlay" id="deckKortModalOverlay" onclick="lukDeckKortModal(event)">
+<div class="modal-overlay" id="deckCardModalOverlay" onclick="closeDeckCardModal(event)">
     <div class="modal">
-        <button class="modal-close" onclick="lukDeckKortModal()">&#x2715;</button>
+        <button class="modal-close" onclick="closeDeckCardModal()">&#x2715;</button>
         <img id="dkModalBillede" src="" alt="">
         <h3 id="dkModalNavn"></h3>
         <ul>
@@ -201,12 +223,12 @@
             <li><strong>Sæt:</strong> <span id="dkModalSet"></span></li>
             <li id="dkModalRulesItem"><strong>Regeltext:</strong> <span id="dkModalRules"></span></li>
         </ul>
-        <p id="dkModalAntal" class="modal-card-antal"></p>
-        <div id="dkModalHandlinger" class="modal-handlinger">
-            <div class="antal-stepper">
-                <button type="button" class="btn btn-secondary" onclick="justerDkAntal(-1)">−</button>
-                <span class="antal-stepper-vis" id="dkAntal">1</span>
-                <button type="button" class="btn btn-secondary" onclick="justerDkAntal(1)">+</button>
+        <p id="dkModalAntal" class="modal-card-quantity"></p>
+        <div id="dkModalHandlinger" class="modal-actions">
+            <div class="quantity-stepper">
+                <button type="button" class="btn btn-secondary" onclick="adjustDeckQuantity(-1)">−</button>
+                <span class="quantity-stepper-display" id="dkAntal">1</span>
+                <button type="button" class="btn btn-secondary" onclick="adjustDeckQuantity(1)">+</button>
             </div>
             <div class="modal-action-row">
                 <form id="dkTilføjForm" method="post" class="modal-action-form">
@@ -221,25 +243,31 @@
             </div>
         </div>
         <a id="dkModalScryfall" class="btn btn-secondary modal-scryfall-btn" href="" target="_blank">Åbn i Scryfall</a>
+        <button class="btn btn-secondary modal-close-btn" onclick="closeDeckCardModal()">Luk</button>
     </div>
 </div>
 
-<div class="modal-overlay" id="kortVælgerModalOverlay" onclick="lukKortVælgerModal(event)">
-    <div class="modal kortVælger-modal">
-        <button class="modal-close" onclick="lukKortVælgerModal()">&#x2715;</button>
+<div class="modal-overlay" id="cardPickerModalOverlay" onclick="closeCardPickerModal(event)">
+    <div class="modal card-picker-modal">
+        <button class="modal-close" onclick="closeCardPickerModal()">&#x2715;</button>
         <img id="kvModalBillede" src="" alt="">
         <h3 id="kvModalNavn"></h3>
-        <div class="antal-stepper">
-            <button type="button" class="btn btn-secondary" onclick="justerKvAntal(-1)">−</button>
-            <span class="antal-stepper-vis" id="kvAntal">1</span>
-            <button type="button" class="btn btn-secondary" onclick="justerKvAntal(1)">+</button>
+        <div class="quantity-stepper">
+            <button type="button" class="btn btn-secondary" onclick="adjustPickerQuantity(-1)">−</button>
+            <span class="quantity-stepper-display" id="kvAntal">1</span>
+            <button type="button" class="btn btn-secondary" onclick="adjustPickerQuantity(1)">+</button>
         </div>
         <p id="kvAdvarsel" class="warning-box" style="display:none;"></p>
-        <button type="button" class="btn kv-tilføj-knap" onclick="tilføjFraPicker()">Tilføj til deck</button>
+        <button type="button" class="btn card-picker-add-btn" onclick="addFromPicker()">Tilføj til deck</button>
+        <button class="btn btn-secondary modal-close-btn" onclick="closeCardPickerModal()">Luk</button>
     </div>
 </div>
 
 <footer th:replace="~{fragments :: footer}"></footer>
 <script th:src="@{/js/modal.js}"></script>
+<script th:src="@{/js/deck-modal.js}"></script>
+<script th:src="@{/js/collection-modal.js}"></script>
+<script th:src="@{/js/card-picker.js}"></script>
+<script th:src="@{/js/pagination.js}"></script>
 </body>
 </html>

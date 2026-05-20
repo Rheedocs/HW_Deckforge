@@ -6,9 +6,13 @@ import jakarta.servlet.http.HttpSession;
 
 public class AuthHelper {
 
+    // --- Session ---
+
     public static Player getLoggedIn(HttpSession session) {
         return (Player) session.getAttribute("player");
     }
+
+    // --- Adgangstjek ---
 
     public static boolean isAdmin(HttpSession session) {
         Player player = getLoggedIn(session);

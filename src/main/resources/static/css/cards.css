@@ -15,70 +15,7 @@
     cursor: pointer;
 }
 
-/* --- Modal --- */
-
-.modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 100;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-overlay.active { display: flex; }
-
-.modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 24px;
-    border-radius: 8px;
-    max-width: 400px;
-    width: 100%;
-    position: relative;
-}
-
-.modal img {
-    width: 100%;
-    border-radius: 4px;
-    margin-bottom: 16px;
-}
-
-.modal h3 {
-    color: var(--primary);
-    margin: 0 0 12px 0;
-}
-
-.modal ul {
-    padding-left: 16px;
-    margin: 0 0 16px 0;
-}
-
-.modal ul li { color: var(--text); padding: 4px 0; }
-.modal ul li strong { color: var(--primary); }
-
-.modal-close {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    border: none;
-    background: var(--error);
-    color: #fff;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    margin-bottom: 0;
-}
-.modal-close:hover { background: #a93226; }
-
-/* --- Mobil-kortgrid --- */
+/* --- Kortgrid --- */
 
 .card-grid {
     display: grid;
@@ -88,11 +25,6 @@
 }
 
 .desktop-table { display: none; }
-
-@media (min-width: 768px) {
-    .card-grid { display: none; }
-    .desktop-table { display: block; }
-}
 
 .card-thumb {
     cursor: pointer;
@@ -129,10 +61,7 @@
     color: var(--text);
 }
 
-.card-thumb-actions {
-    display: flex;
-    gap: 2px;
-}
+.card-thumb-actions { display: flex; gap: 2px; }
 
 .card-thumb-action {
     font-size: 0.85rem;
@@ -168,151 +97,14 @@
     padding: 2px 4px;
 }
 
-.warning-box {
-    background: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffc107;
-    border-radius: 4px;
-    padding: 10px 14px;
-    margin-bottom: 16px;
-}
-
-/* --- Kortbillede-vælger til tilføj-formular --- */
-
-.card-picker {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 8px;
-    margin-bottom: 8px;
-}
-
-.card-picker-item.filter-hidden { display: none; }
-.card-picker-item.page-hidden { display: none; }
-
-.paginering-controls {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 16px;
-}
-
-.paginering-controls .btn {
-    min-height: unset;
-    width: auto;
-    padding: 6px 14px;
-    margin: 0;
-    flex-shrink: 0;
-    font-size: 1rem;
-}
-
-.paginering-info {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    flex: 1;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* --- Kortbillede-vælger modal (mobil) --- */
-
-.kortVælger-modal {
-    width: 90vw;
-    max-width: 340px;
-}
-
-.antal-stepper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin: 12px 0;
-}
-
-.antal-stepper-vis {
-    font-size: 1.5rem;
-    font-weight: bold;
-    min-width: 36px;
-    text-align: center;
-    color: var(--text);
-}
-
-.kv-tilføj-knap {
-    width: 100%;
-    margin-top: 8px;
-}
-
-.card-picker-item {
-    cursor: pointer;
-    border: 2px solid transparent;
-    border-radius: 4px;
-    overflow: hidden;
-    background: var(--surface);
-    text-align: center;
-}
-
-.card-picker-item:hover { border-color: var(--primary-light); }
-
-.card-picker-item.selected {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 2px var(--primary);
-}
-
-.card-picker-item img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.card-picker-item-name {
-    font-size: 0.62rem;
-    padding: 2px 3px;
-    line-height: 1.2;
-    word-break: break-word;
-    color: var(--text);
-}
-
-.card-picker-item-owned {
-    font-size: 0.58rem;
-    padding: 1px 3px 3px;
-    color: var(--primary);
-    text-align: center;
-    font-weight: bold;
-}
-
-.card-picker-no-img {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--background);
-    font-size: 0.65rem;
-    padding: 4px;
-    word-break: break-word;
-    text-align: center;
-    color: var(--text-light);
-}
-
-.card-picker-selected-label {
-    font-size: 0.9rem;
-    margin-bottom: 8px;
-    color: var(--text-light);
-    font-style: italic;
-}
-
-.card-picker-selected-label.valgt {
-    color: var(--text);
-    font-style: normal;
-    font-weight: bold;
-}
+/* --- Desktop --- */
 
 @media (min-width: 768px) {
-    .card-picker { grid-template-columns: repeat(3, 1fr); }
+    .card-grid { display: none; }
+    .desktop-table { display: block; }
 }
+
+/* --- Mobil --- */
 
 @media (max-width: 767px) {
     .card-thumb-action {
@@ -325,13 +117,8 @@
         justify-content: center;
     }
 
-    .card-thumb-actions {
-        gap: 8px;
-    }
-
-    .card-thumb-meta {
-        padding: 6px 5px;
-    }
+    .card-thumb-actions { gap: 8px; }
+    .card-thumb-meta { padding: 6px 5px; }
 
     .card-thumb-trade-toggle {
         min-height: 44px;
@@ -339,140 +126,5 @@
         display: flex;
         align-items: center;
         justify-content: center;
-    }
-}
-
-/* --- Fælles layout-hjælpere --- */
-
-.deck-actions       { margin-bottom: 16px; }
-.section-add        { margin-top: 24px; }
-.back-link-wrapper  { margin-top: 16px; }
-.filter-knappe      { display: flex; gap: 8px; margin-bottom: 8px; }
-.quantity-input-compact { width: 55px; margin: 0; }
-
-/* --- Desktop kortbillede-vælger sticky bar --- */
-
-.picker-sticky-bar {
-    display: none;
-}
-
-@media (min-width: 768px) {
-    .picker-sticky-bar {
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        padding: 10px 14px;
-        margin-bottom: 10px;
-        align-items: center;
-        gap: 16px;
-    }
-
-    .picker-sticky-bar.actief {
-        display: flex;
-    }
-
-    .picker-sticky-preview {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex: 1;
-        min-width: 0;
-    }
-
-    .picker-sticky-preview img {
-        width: 44px;
-        height: auto;
-        border-radius: 3px;
-        flex-shrink: 0;
-    }
-
-    .picker-sticky-preview span {
-        font-weight: bold;
-        font-size: 0.9rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: var(--text);
-    }
-
-    .picker-sticky-actions {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-shrink: 0;
-    }
-
-    .picker-sticky-actions label {
-        font-size: 0.9rem;
-        margin: 0;
-        white-space: nowrap;
-    }
-
-    .picker-sticky-actions input[type="number"] {
-        width: 64px;
-        margin: 0;
-        min-height: unset;
-        height: 36px;
-    }
-
-    .picker-sticky-actions .btn {
-        margin: 0;
-        min-height: unset;
-        height: 36px;
-        padding: 0 16px;
-    }
-
-    .picker-label { display: none; }
-}
-
-/* --- kortVælger-modal indhold --- */
-
-.kortVælger-modal img { margin-bottom: 8px; }
-.kortVælger-modal h3  { margin: 0 0 4px 0; }
-
-/* --- Samlings-/deck-kort-modal indhold --- */
-
-.modal-card-antal   { margin: 0 0 12px 0; }
-.modal-handlinger   { display: none !important; }
-.modal-action-row   { display: flex; gap: 8px; margin-bottom: 8px; }
-.modal-action-form  { flex: 1; margin: 0; }
-.modal-trade-form   { margin-bottom: 8px; }
-.modal-form-btn     { margin: 0; }
-.modal-scryfall-btn { margin: 0; text-align: center; display: block; }
-
-@media (max-width: 767px) {
-    .modal {
-        padding: 10px;
-        max-width: 95vw;
-        max-height: 95vh;
-        overflow-y: auto;
-    }
-
-    .modal img {
-        max-height: 60vh;
-        width: 100%;
-        object-fit: contain;
-        margin-bottom: 8px;
-    }
-
-    .modal h3 {
-        font-size: 0.9rem;
-        margin: 0 0 6px 0;
-    }
-
-    .modal ul {
-        font-size: 0.8rem;
-        padding-left: 12px;
-        margin: 0 0 10px 0;
-    }
-
-    .modal ul li { padding: 2px 0; }
-
-    .modal-close {
-        top: 8px;
-        right: 8px;
     }
 }

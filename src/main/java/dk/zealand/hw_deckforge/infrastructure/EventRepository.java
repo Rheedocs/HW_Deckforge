@@ -15,12 +15,20 @@ public class EventRepository implements IEventRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // --- Forespørgsler ---
+
     @Override public List<Event> findAll() { return null; }
     @Override public Event findById(int id) { return null; }
     @Override public List<Event> findUpcoming() { return null; }
+
+    // --- Skriveoperationer ---
+
     @Override public void save(Event event) {}
     @Override public void update(Event event) {}
     @Override public void delete(int id) {}
+
+    // --- Tilmelding ---
+
     @Override public void registerPlayer(int playerId, int eventId, int deckId) {}
     @Override public int countRegistrations(int eventId) { return 0; }
 }
