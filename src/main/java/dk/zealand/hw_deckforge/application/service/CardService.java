@@ -45,7 +45,7 @@ public class CardService {
 
     public void create(Card card, String scryfallUrl) {
         if (card == null) throw new IllegalArgumentException("Kort må ikke være null!");
-        applyImageFromScryfallLink(card, scryfallUrl);
+        applyImageFromScryfallLink(card, sanitizeScryfallUrl(scryfallUrl));
         validateCard(card);
         cardRepository.save(card);
     }
@@ -53,7 +53,7 @@ public class CardService {
     public void update(Card card, String scryfallUrl) {
         if (card == null) throw new IllegalArgumentException("Kort må ikke være null!");
         if (card.getId() == null || card.getId() <= 0) throw new IllegalArgumentException("Ugyldigt kort-id!");
-        applyImageFromScryfallLink(card, scryfallUrl);
+        applyImageFromScryfallLink(card, sanitizeScryfallUrl(scryfallUrl));
         validateCard(card);
         cardRepository.update(card);
     }
@@ -69,6 +69,12 @@ public class CardService {
         if (scryfallUrl == null || scryfallUrl.isBlank()) return;
         String imageUrl = scryfallService.fetchImageUrlByScryfallLink(scryfallUrl);
         if (imageUrl != null) card.setImageUrl(imageUrl);
+    }
+
+    private String sanitizeScryfallUrl(String scryfallUrl) {
+        if (scryfallUrl == null || scryfallUrl.isBlank()) return null;
+        if (!scryfallUrl.startsWith("https://scryfall.com/card/")) return null;
+        return scryfallUrl.strip();
     }
 
     // --- Validering ---

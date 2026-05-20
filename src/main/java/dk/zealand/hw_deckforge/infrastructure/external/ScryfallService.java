@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.util.regex.Pattern;
 
 /**
  * Henter kortbilleder fra Scryfall API.
@@ -17,6 +18,8 @@ public class ScryfallService {
     private static final String SCRYFALL_API_HOST = "api.scryfall.com";
     private static final String SET_PATTERN = "[a-zA-Z0-9]+";
     private static final String NUMBER_PATTERN = "[0-9]+";
+    private static final Pattern SCRYFALL_CARD_URL_PATTERN = Pattern.compile(
+            "^https://scryfall\\.com/card/[a-zA-Z0-9]+/[0-9]+(?:/.*)?$");
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -29,18 +32,23 @@ public class ScryfallService {
     // --- Billedopslag ---
 
     public String fetchImageUrlByScryfallLink(String scryfallLink) {
-        // https://scryfall.com/card/{set}/{number}/{navn}
-        if (!scryfallLink.startsWith("https://scryfall.com/card/")) return null;
-        String[] parts = scryfallLink.split("/");
-        if (parts.length < 6) return null;
-        String set = parts[4];
-        String number = parts[5];
-        if (!set.matches(SET_PATTERN) || !number.matches(NUMBER_PATTERN)) return null;
-        return fetchImageUrlBySetAndNumber(set, number);
+        if (scryfallLink == null) return null;
+        if (!SCRYFALL_CARD_URL_PATTERN.matcher(scryfallLink).matches()) return null;
+        try {
+            URI uri = URI.create(scryfallLink);
+            String[] parts = uri.getPath().split("/");
+            if (parts.length < 4) return null;
+            String set = parts[2];
+            String number = parts[3];
+            if (!isValidSet(set) || !isValidNumber(number)) return null;
+            return fetchImageUrlBySetAndNumber(set, number);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public String fetchImageUrlBySetAndNumber(String set, String number) {
-        if (!set.matches(SET_PATTERN) || !number.matches(NUMBER_PATTERN)) return null;
+        if (!isValidSet(set) || !isValidNumber(number)) return null;
         try {
             URI uri = new URI("https", SCRYFALL_API_HOST, "/cards/" + set + "/" + number, null);
             String json = restTemplate.getForObject(uri, String.class);
@@ -49,6 +57,16 @@ public class ScryfallService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    // --- Validering ---
+
+    private boolean isValidSet(String set) {
+        return set != null && set.matches(SET_PATTERN);
+    }
+
+    private boolean isValidNumber(String number) {
+        return number != null && number.matches(NUMBER_PATTERN);
     }
 
     // --- Intern behandling ---
