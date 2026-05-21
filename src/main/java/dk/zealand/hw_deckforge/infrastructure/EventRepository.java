@@ -82,7 +82,11 @@ public class EventRepository implements IEventRepository {
 
     @Override
     public void registerPlayer(int playerId, int eventId, int deckId) {
-        String sql = "INSERT INTO event_registration (player_id, event_id, deck_id) VALUES (?, ?, ?)";
+        String sql = """
+            INSERT INTO event_registration (player_id, event_id, deck_id, registration_date)
+            VALUES (?, ?, ?, CURRENT_DATE)
+            """;
+
         jdbcTemplate.update(sql, playerId, eventId, deckId);
     }
 

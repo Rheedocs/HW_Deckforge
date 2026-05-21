@@ -11,29 +11,35 @@
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
+
 <main>
-    <h2>Registrer resultat for <span th:text="${event.name}"></span></h2>
+    <section class="info-section">
+        <h2>Registrer resultat for <span th:text="${event.name}"></span></h2>
 
-    <form th:action="@{/results/event/{eventId}/register(eventId=${event.id})}" th:object="${result}" method="post">
-        <label for="playerId">Spiller</label>
-        <select id="playerId" name="playerId" required>
-            <option value="">Vælg spiller</option>
-            <option th:each="player : ${players}"
-                    th:value="${player.id}"
-                    th:text="${player.username}">
-            </option>
-        </select>
+        <form th:action="@{/results/event/{eventId}/register(eventId=${event.id})}" th:object="${result}" method="post">
+            <label for="playerId">Spiller</label>
+            <select id="playerId" name="playerId" required>
+                <option value="">Vælg spiller</option>
+                <option th:each="player : ${players}"
+                        th:value="${player.id}"
+                        th:text="${player.username}">
+                </option>
+            </select>
 
-        <label for="placement">Placering</label>
-        <input type="number" id="placement" name="placement" min="1" required>
+            <label for="placement">Placering</label>
+            <input type="number" id="placement" name="placement" min="1" required>
 
-        <button type="submit">Gem resultat</button>
-    </form>
-
-    <div style="margin-top: 16px;">
-        <a th:href="@{/results/event/{eventId}(eventId=${event.id})}">Tilbage</a>
-    </div>
+            <div class="action-col">
+                <button type="submit">Gem resultat</button>
+                <a class="btn btn-secondary"
+                   th:href="@{/results/event/{eventId}(eventId=${event.id})}">
+                    Tilbage
+                </a>
+            </div>
+        </form>
+    </section>
 </main>
+
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

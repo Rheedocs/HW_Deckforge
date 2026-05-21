@@ -11,83 +11,102 @@
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
+
 <main>
     <div th:with="isAdmin=${session.player != null and session.player.role.name() == 'ADMIN'}">
-        <h2>Events</h2>
-
-        <h3>Kommende events</h3>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                <tr>
-                    <th>Navn</th>
-                    <th>Dato</th>
-                    <th>Lokation</th>
-                    <th>Format</th>
-                    <th>Pladser</th>
-                    <th>Status</th>
-                    <th>Handlinger</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="event : ${events}" th:if="${event.upcoming}">
-                    <td th:text="${event.name}"></td>
-                    <td th:text="${event.date}"></td>
-                    <td th:text="${event.location}"></td>
-                    <td th:text="${event.format}"></td>
-                    <td th:text="${event.maxPlayers}"></td>
-                    <td><span class="badge badge-upcoming">Kommende</span></td>
-                    <td>
-                        <div class="action-col">
-                            <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
-                            <a class="btn" th:if="${isAdmin}" th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
-                            <a class="btn btn-danger" th:if="${isAdmin}"
-                               th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+        <div class="action-col">
+            <h2>Events</h2>
         </div>
-
-        <h3>Tidligere events</h3>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                <tr>
-                    <th>Navn</th>
-                    <th>Dato</th>
-                    <th>Lokation</th>
-                    <th>Format</th>
-                    <th>Pladser</th>
-                    <th>Status</th>
-                    <th>Handlinger</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="event : ${events}" th:if="${!event.upcoming}">
-                    <td th:text="${event.name}"></td>
-                    <td th:text="${event.date}"></td>
-                    <td th:text="${event.location}"></td>
-                    <td th:text="${event.format}"></td>
-                    <td th:text="${event.maxPlayers}"></td>
-                    <td><span class="badge badge-completed">Afsluttet</span></td>
-                    <td>
-                        <div class="action-col">
-                            <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
-                            <a class="btn" th:if="${isAdmin}" th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
-                            <a class="btn btn-danger" th:if="${isAdmin}"
-                               th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
-                        </div>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
         <a class="btn list-action" th:if="${isAdmin}" th:href="@{/events/create}">Opret nyt event</a>
+
+        <section class="info-section">
+            <h3>Kommende events</h3>
+
+            <p class="info" th:if="${events == null or #lists.isEmpty(events)}">
+                Der er ingen events endnu.
+            </p>
+
+            <div class="table-wrapper" th:if="${events != null and !#lists.isEmpty(events)}">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Navn</th>
+                        <th>Dato</th>
+                        <th>Lokation</th>
+                        <th>Format</th>
+                        <th>Pladser</th>
+                        <th>Status</th>
+                        <th>Handlinger</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="event : ${events}" th:if="${event.upcoming}">
+                        <td th:text="${event.name}"></td>
+                        <td th:text="${event.date}"></td>
+                        <td th:text="${event.location}"></td>
+                        <td th:text="${event.format}"></td>
+                        <td th:text="${event.maxPlayers}"></td>
+                        <td><span class="badge badge-upcoming">Kommende</span></td>
+                        <td>
+                            <div class="action-col">
+                                <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
+                                <a class="btn" th:if="${isAdmin}"
+                                   th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
+                                <a class="btn btn-danger" th:if="${isAdmin}"
+                                   th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="info-section">
+            <h3>Tidligere events</h3>
+
+            <div class="table-wrapper" th:if="${events != null and !#lists.isEmpty(events)}">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Navn</th>
+                        <th>Dato</th>
+                        <th>Lokation</th>
+                        <th>Format</th>
+                        <th>Pladser</th>
+                        <th>Status</th>
+                        <th>Handlinger</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="event : ${events}" th:if="${!event.upcoming}">
+                        <td th:text="${event.name}"></td>
+                        <td th:text="${event.date}"></td>
+                        <td th:text="${event.location}"></td>
+                        <td th:text="${event.format}"></td>
+                        <td th:text="${event.maxPlayers}"></td>
+                        <td>
+                            <span class="badge badge-ongoing" th:if="${event.ongoing}">Igangværende</span>
+                            <span class="badge badge-completed" th:if="${event.completed}">Afsluttet</span>
+                            <span class="badge badge-cancelled" th:if="${event.cancelled}">Aflyst</span>
+                        </td>
+                        <td>
+                            <div class="action-col">
+                                <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
+                                <a class="btn" th:if="${isAdmin}"
+                                   th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
+                                <a class="btn btn-danger" th:if="${isAdmin}"
+                                   th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 </main>
+
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

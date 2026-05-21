@@ -11,50 +11,82 @@
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
+
 <main>
-    <h2 th:text="${event.name}"></h2>
-    <p><strong>Dato:</strong> <span th:text="${event.date}"></span></p>
-    <p><strong>Lokation:</strong> <span th:text="${event.location}"></span></p>
-    <p><strong>Format:</strong> <span th:text="${event.format}"></span></p>
-    <p><strong>Maks. spillere:</strong> <span th:text="${event.maxPlayers}"></span></p>
-    <p><strong>Status:</strong> <span th:text="${event.status}"></span></p>
+    <section class="info-section">
+        <h2 th:text="${event.name}">Eventnavn</h2>
 
-    <h3>Tilmeldte spillere</h3>
-    <div class="table-wrapper" th:if="${registrations != null and !#lists.isEmpty(registrations)}">
-    <table>
-        <thead>
-        <tr>
-            <th>Spiller</th>
-            <th>Deck</th>
-            <th>Tilmeldingsdato</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="reg : ${registrations}">
-            <td th:text="${reg.playerId}"></td>
-            <td th:text="${reg.deckId}"></td>
-            <td th:text="${reg.registrationDate}"></td>
-        </tr>
-        </tbody>
-    </table>
-    </div>
-    <p th:if="${registrations == null or #lists.isEmpty(registrations)}">Ingen tilmeldte endnu.</p>
+        <p><strong>Dato:</strong> <span th:text="${event.date}"></span></p>
+        <p><strong>Lokation:</strong> <span th:text="${event.location}"></span></p>
+        <p><strong>Format:</strong> <span th:text="${event.format}"></span></p>
+        <p><strong>Maks. spillere:</strong> <span th:text="${event.maxPlayers}"></span></p>
 
-    <div th:if="${event.upcoming and session.player != null}" style="margin-top: 24px;">
+        <p>
+            <strong>Status:</strong>
+            <span class="badge badge-upcoming" th:if="${event.upcoming}">Kommende</span>
+            <span class="badge badge-ongoing" th:if="${event.ongoing}">Igangværende</span>
+            <span class="badge badge-completed" th:if="${event.completed}">Afsluttet</span>
+            <span class="badge badge-cancelled" th:if="${event.cancelled}">Aflyst</span>
+        </p>
+
+        <div class="action-col">
+            <a class="btn" th:href="@{/events}">Tilbage til events</a>
+            <a class="btn" th:href="@{/results/event/{eventId}(eventId=${event.id})}">Se resultater</a>
+            <a class="btn"
+               th:if="${session.player != null and session.player.role.name() == 'ADMIN'}"
+               th:href="@{/results/event/{eventId}/register(eventId=${event.id})}">
+                Registrer resultat
+            </a>
+        </div>
+    </section>
+
+    <section class="info-section">
+        <h3>Tilmeldte spillere</h3>
+
+        <p class="info" th:if="${registrations == null or #lists.isEmpty(registrations)}">
+            Ingen tilmeldte endnu.
+        </p>
+
+        <div class="table-wrapper" th:if="${registrations != null and !#lists.isEmpty(registrations)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Spiller</th>
+                    <th>Deck</th>
+                    <th>Tilmeldingsdato</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="reg : ${registrations}">
+                    <td th:text="${reg.playerId}"></td>
+                    <td th:text="${reg.deckId}"></td>
+                    <td th:text="${reg.registrationDate}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="info-section" th:if="${event.upcoming and session.player != null}">
         <h3>Tilmeld dig</h3>
-        <form th:action="@{/events/{id}/register(id=${event.id})}" method="post">
+
+        <p class="info" th:if="${decks == null or #lists.isEmpty(decks)}">
+            Du har ingen decks, der kan bruges til tilmelding.
+        </p>
+
+        <form th:if="${decks != null and !#lists.isEmpty(decks)}"
+              th:action="@{/events/{id}/register(id=${event.id})}" method="post">
             <label for="deckId">Vælg deck:</label>
-            <select id="deckId" name="deckId">
+            <select id="deckId" name="deckId" required>
+                <option value="">Vælg deck</option>
                 <option th:each="deck : ${decks}" th:value="${deck.id}" th:text="${deck.name}"></option>
             </select>
+
             <button type="submit">Tilmeld</button>
         </form>
-    </div>
-
-    <div style="margin-top: 16px;">
-        <a th:href="@{/events}">Tilbage</a>
-    </div>
+    </section>
 </main>
+
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

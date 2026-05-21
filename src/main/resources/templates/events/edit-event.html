@@ -11,45 +11,51 @@
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
+
 <main>
-    <h2>Rediger event</h2>
-    <form th:action="@{/events/{id}/edit(id=${event.id})}" th:object="${event}" method="post">
-        <input type="hidden" th:field="*{id}">
+    <section class="info-section">
+        <h2>Rediger event</h2>
 
-        <label for="name">Navn:</label>
-        <input type="text" id="name" th:field="*{name}" required>
+        <form th:action="@{/events/{id}/edit(id=${event.id})}" th:object="${event}" method="post">
+            <input type="hidden" th:field="*{id}">
 
-        <label for="location">Lokation:</label>
-        <input type="text" id="location" th:field="*{location}" required>
+            <label for="name">Navn:</label>
+            <input type="text" id="name" th:field="*{name}" required>
 
-        <label for="date">Dato:</label>
-        <input type="date" id="date" name="date" th:value="${#temporals.format(event.date, 'yyyy-MM-dd')}" required>
+            <label for="location">Lokation:</label>
+            <input type="text" id="location" th:field="*{location}" required>
 
-        <label for="format">Format:</label>
-        <select id="format" th:field="*{format}">
-            <option value="COMMANDER">Commander</option>
-            <option value="STANDARD">Standard</option>
-            <option value="DRAFT">Draft</option>
-            <option value="CASUAL">Casual</option>
-        </select>
+            <label for="date">Dato:</label>
+            <input type="date" id="date" name="date"
+                   th:value="${#temporals.format(event.date, 'yyyy-MM-dd')}" required>
 
-        <label for="maxPlayers">Maks. spillere:</label>
-        <input type="number" id="maxPlayers" th:field="*{maxPlayers}" min="2" required>
+            <label for="format">Format:</label>
+            <select id="format" th:field="*{format}" required>
+                <option value="COMMANDER">Commander</option>
+                <option value="STANDARD">Standard</option>
+                <option value="DRAFT">Draft</option>
+                <option value="CASUAL">Casual</option>
+            </select>
 
-        <label for="status">Status:</label>
-        <select id="status" th:field="*{status}">
-            <option value="UPCOMING">Kommende</option>
-            <option value="ONGOING">Igangværende</option>
-            <option value="COMPLETED">Afsluttet</option>
-            <option value="CANCELLED">Aflyst</option>
-        </select>
+            <label for="maxPlayers">Maks. spillere:</label>
+            <input type="number" id="maxPlayers" th:field="*{maxPlayers}" min="2" required>
 
-        <button type="submit">Gem ændringer</button>
-    </form>
-    <div style="margin-top: 16px;">
-        <a th:href="@{/events}">Tilbage</a>
-    </div>
+            <label for="status">Status:</label>
+            <select id="status" th:field="*{status}" required>
+                <option value="UPCOMING">Kommende</option>
+                <option value="ONGOING">Igangværende</option>
+                <option value="COMPLETED">Afsluttet</option>
+                <option value="CANCELLED">Aflyst</option>
+            </select>
+
+            <div class="action-col">
+                <button type="submit">Gem ændringer</button>
+                <a class="btn btn-secondary" th:href="@{/events}">Tilbage</a>
+            </div>
+        </form>
+    </section>
 </main>
+
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

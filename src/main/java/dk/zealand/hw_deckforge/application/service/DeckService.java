@@ -11,6 +11,7 @@ import dk.zealand.hw_deckforge.domain.exceptions.AccessDeniedException;
 import dk.zealand.hw_deckforge.domain.validation.FormatValidator;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,8 +21,7 @@ public class DeckService {
     private final IDeckCardRepository deckCardRepository;
     private final ICardRepository cardRepository;
 
-    public DeckService(IDeckRepository deckRepository, IDeckCardRepository deckCardRepository,
-                       ICardRepository cardRepository) {
+    public DeckService(IDeckRepository deckRepository, IDeckCardRepository deckCardRepository, ICardRepository cardRepository) {
         this.deckRepository = deckRepository;
         this.deckCardRepository = deckCardRepository;
         this.cardRepository = cardRepository;
@@ -41,11 +41,22 @@ public class DeckService {
         return deckRepository.findByPlayerId(playerId);
     }
 
+    public List<Deck> getByPlayerIdAndFormat(int playerId, Format format) {
+        if (playerId <= 0) throw new IllegalArgumentException("PlayerId skal være større end nul");
+        if (format == null) throw new IllegalArgumentException("Format skal angives");
+        List<Deck> decks = deckRepository.findByPlayerId(playerId);
+        List<Deck> matchingDecks = new ArrayList<>();
+        for (Deck deck : decks) {
+            if (deck.getFormat() == format) matchingDecks.add(deck);
+        }
+        return matchingDecks;
+    }
+
     public List<Deck> getVisibleDecks(int playerId, boolean isSelf, boolean isAdmin) {
         if (playerId <= 0) throw new IllegalArgumentException("PlayerId skal være større end nul");
         List<Deck> all = deckRepository.findByPlayerId(playerId);
         if (isSelf || isAdmin) return all;
-        List<Deck> visible = new java.util.ArrayList<>();
+        List<Deck> visible = new ArrayList<>();
         for (Deck deck : all) {
             if (deck.isPublic()) visible.add(deck);
         }
@@ -107,7 +118,6 @@ public class DeckService {
         if (deck.getPlayerId() != requestingPlayerId) throw new IllegalArgumentException("Du har ikke adgang til dette deck");
         DeckCard existing = deckCardRepository.findByDeckIdAndCardId(deckId, cardId);
         int alreadyInDeck = existing != null ? existing.getQuantity() : 0;
-        // Tjek format-begrænsning
         Card card = cardRepository.findById(cardId);
         FormatValidator.validateFormatLimit(deck.getFormat(), card, alreadyInDeck, quantity);
         if (existing != null) {

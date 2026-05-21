@@ -11,36 +11,43 @@
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
+
 <main>
-    <h2>Opret event</h2>
-    <form th:action="@{/events/create}" th:object="${event}" method="post">
-        <input type="hidden" name="status" value="UPCOMING">
-        <label for="name">Navn:</label>
-        <input type="text" id="name" th:field="*{name}" required>
+    <section class="info-section">
+        <h2>Opret event</h2>
 
-        <label for="location">Lokation:</label>
-        <input type="text" id="location" th:field="*{location}" required>
+        <form th:action="@{/events/create}" th:object="${event}" method="post">
+            <input type="hidden" name="status" value="UPCOMING">
 
-        <label for="date">Dato:</label>
-        <input type="date" id="date" th:field="*{date}" required>
+            <label for="name">Navn:</label>
+            <input type="text" id="name" th:field="*{name}" required>
 
-        <label for="format">Format:</label>
-        <select id="format" th:field="*{format}">
-            <option value="COMMANDER">Commander</option>
-            <option value="STANDARD">Standard</option>
-            <option value="DRAFT">Draft</option>
-            <option value="CASUAL">Casual</option>
-        </select>
+            <label for="location">Lokation:</label>
+            <input type="text" id="location" th:field="*{location}" required>
 
-        <label for="maxPlayers">Maks. spillere:</label>
-        <input type="number" id="maxPlayers" th:field="*{maxPlayers}" min="2" required>
+            <label for="date">Dato:</label>
+            <input type="date" id="date" th:field="*{date}" required>
 
-        <button type="submit">Opret event</button>
-    </form>
-    <div style="margin-top: 16px;">
-        <a th:href="@{/events}">Tilbage</a>
-    </div>
+            <label for="format">Format:</label>
+            <select id="format" th:field="*{format}" required>
+                <option value="">Vælg format</option>
+                <option value="COMMANDER">Commander</option>
+                <option value="STANDARD">Standard</option>
+                <option value="DRAFT">Draft</option>
+                <option value="CASUAL">Casual</option>
+            </select>
+
+            <label for="maxPlayers">Maks. spillere:</label>
+            <input type="number" id="maxPlayers" th:field="*{maxPlayers}" min="2" required>
+
+            <div class="action-col">
+                <button type="submit">Opret event</button>
+                <a class="btn btn-secondary" th:href="@{/events}">Tilbage</a>
+            </div>
+        </form>
+    </section>
 </main>
+
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>
