@@ -4,6 +4,7 @@ import dk.zealand.hw_deckforge.application.interfaces.IPlayerCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerRepository;
 import dk.zealand.hw_deckforge.application.interfaces.ITradeCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.ITradeRepository;
+import dk.zealand.hw_deckforge.application.validation.TradeValidator;
 import dk.zealand.hw_deckforge.domain.Player;
 import dk.zealand.hw_deckforge.domain.PlayerCard;
 import dk.zealand.hw_deckforge.domain.Trade;
@@ -28,13 +29,16 @@ public class TradeService {
     private final IPlayerCardRepository playerCardRepository;
     private final ITradeCardRepository tradeCardRepository;
     private final IPlayerRepository playerRepository;
+    private final TradeValidator tradeValidator;
 
     public TradeService(ITradeRepository tradeRepository, IPlayerCardRepository playerCardRepository,
-                        ITradeCardRepository tradeCardRepository, IPlayerRepository playerRepository) {
+                        ITradeCardRepository tradeCardRepository, IPlayerRepository playerRepository,
+                        TradeValidator tradeValidator) {
         this.tradeRepository = tradeRepository;
         this.playerCardRepository = playerCardRepository;
         this.tradeCardRepository = tradeCardRepository;
         this.playerRepository = playerRepository;
+        this.tradeValidator = tradeValidator;
     }
 
     // --- Forespørgsler ---
@@ -47,6 +51,27 @@ public class TradeService {
     public List<Trade> getAllByPlayerId(int playerId) {
         if (playerId <= 0) throw new IllegalArgumentException("Player id skal være større end 0");
         return tradeRepository.findByPlayerId(playerId);
+    }
+
+    public List<Trade> getActiveByPlayerId(List<Trade> all, int playerId) {
+        List<Trade> active = new ArrayList<>();
+        for (Trade trade : all) {
+            if ((trade.getProposerId() == playerId || trade.getReceiverId() == playerId)
+                    && trade.getStatus() == TradeStatus.ACCEPTED) {
+                active.add(trade);
+            }
+        }
+        return active;
+    }
+
+    public int countActiveAcceptedTrades(int playerId) {
+        if (playerId <= 0) throw new IllegalArgumentException("Player id skal være større end 0");
+        return getActiveByPlayerId(tradeRepository.findByPlayerId(playerId), playerId).size();
+    }
+
+    public int countIncomingPendingTrades(int playerId) {
+        if (playerId <= 0) throw new IllegalArgumentException("Player id skal være større end 0");
+        return tradeRepository.findIncomingByPlayerId(playerId).size();
     }
 
     public List<Trade> getSentByPlayerId(List<Trade> all, int playerId) {
@@ -83,7 +108,7 @@ public class TradeService {
     public List<Trade> getHistoryByPlayerId(List<Trade> all) {
         List<Trade> history = new ArrayList<>();
         for (Trade trade : all) {
-            if (trade.getStatus() != TradeStatus.PENDING) {
+            if (trade.getStatus() != TradeStatus.PENDING && trade.getStatus() != TradeStatus.ACCEPTED) {
                 history.add(trade);
             }
         }
@@ -199,26 +224,12 @@ public class TradeService {
         int proposerCardId = proposerCardIds.getFirst();
         int receiverCardId = receiverCardIds.getFirst();
 
-        validateProposerCard(trade.getProposerId(), proposerCardId);
-        validateReceiverCard(trade.getReceiverId(), receiverCardId);
+        tradeValidator.validateProposerCard(trade.getProposerId(), proposerCardId);
+        tradeValidator.validateReceiverCard(trade.getReceiverId(), receiverCardId);
 
         int tradeId = tradeRepository.save(trade);
         tradeCardRepository.save(new TradeCard(0, tradeId, proposerCardId, TradeRole.PROPOSER));
         tradeCardRepository.save(new TradeCard(0, tradeId, receiverCardId, TradeRole.RECEIVER));
-    }
-
-    private void validateProposerCard(int proposerId, int proposerCardId) {
-        for (PlayerCard pc : playerCardRepository.findForTradeByPlayerId(proposerId)) {
-            if (pc.getId() == proposerCardId) return;
-        }
-        throw new IllegalArgumentException("Proposerens kort er ikke markeret til bytte");
-    }
-
-    private void validateReceiverCard(int receiverId, int receiverCardId) {
-        for (PlayerCard pc : playerCardRepository.findForTradeByPlayerId(receiverId)) {
-            if (pc.getId() == receiverCardId) return;
-        }
-        throw new IllegalArgumentException("Modtagerens kort er ikke markeret til bytte");
     }
 
     // --- Intern behandling ---

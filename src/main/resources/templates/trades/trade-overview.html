@@ -29,7 +29,8 @@
                 <div class="list-thumb-meta">
                     <span th:each="tc, iterStat : ${tradeCardMap[trade.id]}">
                         <span th:if="${playerCardMap[tc.playerCardId] != null}"
-                              th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span>
+                              th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null
+                               ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span>
                         <span th:unless="${iterStat.last}"> / </span>
                     </span>
                 </div>
@@ -64,7 +65,8 @@
                     <td th:text="${#temporals.format(trade.expiresAt, 'dd-MM-yyyy HH:mm')}"></td>
                     <td><span th:each="tc, iterStat : ${tradeCardMap[trade.id]}"><span
                             th:if="${playerCardMap[tc.playerCardId] != null}"
-                            th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span><span
+                            th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null
+                             ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span><span
                             th:unless="${iterStat.last}"> / </span></span></td>
                     <td>
                         <div class="action-col">
@@ -95,7 +97,8 @@
                 <div class="list-thumb-meta">
                     <span th:each="tc, iterStat : ${tradeCardMap[trade.id]}">
                         <span th:if="${playerCardMap[tc.playerCardId] != null}"
-                              th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span>
+                              th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null
+                               ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span>
                         <span th:unless="${iterStat.last}"> / </span>
                     </span>
                 </div>
@@ -127,12 +130,112 @@
                     <td th:text="${#temporals.format(trade.expiresAt, 'dd-MM-yyyy HH:mm')}"></td>
                     <td><span th:each="tc, iterStat : ${tradeCardMap[trade.id]}"><span
                             th:if="${playerCardMap[tc.playerCardId] != null}"
-                            th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span><span
+                            th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null
+                            ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span><span
                             th:unless="${iterStat.last}"> / </span></span></td>
                     <td>
                         <form th:action="@{/trades/{id}/cancel(id=${trade.id})}" method="post">
                             <button type="submit">Annuller</button>
                         </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Aktive bytter -->
+    <h3>Aktive bytter</h3>
+    <p th:if="${active.isEmpty()}">Du har ingen aktive bytter, der afventer gennemførsel.</p>
+
+    <div th:if="${!active.isEmpty()}">
+        <div class="list-grid">
+            <div th:each="trade : ${active}" class="list-thumb">
+                <div class="list-thumb-title">Accepteret - afventer gennemførsel</div>
+
+                <div class="list-thumb-meta">
+                <span th:if="${trade.proposerId == loggedInId}"
+                      th:text="${playerMap[trade.receiverId] != null ? playerMap[trade.receiverId].username : '?'}"></span>
+                    <span th:if="${trade.proposerId != loggedInId}"
+                          th:text="${playerMap[trade.proposerId] != null ? playerMap[trade.proposerId].username : '?'}"></span>
+                </div>
+
+                <div class="list-thumb-meta">
+                <span th:each="tc, iterStat : ${tradeCardMap[trade.id]}">
+                    <span th:if="${playerCardMap[tc.playerCardId] != null}"
+                          th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null
+                           ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span>
+                    <span th:unless="${iterStat.last}"> / </span>
+                </span>
+                </div>
+
+                <div class="list-thumb-meta" th:text="${#temporals.format(trade.createdAt, 'dd-MM-yyyy HH:mm')}"></div>
+
+                <div class="list-thumb-actions">
+                    <form th:if="${trade.proposerId == loggedInId and !trade.proposerConfirmed}"
+                          th:action="@{/trades/{id}/complete(id=${trade.id})}" method="post">
+                        <button class="btn card-thumb-action" type="submit">Bekræft gennemført</button>
+                    </form>
+
+                    <form th:if="${trade.receiverId == loggedInId and !trade.receiverConfirmed}"
+                          th:action="@{/trades/{id}/complete(id=${trade.id})}" method="post">
+                        <button class="btn card-thumb-action" type="submit">Bekræft gennemført</button>
+                    </form>
+
+                    <span th:if="${trade.proposerId == loggedInId and trade.proposerConfirmed}"
+                          class="badge badge-pending">Venter på modpart</span>
+                    <span th:if="${trade.receiverId == loggedInId and trade.receiverConfirmed}"
+                          class="badge badge-pending">Venter på modpart</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-wrapper desktop-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Modpart</th>
+                    <th>Oprettet</th>
+                    <th>Kort</th>
+                    <th>Handlinger</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="trade : ${active}">
+                    <td>Accepteret - afventer gennemførsel</td>
+                    <td>
+                    <span th:if="${trade.proposerId == loggedInId}"
+                          th:text="${playerMap[trade.receiverId] != null ? playerMap[trade.receiverId].username : '?'}"></span>
+                        <span th:if="${trade.proposerId != loggedInId}"
+                              th:text="${playerMap[trade.proposerId] != null ? playerMap[trade.proposerId].username : '?'}"></span>
+                    </td>
+                    <td th:text="${#temporals.format(trade.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td>
+                    <span th:each="tc, iterStat : ${tradeCardMap[trade.id]}">
+                        <span th:if="${playerCardMap[tc.playerCardId] != null}"
+                              th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null
+                               ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span>
+                        <span th:unless="${iterStat.last}"> / </span>
+                    </span>
+                    </td>
+                    <td>
+                        <div class="action-col">
+                            <form th:if="${trade.proposerId == loggedInId and !trade.proposerConfirmed}"
+                                  th:action="@{/trades/{id}/complete(id=${trade.id})}" method="post">
+                                <button type="submit">Bekræft gennemført</button>
+                            </form>
+
+                            <form th:if="${trade.receiverId == loggedInId and !trade.receiverConfirmed}"
+                                  th:action="@{/trades/{id}/complete(id=${trade.id})}" method="post">
+                                <button type="submit">Bekræft gennemført</button>
+                            </form>
+
+                            <span th:if="${trade.proposerId == loggedInId and trade.proposerConfirmed}"
+                                  class="badge badge-pending">Venter på modpart</span>
+                            <span th:if="${trade.receiverId == loggedInId and trade.receiverConfirmed}"
+                                  class="badge badge-pending">Venter på modpart</span>
+                        </div>
                     </td>
                 </tr>
                 </tbody>
@@ -148,12 +251,16 @@
             <div th:each="trade : ${history}" class="list-thumb">
                 <div class="list-thumb-title" th:text="${trade.status.getDisplayName()}"></div>
                 <div class="list-thumb-meta">
-                    <span th:text="${playerMap[trade.proposerId == loggedInId ? trade.receiverId : trade.proposerId] != null ? playerMap[trade.proposerId == loggedInId ? trade.receiverId : trade.proposerId].username : '?'}"></span>
+                   <span th:if="${trade.proposerId == loggedInId}"
+                         th:text="${playerMap[trade.receiverId] != null ? playerMap[trade.receiverId].username : '?'}"></span>
+                    <span th:if="${trade.proposerId != loggedInId}"
+                          th:text="${playerMap[trade.proposerId] != null ? playerMap[trade.proposerId].username : '?'}"></span>
                 </div>
                 <div class="list-thumb-meta">
                     <span th:each="tc, iterStat : ${tradeCardMap[trade.id]}">
                         <span th:if="${playerCardMap[tc.playerCardId] != null}"
-                              th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span>
+                              th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null
+                               ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span>
                         <span th:unless="${iterStat.last}"> / </span>
                     </span>
                 </div>
@@ -189,12 +296,20 @@
                 <tbody>
                 <tr th:each="trade : ${history}">
                     <td th:text="${trade.status.getDisplayName()}"></td>
-                    <td th:text="${playerMap[trade.proposerId == loggedInId ? trade.receiverId : trade.proposerId] != null ? playerMap[trade.proposerId == loggedInId ? trade.receiverId : trade.proposerId].username : '?'}"></td>
+                    <td>
+                        <span th:if="${trade.proposerId == loggedInId}"
+                              th:text="${playerMap[trade.receiverId] != null ? playerMap[trade.receiverId].username : '?'}">
+                        </span>
+                        <span th:if="${trade.proposerId != loggedInId}"
+                              th:text="${playerMap[trade.proposerId] != null ? playerMap[trade.proposerId].username : '?'}">
+                        </span>
+                    </td>
                     <td th:text="${#temporals.format(trade.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
                     <td th:text="${#temporals.format(trade.expiresAt, 'dd-MM-yyyy HH:mm')}"></td>
                     <td><span th:each="tc, iterStat : ${tradeCardMap[trade.id]}"><span
                             th:if="${playerCardMap[tc.playerCardId] != null}"
-                            th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span><span
+                            th:text="${cardMap[playerCardMap[tc.playerCardId].cardId] != null
+                             ? cardMap[playerCardMap[tc.playerCardId].cardId].name : '?'}"></span><span
                             th:unless="${iterStat.last}"> / </span></span></td>
                     <td th:if="${trade.status.name() == 'ACCEPTED'}">
                         <div class="action-col">

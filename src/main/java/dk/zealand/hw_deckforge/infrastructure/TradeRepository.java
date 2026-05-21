@@ -26,7 +26,8 @@ public class TradeRepository implements ITradeRepository {
     }
 
     private static final String BASE_SQL =
-            "SELECT id, proposer_id, receiver_id, status, created_at, expires_at, proposer_confirmed, receiver_confirmed FROM trade";
+            "SELECT id, proposer_id, receiver_id, status, created_at, expires_at, proposer_confirmed," +
+                    " receiver_confirmed FROM trade";
 
     private final RowMapper<Trade> tradeRowMapper = (rs, rowNum) -> new Trade(
             rs.getInt("id"),
@@ -52,7 +53,8 @@ public class TradeRepository implements ITradeRepository {
     @Override
     public List<Trade> findByPlayerId(int playerId) {
         try {
-            return jdbcTemplate.query(BASE_SQL + " WHERE proposer_id = ? OR receiver_id = ?", tradeRowMapper, playerId, playerId);
+            return jdbcTemplate.query(BASE_SQL + " WHERE proposer_id = ? OR receiver_id = ?",
+                    tradeRowMapper, playerId, playerId);
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke hente trades for spiller: " + playerId, e);
         }
@@ -61,7 +63,8 @@ public class TradeRepository implements ITradeRepository {
     @Override
     public List<Trade> findIncomingByPlayerId(int playerId) {
         try {
-            return jdbcTemplate.query(BASE_SQL + " WHERE receiver_id = ? AND status = ?", tradeRowMapper, playerId, TradeStatus.PENDING.name());
+            return jdbcTemplate.query(BASE_SQL + " WHERE receiver_id = ? AND status = ?", tradeRowMapper,
+                    playerId, TradeStatus.PENDING.name());
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke hente kommende trades for spiller: " + playerId, e);
         }
@@ -70,7 +73,8 @@ public class TradeRepository implements ITradeRepository {
     @Override
     public int save(Trade trade) {
         try {
-            String sql = "INSERT INTO trade (proposer_id, receiver_id, status, created_at, expires_at, proposer_confirmed, receiver_confirmed) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO trade (proposer_id, receiver_id, status, created_at, expires_at," +
+                    " proposer_confirmed, receiver_confirmed) VALUES (?, ?, ?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -83,7 +87,11 @@ public class TradeRepository implements ITradeRepository {
                 ps.setBoolean(7, trade.isReceiverConfirmed());
                 return ps;
             }, keyHolder);
-            return keyHolder.getKey().intValue();
+            Number key = keyHolder.getKey();
+            if (key == null) {
+                throw new DatabaseException("Ingen nøgle returneret ved gem af trade", null);
+            }
+            return key.intValue();
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke gemme trade", e);
         }
@@ -92,7 +100,8 @@ public class TradeRepository implements ITradeRepository {
     @Override
     public void update(Trade trade) {
         try {
-            String sql = "UPDATE trade SET proposer_id = ?, receiver_id = ?, status = ?, created_at = ?, expires_at = ?, proposer_confirmed = ?, receiver_confirmed = ? WHERE id = ?";
+            String sql = "UPDATE trade SET proposer_id = ?, receiver_id = ?, status = ?, created_at = ?," +
+                    " expires_at = ?, proposer_confirmed = ?, receiver_confirmed = ? WHERE id = ?";
             jdbcTemplate.update(sql,
                     trade.getProposerId(),
                     trade.getReceiverId(),

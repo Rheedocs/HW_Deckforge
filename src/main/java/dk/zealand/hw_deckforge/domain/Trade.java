@@ -9,8 +9,8 @@ public class Trade {
     private int proposerId;
     private int receiverId;
     private TradeStatus status;
-    private LocalDateTime createdAt;
-    private LocalDateTime expiresAt;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime expiresAt;
     private boolean proposerConfirmed;
     private boolean receiverConfirmed;
 

@@ -11,7 +11,7 @@
     document.getElementById("skModalAntal").textContent = "I samling: " + (el.dataset.quantity || "?");
     document.getElementById("skModalScryfall").href = el.dataset.url || "";
 
-    var hasActions = !!el.dataset.addUrl;
+    let hasActions = !!el.dataset.addUrl;
     document.getElementById("skModalHandlinger").classList.toggle("modal-actions", !hasActions);
     if (hasActions) {
         document.getElementById("skAntal").textContent = "1";
@@ -21,9 +21,9 @@
         document.getElementById("skTilføjForm").action = el.dataset.addUrl;
         document.getElementById("skFjernForm").action = el.dataset.removeUrl;
         document.getElementById("skByteForm").action = el.dataset.tradeUrl;
-        var forTrade = el.dataset.forTrade === "true";
+        let forTrade = el.dataset.forTrade === "true";
         document.getElementById("skForTrade").value = String(!forTrade);
-        var tradeButton = document.getElementById("skByteKnap");
+        let tradeButton = document.getElementById("skByteKnap");
         tradeButton.textContent = forTrade ? "Fjern fra bytte" : "Markér til bytte";
         tradeButton.className = "btn" + (forTrade ? " btn-secondary" : "");
     }
@@ -37,8 +37,8 @@ function closeCollectionCardModal(event) {
 }
 
 function adjustCollectionQuantity(delta) {
-    var el = document.getElementById("skAntal");
-    var val = parseInt(el.textContent) + delta;
+    let el = document.getElementById("skAntal");
+    let val = parseInt(el.textContent) + delta;
     if (val < 1) val = 1;
     el.textContent = val;
     document.getElementById("skTilføjQuantity").value = val;

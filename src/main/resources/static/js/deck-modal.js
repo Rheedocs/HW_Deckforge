@@ -10,7 +10,7 @@
     document.getElementById("dkModalRulesItem").style.display = el.dataset.rules ? "list-item" : "none";
     document.getElementById("dkModalAntal").textContent = "I decket: " + (el.dataset.quantity || "?");
     document.getElementById("dkModalScryfall").href = el.dataset.url || "";
-    var hasActions = !!el.dataset.addUrl;
+    let hasActions = !!el.dataset.addUrl;
     document.getElementById("dkModalHandlinger").classList.toggle("modal-actions", !hasActions);
     if (hasActions) {
         document.getElementById("dkAntal").textContent = "1";
@@ -30,8 +30,8 @@ function closeDeckCardModal(event) {
 }
 
 function adjustDeckQuantity(delta) {
-    var el = document.getElementById("dkAntal");
-    var val = parseInt(el.textContent) + delta;
+    let el = document.getElementById("dkAntal");
+    let val = parseInt(el.textContent) + delta;
     if (val < 1) val = 1;
     el.textContent = val;
     document.getElementById("dkTilføjQuantity").value = val;

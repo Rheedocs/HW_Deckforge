@@ -83,8 +83,8 @@ class DeckServiceTest {
 
     @Test
     void create_withBlankName_throwsIllegalArgumentException() {
-        Deck deckUdenNavn = new Deck(-1, 1, "", Format.CASUAL, DeckVisibility.PUBLIC);
-        assertThrows(IllegalArgumentException.class, () -> deckService.create(deckUdenNavn));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Deck(-1, 1, "", Format.CASUAL, DeckVisibility.PUBLIC));
     }
 
     // --- update ---

@@ -9,9 +9,9 @@ function openModal(img) {
     document.getElementById("modalRules").textContent = img.dataset.rules;
     document.getElementById("modalRulesItem").style.display = img.dataset.rules ? "list-item" : "none";
     document.getElementById("modalScryfall").href = img.dataset.url;
-    var adminActions = document.getElementById("modalAdminHandlinger");
+    let adminActions = document.getElementById("modalAdminHandlinger");
     if (adminActions) {
-        var hasAdmin = !!img.dataset.editUrl;
+        let hasAdmin = !!img.dataset.editUrl;
         adminActions.classList.toggle("modal-actions", !hasAdmin);
         if (hasAdmin) {
             document.getElementById("modalRediger").href = img.dataset.editUrl;

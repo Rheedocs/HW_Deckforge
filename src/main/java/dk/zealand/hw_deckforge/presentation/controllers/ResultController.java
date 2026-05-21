@@ -2,7 +2,6 @@ package dk.zealand.hw_deckforge.presentation.controllers;
 
 import dk.zealand.hw_deckforge.application.service.ResultService;
 import dk.zealand.hw_deckforge.domain.Result;
-import dk.zealand.hw_deckforge.presentation.helpers.AuthHelper;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

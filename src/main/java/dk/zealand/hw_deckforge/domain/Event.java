@@ -15,6 +15,7 @@ public class Event {
     private Format format;
 
     public Event(int id, String name, String location, LocalDate date, int maxPlayers, EventStatus status, Format format) {
+        validate(name, maxPlayers);
         this.id = id;
         this.name = name;
         this.location = location;
@@ -49,4 +50,11 @@ public class Event {
     public boolean isOngoing() { return this.status == EventStatus.ONGOING; }
     public boolean isCompleted() { return this.status == EventStatus.COMPLETED; }
     public boolean isCancelled() { return this.status == EventStatus.CANCELLED; }
+
+    // --- Validering ---
+
+    private void validate(String name, int maxPlayers) {
+        if (name == null || name.isBlank()) throw new IllegalArgumentException("Eventnavn må ikke være tomt");
+        if (maxPlayers < 1) throw new IllegalArgumentException("Antal spillere skal være mindst 1");
+    }
 }

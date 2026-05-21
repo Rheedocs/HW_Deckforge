@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tilføj deck</title>
+    <title>Deckforge - Rediger deck</title>
     <link rel="stylesheet" th:href="@{/css/base.css}">
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/components.css}">
@@ -12,7 +12,7 @@
 <body>
 <header th:replace="~{fragments :: header}"></header>
 <main>
-    <h2>Tilføj deck</h2>
+    <h2>Rediger deck</h2>
     <form th:action="@{/decks/{id}/edit(id=${deck.id})}" method="post">
 
         <input type="hidden" name="playerId" th:value="${deck.playerId}">
@@ -45,5 +45,6 @@
         <button type="submit">Opdatere deck</button>
     </form>
 </main>
+<footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

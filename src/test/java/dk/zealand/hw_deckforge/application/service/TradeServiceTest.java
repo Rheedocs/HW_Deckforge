@@ -4,6 +4,7 @@ import dk.zealand.hw_deckforge.application.interfaces.IPlayerCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerRepository;
 import dk.zealand.hw_deckforge.application.interfaces.ITradeCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.ITradeRepository;
+import dk.zealand.hw_deckforge.application.validation.TradeValidator;
 import dk.zealand.hw_deckforge.domain.Trade;
 import dk.zealand.hw_deckforge.domain.enums.TradeStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ class TradeServiceTest {
 
     @Mock
     private IPlayerRepository playerRepository;
+
+    @Mock
+    private TradeValidator tradeValidator;
 
     @InjectMocks
     private TradeService tradeService;
@@ -128,12 +132,15 @@ class TradeServiceTest {
 
     @Test
     void propose_proposerCardNotTradeable_throwsIllegalArgument() {
-        when(playerCardRepository.findForTradeByPlayerId(20)).thenReturn(List.of());
+        doThrow(new IllegalArgumentException("Proposerens kort er ikke markeret til bytte"))
+                .when(tradeValidator)
+                .validateProposerCard(20, 10);
 
         assertThrows(IllegalArgumentException.class,
                 () -> tradeService.propose(20, 30, List.of(10), List.of(20)));
 
         verify(tradeRepository, never()).save(any());
+        verify(tradeCardRepository, never()).save(any());
     }
 
     // --- Scheduler ---

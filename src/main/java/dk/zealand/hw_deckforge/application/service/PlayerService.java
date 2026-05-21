@@ -1,6 +1,7 @@
 package dk.zealand.hw_deckforge.application.service;
 
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerCardRepository;
+import dk.zealand.hw_deckforge.domain.validation.PlayerValidator;
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerRepository;
 import dk.zealand.hw_deckforge.domain.Player;
 import dk.zealand.hw_deckforge.domain.PlayerCard;
@@ -72,7 +73,7 @@ public class PlayerService {
     public void create(String username, String email, String password) {
         if (playerRepository.findByEmail(email) != null)
             throw new IllegalArgumentException("Email er allerede i brug");
-        validatePassword(password);
+        PlayerValidator.validatePassword(password);
         Player player = new Player(0, username, email, password, Role.PLAYER, CollectionVisibility.TRADE_ONLY);
         validatePlayer(player);
         player.changePassword(passwordEncoder.encode(player.getPassword()));
@@ -129,7 +130,7 @@ public class PlayerService {
 
     private void applyPasswordChange(Player existing, String newPassword) {
         if (newPassword == null || newPassword.isBlank()) return;
-        validatePassword(newPassword);
+        PlayerValidator.validatePassword(newPassword);
         existing.changePassword(passwordEncoder.encode(newPassword));
     }
 
@@ -150,25 +151,9 @@ public class PlayerService {
 
     // --- Validering ---
 
-    private void validatePassword(String password) {
-        if (password == null || password.isBlank())
-            throw new IllegalArgumentException("Adgangskode må ikke være tom");
-        if (password.length() < 8)
-            throw new IllegalArgumentException("Adgangskode skal være mindst 8 tegn");
-    }
-
-    private boolean isValidEmail(String email) {
-        return email != null && !email.isBlank() &&
-                email.matches("[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}");
-    }
-
     private void validatePlayer(Player player) {
         if (player == null) throw new IllegalArgumentException("Spiller må ikke være null");
-        if (player.getUsername() == null || player.getUsername().isBlank())
-            throw new IllegalArgumentException("Brugernavn må ikke være tomt");
-        if (!isValidEmail(player.getEmail()))
+        if (!PlayerValidator.isValidEmail(player.getEmail()))
             throw new IllegalArgumentException("Email er ikke gyldig");
-        if (player.getRole() == null)
-            throw new IllegalArgumentException("Rolle må ikke være tom");
     }
 }

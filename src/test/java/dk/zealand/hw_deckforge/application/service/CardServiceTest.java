@@ -82,26 +82,26 @@ class CardServiceTest {
 
     @Test
     void create_blankName_throwsIllegalArgument() {
-        Card card = new Card(0, "", CardType.INSTANT, "Alpha", Color.RED, Rarity.COMMON, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.create(card, null));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(0, "", CardType.INSTANT, "Alpha", Color.RED, Rarity.COMMON, null, null));
     }
 
     @Test
     void create_nullCardType_throwsIllegalArgument() {
-        Card card = new Card(0, "Lightning Bolt", null, "Alpha", Color.RED, Rarity.COMMON, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.create(card, null));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(0, "Lightning Bolt", null, "Alpha", Color.RED, Rarity.COMMON, null, null));
     }
 
     @Test
     void create_nullColor_throwsIllegalArgument() {
-        Card card = new Card(0, "Lightning Bolt", CardType.INSTANT, "Alpha", null, Rarity.COMMON, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.create(card, null));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(0, "Lightning Bolt", CardType.INSTANT, "Alpha", null, Rarity.COMMON, null, null));
     }
 
     @Test
     void create_nullRarity_throwsIllegalArgument() {
-        Card card = new Card(0, "Lightning Bolt", CardType.INSTANT, "Alpha", Color.RED, null, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.create(card, null));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(0, "Lightning Bolt", CardType.INSTANT, "Alpha", Color.RED, null, null, null));
     }
 
     @Test
@@ -116,7 +116,6 @@ class CardServiceTest {
 
     @Test
     void create_withInvalidScryfallUrl_doesNotChangeImageUrl() {
-        when(scryfallService.fetchImageUrlByScryfallLink("ugyldig")).thenReturn(null);
         cardService.create(testCard, "ugyldig");
         assertEquals("url", testCard.getImageUrl());
         verify(cardRepository).save(testCard);
@@ -142,14 +141,14 @@ class CardServiceTest {
 
     @Test
     void update_blankName_throwsIllegalArgument() {
-        Card card = new Card(1, "", CardType.INSTANT, "Alpha", Color.RED, Rarity.COMMON, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.update(card, null));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(1, "", CardType.INSTANT, "Alpha", Color.RED, Rarity.COMMON, null, null));
     }
 
     @Test
     void update_nullRarity_throwsIllegalArgument() {
-        Card card = new Card(1, "Lightning Bolt", CardType.INSTANT, "Alpha", Color.RED, null, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.update(card, null));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(1, "Lightning Bolt", CardType.INSTANT, "Alpha", Color.RED, null, null, null));
     }
 
     @Test

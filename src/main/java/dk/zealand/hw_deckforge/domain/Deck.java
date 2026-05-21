@@ -11,6 +11,7 @@ public class Deck {
     private DeckVisibility visibility;
 
     public Deck(Integer id, int playerId, String name, Format format, DeckVisibility visibility) {
+        validate(playerId, name, format, visibility);
         this.id = id;
         this.playerId = playerId;
         this.name = name;
@@ -31,7 +32,7 @@ public class Deck {
     public void setId(Integer id) { this.id = id; }
     public void setPlayerId(int playerId) { this.playerId = playerId; }
     public void setName(String name) {
-        if (name == null) throw new IllegalArgumentException("Navn må ikke være tomt");
+        if (name == null || name.isBlank()) throw new IllegalArgumentException("Navn må ikke være tomt");
         this.name = name;
     }
     public void setFormat(Format format) { this.format = format; }
@@ -39,16 +40,17 @@ public class Deck {
 
     // --- Synlighed ---
 
-    public boolean isPublic() {
-        return this.visibility == DeckVisibility.PUBLIC;
-    }
+    public boolean isPublic() { return this.visibility == DeckVisibility.PUBLIC; }
+    public void makePublic() { this.visibility = DeckVisibility.PUBLIC; }
+    public void makePrivate() { this.visibility = DeckVisibility.PRIVATE; }
 
-    public void makePublic() {
-        this.visibility = DeckVisibility.PUBLIC;
-    }
+    // --- Validering ---
 
-    public void makePrivate() {
-        this.visibility = DeckVisibility.PRIVATE;
+    private void validate(int playerId, String name, Format format, DeckVisibility visibility) {
+        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        if (name == null || name.isBlank()) throw new IllegalArgumentException("Navn må ikke være tomt");
+        if (format == null) throw new IllegalArgumentException("Format må ikke være null");
+        if (visibility == null) throw new IllegalArgumentException("Synlighed må ikke være null");
     }
 
     @Override

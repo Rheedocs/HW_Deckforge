@@ -1,16 +1,14 @@
 package dk.zealand.hw_deckforge.domain;
 
 public class PlayerCard {
-    private int id;
-    private int playerId;
-    private int cardId;
+    private final int id;
+    private final int playerId;
+    private final int cardId;
     private int quantity;
     private boolean forTrade;
 
     public PlayerCard(int id, int playerId, int cardId, int quantity, boolean forTrade) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
-        if (cardId <= 0) throw new IllegalArgumentException("Ugyldigt kort-id");
-        if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");
+        validate(playerId, cardId, quantity);
         this.id = id;
         this.playerId = playerId;
         this.cardId = cardId;
@@ -35,4 +33,12 @@ public class PlayerCard {
 
     public void markForTrade() { this.forTrade = true; }
     public void unmarkForTrade() { this.forTrade = false; }
+
+    // --- Validering ---
+
+    private void validate(int playerId, int cardId, int quantity) {
+        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        if (cardId <= 0) throw new IllegalArgumentException("Ugyldigt kort-id");
+        if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");
+    }
 }

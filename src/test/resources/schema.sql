@@ -86,6 +86,8 @@ CREATE TABLE trade (
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
     created_at TIMESTAMP NOT NULL,
     expires_at TIMESTAMP NOT NULL,
+    proposer_confirmed BOOLEAN NOT NULL DEFAULT FALSE,
+    receiver_confirmed BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (proposer_id) REFERENCES player(id) ON DELETE CASCADE,
     FOREIGN KEY (receiver_id) REFERENCES player(id) ON DELETE CASCADE
 );

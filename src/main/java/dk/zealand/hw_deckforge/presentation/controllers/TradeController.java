@@ -34,16 +34,21 @@ public class TradeController {
     @GetMapping
     public String showTradePage(Model model, HttpSession session) {
         int playerId = AuthHelper.getLoggedIn(session).getId();
+
         List<Trade> all = tradeService.getAllByPlayerId(playerId);
         Map<Integer, List<TradeCard>> tradeCardMap = tradeService.getTradeCardMap(all);
+
         model.addAttribute("loggedInId", playerId);
         model.addAttribute("received", tradeService.getReceivedByPlayerId(all, playerId));
         model.addAttribute("sent", tradeService.getSentByPlayerId(all, playerId));
+        model.addAttribute("active", tradeService.getActiveByPlayerId(all, playerId));
         model.addAttribute("history", tradeService.getHistoryByPlayerId(all));
         model.addAttribute("playerMap", tradeService.getPlayerMap(all));
         model.addAttribute("tradeCardMap", tradeCardMap);
-        model.addAttribute("playerCardMap", playerCardService.getPlayerCardMapByIds(tradeService.getPlayerCardIds(tradeCardMap)));
+        model.addAttribute("playerCardMap", playerCardService.getPlayerCardMapByIds(
+                tradeService.getPlayerCardIds(tradeCardMap)));
         model.addAttribute("cardMap", cardService.getCardMap());
+
         return "trades/trade-overview";
     }
 
