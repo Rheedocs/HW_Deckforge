@@ -34,6 +34,11 @@ INSERT INTO deck (player_id, name, format, visibility) VALUES
 (4, 'Nickis Casual', 'CASUAL', 'PRIVATE'),
 (5, 'Holgers Standard', 'STANDARD', 'PUBLIC');
 
+INSERT INTO deck_card (deck_id, card_id, quantity) VALUES
+(1, 1, 2),
+(1, 3, 4),
+(1, 7, 1);
+
 INSERT INTO event (name, location, date, format, max_players, status) VALUES
 ('Commander Aften', 'Deckforge Naestved', '2026-06-15', 'COMMANDER', 8, 'UPCOMING'),
 ('Standard Turnering', 'Deckforge Naestved', '2026-06-20', 'STANDARD', 16, 'UPCOMING'),

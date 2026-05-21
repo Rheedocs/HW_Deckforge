@@ -65,7 +65,7 @@ thead { background-color: var(--primary); color: white; }
 .action-col { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .action-col .btn, .action-col button { width: auto; margin-bottom: 0; }
 
-td:empty { border: none; background: transparent; }
+td:empty { border: 1px solid var(--border); background: transparent; }
 
 /* --- Badges --- */
 .badge {
@@ -87,9 +87,3 @@ td:empty { border: none; background: transparent; }
 
 /* Røde badges: fejl og afviste tilstande */
 .badge-cancelled, .badge-declined { background-color: var(--error-bg); color: var(--error); }
-
-/* --- Desktop --- */
-@media (min-width: 768px) {
-    button, .btn { width: auto; margin-bottom: 0; }
-    input, select, textarea { width: 300px; }
-}

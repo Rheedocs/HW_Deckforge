@@ -17,7 +17,8 @@ class PlayerTest {
                 Role.PLAYER, CollectionVisibility.TRADE_ONLY);
     }
 
-    // isAdmin
+    // --- isAdmin ---
+
     @Test
     void isAdmin_ifRoleIsPlayer_returnsFalse() {
         assertFalse(player.isAdmin());
@@ -29,7 +30,8 @@ class PlayerTest {
         assertTrue(player.isAdmin());
     }
 
-    // promoteToAdmin / demoteToPlayer
+    // --- promoteToAdmin og demoteToPlayer ---
+
     @Test
     void promoteToAdmin_setsRoleToAdmin() {
         player.promoteToAdmin();
@@ -50,7 +52,8 @@ class PlayerTest {
         assertEquals(Role.PLAYER, player.getRole());
     }
 
-    // changeVisibility
+    // --- changeVisibility ---
+
     @Test
     void changeVisibility_withValidVisibility_updatesVisibility() {
         player.changeVisibility(CollectionVisibility.PUBLIC);
@@ -62,7 +65,8 @@ class PlayerTest {
         assertThrows(IllegalArgumentException.class, () -> player.changeVisibility(null));
     }
 
-    // changePassword
+    // --- changePassword ---
+
     @Test
     void changePassword_withValidPassword_updatesPassword() {
         player.changePassword("nyt_encoded_password");
@@ -79,7 +83,8 @@ class PlayerTest {
         assertThrows(IllegalArgumentException.class, () -> player.changePassword(null));
     }
 
-    // isCollectionVisible
+    // --- isCollectionVisible ---
+
     @Test
     void isCollectionVisible_ifMatchingVisibility_returnsTrue() {
         assertTrue(player.isCollectionVisible(CollectionVisibility.TRADE_ONLY));
@@ -95,7 +100,8 @@ class PlayerTest {
         assertFalse(player.isCollectionVisible(null));
     }
 
-    // toString
+    // --- toString ---
+
     @Test
     void toString_doesNotContainPassword() {
         assertFalse(player.toString().contains("encoded_password"));

@@ -18,13 +18,13 @@
             <strong>Email:</strong>
             <span th:text="${player.email}"></span>
         </p>
-        <p>
+        <p th:unless="${isPrivate}">
             <strong>Samling:</strong>
             <span th:text="${player.collectionVisibility.displayName}"></span>
         </p>
     </div>
 
-    <div class="profile-stats-grid">
+    <div class="profile-stats-grid" th:unless="${isPrivate}">
         <div class="info-section stat-box">
             <span class="stat-number">0</span>
             <span class="stat-label">Turneringer</span>
@@ -43,17 +43,15 @@
         </div>
     </div>
 
-    <div th:if="${!isSelf}" class="info-section">
+    <div th:if="${!isSelf and !isPrivate}" class="info-section">
         <h3>Handlinger</h3>
-        <a class="btn" th:href="@{/trades/propose}">Foreslå bytte</a>
+        <a class="btn" th:href="@{/trades/propose/{id}(id=${player.id})}">Foreslå bytte</a>
     </div>
 
     <div th:if="${isSelf}" class="info-section">
         <h3>Din konto</h3>
-        <a class="btn"
-           th:href="@{/players/{id}/edit(id=${player.id})}">Rediger profil</a>
-        <a class="btn btn-danger"
-           th:href="@{/players/{id}/delete(id=${player.id})}">Slet konto</a>
+        <a class="btn" th:href="@{/players/{id}/edit(id=${player.id})}">Rediger profil</a>
+        <a class="btn btn-danger" th:href="@{/players/{id}/delete(id=${player.id})}">Slet konto</a>
         <a class="btn" th:href="@{/logout}">Log ud</a>
     </div>
 </main>

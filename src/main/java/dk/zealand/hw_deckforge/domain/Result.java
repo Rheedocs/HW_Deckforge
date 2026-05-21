@@ -18,10 +18,14 @@ public class Result {
         this.placement = placement;
     }
 
+    // --- Getters ---
+
     public int getId() { return id; }
     public int getPlayerId() { return playerId; }
     public int getEventId() { return eventId; }
     public int getPlacement() { return placement; }
+
+    // --- Setters ---
 
     public void setId(int id) { this.id = id; }
     public void setPlayerId(int playerId) { this.playerId = playerId; }

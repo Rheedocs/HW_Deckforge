@@ -17,17 +17,7 @@ public class EventRepository implements IEventRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private Event mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
-        return new Event(
-                rs.getInt("id"),
-                rs.getString("name"),
-                rs.getString("location"),
-                rs.getDate("date").toLocalDate(),
-                rs.getInt("max_players"),
-                EventStatus.valueOf(rs.getString("status")),
-                Format.valueOf(rs.getString("format"))
-        );
-    }
+    // --- Forespørgsler ---
 
     @Override
     public List<Event> findAll() {
@@ -48,6 +38,8 @@ public class EventRepository implements IEventRepository {
         return jdbcTemplate.query(sql, this::mapRow, EventStatus.UPCOMING.name());
     }
 
+    // --- Skriveoperationer ---
+
     @Override
     public void save(Event event) {
         String sql = "INSERT INTO event (name, location, date, format, max_players, status) VALUES (?, ?, ?, ?, ?, ?)";
@@ -63,7 +55,12 @@ public class EventRepository implements IEventRepository {
 
     @Override
     public void update(Event event) {
-        String sql = "UPDATE event SET name = ?, location = ?, date = ?, format = ?, max_players = ?, status = ? WHERE id = ?";
+        String sql = """
+                UPDATE event
+                SET name = ?, location = ?, date = ?, format = ?, max_players = ?, status = ?
+                WHERE id = ?
+                """;
+
         jdbcTemplate.update(sql,
                 event.getName(),
                 event.getLocation(),
@@ -81,6 +78,8 @@ public class EventRepository implements IEventRepository {
         jdbcTemplate.update(sql, id);
     }
 
+    // --- Tilmelding ---
+
     @Override
     public void registerPlayer(int playerId, int eventId, int deckId) {
         String sql = "INSERT INTO event_registration (player_id, event_id, deck_id) VALUES (?, ?, ?)";
@@ -92,5 +91,19 @@ public class EventRepository implements IEventRepository {
         String sql = "SELECT COUNT(*) FROM event_registration WHERE event_id = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, eventId);
         return count != null ? count : 0;
+    }
+
+    // --- Intern mapping ---
+
+    private Event mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
+        return new Event(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getString("location"),
+                rs.getDate("date").toLocalDate(),
+                rs.getInt("max_players"),
+                EventStatus.valueOf(rs.getString("status")),
+                Format.valueOf(rs.getString("format"))
+        );
     }
 }

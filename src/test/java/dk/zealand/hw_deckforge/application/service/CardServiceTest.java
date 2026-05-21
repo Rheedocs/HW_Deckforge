@@ -5,6 +5,7 @@ import dk.zealand.hw_deckforge.domain.Card;
 import dk.zealand.hw_deckforge.domain.enums.CardType;
 import dk.zealand.hw_deckforge.domain.enums.Color;
 import dk.zealand.hw_deckforge.domain.enums.Rarity;
+import dk.zealand.hw_deckforge.infrastructure.external.ScryfallService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +23,9 @@ class CardServiceTest {
 
     @Mock
     private ICardRepository cardRepository;
+
+    @Mock
+    private ScryfallService scryfallService;
 
     @InjectMocks
     private CardService cardService;
@@ -67,69 +71,94 @@ class CardServiceTest {
     // --- create ---
     @Test
     void create_validCard_callsSave() {
-        cardService.create(testCard);
+        cardService.create(testCard, null);
         verify(cardRepository).save(testCard);
     }
 
     @Test
     void create_nullCard_throwsIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> cardService.create(null));
+        assertThrows(IllegalArgumentException.class, () -> cardService.create(null, null));
     }
 
     @Test
     void create_blankName_throwsIllegalArgument() {
-        testCard.setName("x");
-        testCard.setName("Lightning Bolt");
-        Card card = new Card(0, "", CardType.INSTANT, "Alpha", Color.RED, Rarity.COMMON, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.create(card));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(0, "", CardType.INSTANT, "Alpha", Color.RED, Rarity.COMMON, null, null));
     }
 
     @Test
     void create_nullCardType_throwsIllegalArgument() {
-        Card card = new Card(0, "Lightning Bolt", null, "Alpha", Color.RED, Rarity.COMMON, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.create(card));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(0, "Lightning Bolt", null, "Alpha", Color.RED, Rarity.COMMON, null, null));
     }
 
     @Test
     void create_nullColor_throwsIllegalArgument() {
-        Card card = new Card(0, "Lightning Bolt", CardType.INSTANT, "Alpha", null, Rarity.COMMON, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.create(card));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(0, "Lightning Bolt", CardType.INSTANT, "Alpha", null, Rarity.COMMON, null, null));
     }
 
     @Test
     void create_nullRarity_throwsIllegalArgument() {
-        Card card = new Card(0, "Lightning Bolt", CardType.INSTANT, "Alpha", Color.RED, null, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.create(card));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(0, "Lightning Bolt", CardType.INSTANT, "Alpha", Color.RED, null, null, null));
+    }
+
+    @Test
+    void create_withScryfallUrl_setsImageUrl() {
+        String scryfallUrl = "https://scryfall.com/card/tla/4/aang-the-last-airbender";
+        String imageUrl = "https://cards.scryfall.io/normal/front/a/b/abc.jpg";
+        when(scryfallService.fetchImageUrlByScryfallLink(scryfallUrl)).thenReturn(imageUrl);
+        cardService.create(testCard, scryfallUrl);
+        assertEquals(imageUrl, testCard.getImageUrl());
+        verify(cardRepository).save(testCard);
+    }
+
+    @Test
+    void create_withInvalidScryfallUrl_doesNotChangeImageUrl() {
+        cardService.create(testCard, "ugyldig");
+        assertEquals("url", testCard.getImageUrl());
+        verify(cardRepository).save(testCard);
     }
 
     // --- update ---
     @Test
     void update_validCard_callsUpdate() {
-        cardService.update(testCard);
+        cardService.update(testCard, null);
         verify(cardRepository).update(testCard);
     }
 
     @Test
     void update_nullCard_throwsIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> cardService.update(null));
+        assertThrows(IllegalArgumentException.class, () -> cardService.update(null, null));
     }
 
     @Test
     void update_idIsZero_throwsIllegalArgument() {
         Card card = new Card(0, "Lightning Bolt", CardType.INSTANT, "Alpha", Color.RED, Rarity.COMMON, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.update(card));
+        assertThrows(IllegalArgumentException.class, () -> cardService.update(card, null));
     }
 
     @Test
     void update_blankName_throwsIllegalArgument() {
-        Card card = new Card(1, "", CardType.INSTANT, "Alpha", Color.RED, Rarity.COMMON, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.update(card));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(1, "", CardType.INSTANT, "Alpha", Color.RED, Rarity.COMMON, null, null));
     }
 
     @Test
     void update_nullRarity_throwsIllegalArgument() {
-        Card card = new Card(1, "Lightning Bolt", CardType.INSTANT, "Alpha", Color.RED, null, null, null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.update(card));
+        assertThrows(IllegalArgumentException.class, () ->
+                new Card(1, "Lightning Bolt", CardType.INSTANT, "Alpha", Color.RED, null, null, null));
+    }
+
+    @Test
+    void update_withScryfallUrl_setsImageUrl() {
+        String scryfallUrl = "https://scryfall.com/card/tla/4/aang-the-last-airbender";
+        String imageUrl = "https://cards.scryfall.io/normal/front/a/b/abc.jpg";
+        when(scryfallService.fetchImageUrlByScryfallLink(scryfallUrl)).thenReturn(imageUrl);
+        cardService.update(testCard, scryfallUrl);
+        assertEquals(imageUrl, testCard.getImageUrl());
+        verify(cardRepository).update(testCard);
     }
 
     // --- delete ---

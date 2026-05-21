@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Service
 public class PlayerCardService {
@@ -20,6 +18,8 @@ public class PlayerCardService {
     public PlayerCardService(IPlayerCardRepository playerCardRepository) {
         this.playerCardRepository = playerCardRepository;
     }
+
+    // --- Forespørgsler ---
 
     public int countByPlayerId(int playerId) {
         if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
@@ -35,6 +35,55 @@ public class PlayerCardService {
         if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
         return playerCardRepository.findForTradeByPlayerId(playerId);
     }
+    
+    public Map<Integer, PlayerCard> getPlayerCardMap(int playerId) {
+        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        Map<Integer, PlayerCard> map = new HashMap<>();
+        for (PlayerCard pc : playerCardRepository.findByPlayerId(playerId)) {
+            map.put(pc.getCardId(), pc);
+        }
+        return map;
+    }
+
+    public Map<Integer, PlayerCard> getPlayerCardMapByIds(List<Integer> playerCardIds) {
+        Map<Integer, PlayerCard> map = new HashMap<>();
+        for (int id : playerCardIds) {
+            PlayerCard pc = playerCardRepository.findById(id);
+            if (pc != null) map.put(id, pc);
+        }
+        return map;
+    }
+
+    // --- Synlighed ---
+
+    public List<PlayerCard> getVisibleCards(int playerId, CollectionVisibility visibility, boolean isSelf, boolean isAdmin) {
+        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        List<PlayerCard> all = playerCardRepository.findByPlayerId(playerId);
+        if (isSelf || isAdmin || visibility == CollectionVisibility.PUBLIC) {
+            return all;
+        }
+        if (visibility == CollectionVisibility.TRADE_ONLY) {
+            List<PlayerCard> filtered = new ArrayList<>();
+            for (PlayerCard pc : all) {
+                if (pc.isForTrade()) filtered.add(pc);
+            }
+            return filtered;
+        }
+        return new ArrayList<>();
+    }
+
+    public int getVisibleCount(int playerId, CollectionVisibility visibility, boolean isSelf, boolean isAdmin) {
+        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        if (isSelf || isAdmin || visibility == CollectionVisibility.PUBLIC) {
+            return playerCardRepository.countByPlayerId(playerId);
+        } else if (visibility == CollectionVisibility.TRADE_ONLY) {
+            return playerCardRepository.countForTradeByPlayerId(playerId);
+        } else {
+            return 0;
+        }
+    }
+
+    // --- Samling ---
 
     public void addCard(int playerId, int cardId, int quantity) {
         if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
@@ -74,51 +123,10 @@ public class PlayerCardService {
 
     public void setForTrade(int id, boolean forTrade) {
         if (id <= 0) throw new IllegalArgumentException("Ugyldigt id");
-        playerCardRepository.setForTrade(id, forTrade);
-    }
-
-    public Set<Integer> getOwnedCardIds(int playerId) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
-        Set<Integer> ids = new HashSet<>();
-        for (PlayerCard pc : playerCardRepository.findByPlayerId(playerId)) {
-            ids.add(pc.getCardId());
-        }
-        return ids;
-    }
-
-    public Map<Integer, PlayerCard> getPlayerCardMap(int playerId) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
-        Map<Integer, PlayerCard> map = new HashMap<>();
-        for (PlayerCard pc : playerCardRepository.findByPlayerId(playerId)) {
-            map.put(pc.getCardId(), pc);
-        }
-        return map;
-    }
-
-    public List<PlayerCard> getVisibleCards(int playerId, CollectionVisibility visibility, boolean isSelf, boolean isAdmin) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
-        List<PlayerCard> all = playerCardRepository.findByPlayerId(playerId);
-        if (isSelf || isAdmin || visibility == CollectionVisibility.PUBLIC) {
-            return all;
-        }
-        if (visibility == CollectionVisibility.TRADE_ONLY) {
-            List<PlayerCard> filtered = new ArrayList<>();
-            for (PlayerCard pc : all) {
-                if (pc.isForTrade()) filtered.add(pc);
-            }
-            return filtered;
-        }
-        return new ArrayList<>();
-    }
-
-    public int getVisibleCount(int playerId, CollectionVisibility visibility, boolean isSelf, boolean isAdmin) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
-        if (isSelf || isAdmin || visibility == CollectionVisibility.PUBLIC) {
-            return playerCardRepository.countByPlayerId(playerId);
-        } else if (visibility == CollectionVisibility.TRADE_ONLY) {
-            return playerCardRepository.countForTradeByPlayerId(playerId);
-        } else {
-            return 0;
-        }
+        PlayerCard playerCard = playerCardRepository.findById(id);
+        if (playerCard == null) throw new IllegalArgumentException("Kortet findes ikke i samlingen");
+        if (forTrade) playerCard.markForTrade();
+        else playerCard.unmarkForTrade();
+        playerCardRepository.update(playerCard);
     }
 }

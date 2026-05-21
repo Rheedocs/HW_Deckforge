@@ -18,6 +18,8 @@ public class LoginController {
         this.playerService = playerService;
     }
 
+    // --- Login ---
+
     @GetMapping("/login")
     public String showLoginForm() {
         return "login";
@@ -35,6 +37,8 @@ public class LoginController {
             return "login";
         }
     }
+
+    // --- Session ---
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {

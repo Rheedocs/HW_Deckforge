@@ -1,0 +1,196 @@
+﻿// --- Deck-filter tilstand ---
+
+let deckShowOwnOnly = false;
+
+// --- Kortfiltrering ---
+
+function filterCardPicker(showOwnOnly) {
+    deckShowOwnOnly = showOwnOnly;
+    document.getElementById("filterAlle").className = showOwnOnly ? "btn btn-secondary" : "btn";
+    document.getElementById("filterOwn").className = showOwnOnly ? "btn" : "btn btn-secondary";
+    applyDeckFilter();
+}
+
+function applyDeckFilter() {
+    let searchInput = document.getElementById("deckCardSearch");
+    let colorInput = document.getElementById("deckCardColor");
+    let typeInput = document.getElementById("deckCardType");
+    let searchText = searchInput ? searchInput.value.toLowerCase() : "";
+    let selectedColor = colorInput ? colorInput.value : "";
+    let selectedType = typeInput ? typeInput.value : "";
+
+    document.querySelectorAll("#deckCardPicker .card-picker-item").forEach(function (item) {
+        let matches = matchesFilter(item, searchText, selectedColor, selectedType) &&
+            (!deckShowOwnOnly || item.dataset.owned === "true");
+        item.classList.toggle("filter-hidden", !matches);
+    });
+    showPage("deckCardPicker", "deckCardPagination", 1);
+}
+
+function filterCollectionCards() {
+    let searchInput = document.getElementById("collectionCardSearch");
+    let colorInput = document.getElementById("collectionCardColor");
+    let typeInput = document.getElementById("collectionCardType");
+    let searchText = searchInput ? searchInput.value.toLowerCase() : "";
+    let selectedColor = colorInput ? colorInput.value : "";
+    let selectedType = typeInput ? typeInput.value : "";
+
+    document.querySelectorAll("#collectionCardPicker .card-picker-item").forEach(function (item) {
+        item.classList.toggle("filter-hidden", !matchesFilter(item, searchText, selectedColor, selectedType));
+    });
+    showPage("collectionCardPicker", "collectionCardPagination", 1);
+}
+
+function filterCardList() {
+    let searchInput = document.getElementById("cardListSearch");
+    let colorInput = document.getElementById("cardListColor");
+    let typeInput = document.getElementById("cardListType");
+    let searchText = searchInput ? searchInput.value.toLowerCase() : "";
+    let selectedColor = colorInput ? colorInput.value : "";
+    let selectedType = typeInput ? typeInput.value : "";
+
+    // Mobil: filtrer .card-thumb
+    document.querySelectorAll(".card-grid .card-thumb").forEach(function (el) {
+        el.classList.toggle("filter-hidden", !matchesFilter(el, searchText, selectedColor, selectedType));
+    });
+
+    // Desktop: filtrer tabelrækker — name=1, type=2, color=3
+    document.querySelectorAll(".desktop-table tbody tr").forEach(function (tr) {
+        let c = tr.cells;
+        if (!c || c.length < 4) return;
+        let name = c[1].textContent.toLowerCase();
+        let cardType = c[2].textContent.trim();
+        let cardColor = c[3].textContent.trim();
+        let matches = (!searchText || name.includes(searchText)) &&
+            (!selectedColor || cardColor === selectedColor) &&
+            (!selectedType || cardType === selectedType);
+        tr.classList.toggle("filter-hidden", !matches);
+    });
+}
+
+function filterPlayerList() {
+    let searchInput = document.getElementById("playerSearch");
+    let searchText = searchInput ? searchInput.value.toLowerCase() : "";
+
+    // Mobil: filtrer .list-thumb elementer
+    document.querySelectorAll(".list-grid .list-thumb").forEach(function (el) {
+        let name = el.querySelector(".list-thumb-title") ? el.querySelector(".list-thumb-title")
+            .textContent.toLowerCase() : "";
+        el.classList.toggle("filter-hidden", searchText && !name.includes(searchText));
+    });
+
+    // Desktop: filtrer tabelrækker på brugernavn kolonnen
+    document.querySelectorAll(".desktop-table tbody tr").forEach(function (tr) {
+        let c = tr.cells;
+        if (!c || c.length < 2) return;
+        let nameCell = tr.querySelector("td:nth-child(2)") || tr.querySelector("td");
+        let name = nameCell ? nameCell.textContent.toLowerCase() : "";
+        tr.classList.toggle("filter-hidden", searchText && !name.includes(searchText));
+    });
+}
+
+function matchesFilter(el, search, color, type) {
+    let name = (el.dataset.name || "").toLowerCase();
+    let cardColor = el.dataset.color || "";
+    let cardType = el.dataset.type || "";
+    return (!search || name.includes(search)) &&
+        (!color || cardColor === color) &&
+        (!type || cardType === type);
+}
+
+function buildFilterDropdowns(containerSelector, colorId, typeId) {
+    let colors = new Set();
+    let types = new Set();
+    document.querySelectorAll(containerSelector).forEach(function (el) {
+        if (el.dataset.color) colors.add(el.dataset.color);
+        if (el.dataset.type) types.add(el.dataset.type);
+    });
+    let colorSelect = document.getElementById(colorId);
+    let typeSelect = document.getElementById(typeId);
+    if (colorSelect) {
+        Array.from(colors).sort().forEach(function (value) {
+            let option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            colorSelect.appendChild(option);
+        });
+    }
+    if (typeSelect) {
+        Array.from(types).sort().forEach(function (value) {
+            let option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            typeSelect.appendChild(option);
+        });
+    }
+}
+
+// --- Paginering ---
+
+function getPageSize() {
+    return window.innerWidth >= 768 ? 12 : 8;
+}
+
+let pagination = {};
+
+function initPagination(pickerId, controlId) {
+    pagination[pickerId] = 1;
+    showPage(pickerId, controlId, 1);
+}
+
+function showPage(pickerId, controlId, side) {
+    let pageSize = getPageSize();
+    let items = document.querySelectorAll("#" + pickerId + " .card-picker-item:not(.filter-hidden)");
+    let total = items.length;
+    let pages = Math.max(1, Math.ceil(total / pageSize));
+    if (side < 1) side = 1;
+    if (side > pages) side = pages;
+    pagination[pickerId] = side;
+
+    document.querySelectorAll("#" + pickerId + " .card-picker-item").forEach(function (item) {
+        item.classList.add("page-hidden");
+    });
+    let counter = 0;
+    for (let i = 0; i < items.length; i++) {
+        if (counter >= (side - 1) * pageSize && counter < side * pageSize) {
+            items[i].classList.remove("page-hidden");
+        }
+        counter++;
+    }
+
+    let controls = document.getElementById(controlId);
+    if (!controls) return;
+    document.getElementById(controlId + "Forrige").disabled = side <= 1;
+    document.getElementById(controlId + "Næste").disabled = side >= pages;
+    document.getElementById(controlId + "Info").textContent = "Side " + side + " af " + pages + " (" + total + " kort)";
+}
+
+function changePage(btn, delta) {
+    let controls = btn.closest(".pagination-controls");
+    let pickerId = controls.dataset.picker;
+    let controlId = controls.id;
+    let current = pagination[pickerId] || 1;
+    showPage(pickerId, controlId, current + delta);
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (document.getElementById("deckCardPicker")) {
+        initPagination("deckCardPicker", "deckCardPagination");
+        buildFilterDropdowns("#deckCardPicker .card-picker-item", "deckCardColor", "deckCardType");
+    }
+    if (document.getElementById("collectionCardPicker")) {
+        initPagination("collectionCardPicker", "collectionCardPagination");
+        buildFilterDropdowns("#collectionCardPicker .card-picker-item", "collectionCardColor", "collectionCardType");
+    }
+    if (document.getElementById("cardListSearch")) {
+        buildFilterDropdowns(".card-grid .card-thumb", "cardListColor", "cardListType");
+    }
+    let quantityInput = document.getElementById("quantity");
+    if (quantityInput) {
+        quantityInput.addEventListener("input", function () {
+            if (document.getElementById("selectedCardId").value) {
+                updateDeckWarning(parseInt(this.value) || 1);
+            }
+        });
+    }
+});

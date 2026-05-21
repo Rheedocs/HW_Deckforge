@@ -96,6 +96,8 @@ public class EventController {
 
     @PostMapping("/{id}/register")
     public String register(@PathVariable int id, @RequestParam int deckId, HttpSession session) {
+        if (session.getAttribute("player") == null) return "redirect:/login";
+
         Player player = AuthHelper.getLoggedIn(session);
 
         eventService.registerPlayer(player.getId(), id, deckId);

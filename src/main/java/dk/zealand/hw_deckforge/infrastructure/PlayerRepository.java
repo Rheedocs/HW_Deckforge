@@ -37,10 +37,12 @@ public class PlayerRepository implements IPlayerRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // --- Forespørgsler ---
+
     @Override
     public List<Player> findAll() {
         try {
-            return jdbcTemplate.query(BASE_SQL + " WHERE active = TRUE", playerRowMapper);
+            return jdbcTemplate.query(BASE_SQL + " WHERE active = TRUE ORDER BY username", playerRowMapper);
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke hente spillere", e);
         }
@@ -65,6 +67,17 @@ public class PlayerRepository implements IPlayerRepository {
             throw new DatabaseException("Kunne ikke hente spiller med email " + email, e);
         }
     }
+
+    @Override
+    public List<Player> findAllIncludingInactive() {
+        try {
+            return jdbcTemplate.query(BASE_SQL + " ORDER BY username", playerRowMapper);
+        } catch (DataAccessException e) {
+            throw new DatabaseException("Kunne ikke hente spillere", e);
+        }
+    }
+
+    // --- Skriveoperationer ---
 
     @Override
     public void save(Player player) {

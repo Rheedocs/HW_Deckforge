@@ -111,9 +111,21 @@ class PlayerCardServiceTest {
 
     // --- setForTrade ---
     @Test
-    void setForTrade_validId_callsRepository() {
+    void setForTrade_true_marksForTrade() {
+        PlayerCard pc = new PlayerCard(1, 1, 1, 1, false);
+        when(playerCardRepository.findById(1)).thenReturn(pc);
         playerCardService.setForTrade(1, true);
-        verify(playerCardRepository).setForTrade(1, true);
+        assertTrue(pc.isForTrade());
+        verify(playerCardRepository).update(pc);
+    }
+
+    @Test
+    void setForTrade_false_unmarksForTrade() {
+        PlayerCard pc = new PlayerCard(1, 1, 1, 1, true);
+        when(playerCardRepository.findById(1)).thenReturn(pc);
+        playerCardService.setForTrade(1, false);
+        assertFalse(pc.isForTrade());
+        verify(playerCardRepository).update(pc);
     }
 
     @Test

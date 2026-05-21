@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="da">
 <head>
     <meta charset="UTF-8">
@@ -8,6 +8,9 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/components.css}">
     <link rel="stylesheet" th:href="@{/css/utilities.css}">
+    <link rel="stylesheet" th:href="@{/css/cards.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/card-picker.css}">
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
@@ -15,53 +18,96 @@
     <div th:with="isAdmin=${session.player != null
                   and session.player.role.name() == 'ADMIN'}">
         <h2>Spillere</h2>
-        <div class="table-wrapper">
-        <table>
-            <thead>
-            <tr>
-                <th th:if="${isAdmin}">Id</th>
-                <th>Brugernavn</th>
-                <th th:if="${isAdmin}">Email</th>
-                <th th:if="${isAdmin}">Rolle</th>
-                <th>Samlingssynlighed</th>
-                <th>Handlinger</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="player : ${players}">
-                <td th:if="${isAdmin}" th:text="${player.id}"></td>
-                <td>
-                    <a th:href="@{/players/{id}(id=${player.id})}"
-                       th:text="${player.username}"></a>
-                </td>
-                <td th:if="${isAdmin}" th:text="${player.email}"></td>
-                <td th:if="${isAdmin}" th:text="${player.role.displayName}"></td>
-                <td th:text="${player.collectionVisibility.displayName}"></td>
-                <td>
-                    <div class="action-col">
-                        <a class="btn"
-                           th:if="${isAdmin or session.player.id == player.id}"
-                           th:href="@{/players/{id}/edit(id=${player.id})}">Rediger</a>
-                        <a class="btn btn-danger"
-                           th:if="${isAdmin or session.player.id == player.id}"
-                           th:href="@{/players/{id}/delete(id=${player.id})}">Slet</a>
-                        <a class="btn"
-                           th:if="${session.player.id != player.id}"
-                           th:href="@{/cards/player/{id}(id=${player.id})}">Se samling</a>
-                        <a class="btn"
-                           th:if="${session.player.id != player.id}"
-                           th:href="@{/decks/player/{id}(id=${player.id})}">Se decks</a>
-                        <a class="btn"
-                           th:if="${!isAdmin and session.player.id != player.id}"
-                           th:href="@{/trades/propose}">Foreslå bytte</a>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <input type="text" id="playerSearch" placeholder="Søg spillere..." oninput="filterPlayerList()">
+
+        <!-- Mobil: liste grid -->
+        <div class="list-grid">
+            <div th:each="player : ${players}" class="list-thumb">
+                <div class="list-thumb-title">
+                    <a th:href="@{/players/{id}(id=${player.id})}" th:text="${player.username}"></a>
+                    <span th:if="${player.role.name() == 'ADMIN'}" class="badge badge-completed">Admin</span>
+                </div>
+                <div class="list-thumb-meta">
+                    <span th:text="${player.collectionVisibility.displayName}"></span>
+                </div>
+                <div class="list-thumb-actions">
+                    <a class="btn btn-secondary card-thumb-action"
+                       th:if="${isAdmin or session.player.id == player.id}"
+                       th:href="@{/players/{id}/edit(id=${player.id})}">Rediger</a>
+                    <a class="btn btn-danger card-thumb-action"
+                       th:if="${isAdmin or session.player.id == player.id}"
+                       th:href="@{/players/{id}/delete(id=${player.id})}">Slet</a>
+                    <a class="btn btn-secondary card-thumb-action"
+                       th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
+                       th:href="@{/cards/player/{id}(id=${player.id})}">Samling</a>
+                    <a class="btn btn-secondary card-thumb-action"
+                       th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
+                       th:href="@{/decks/player/{id}(id=${player.id})}">Decks</a>
+                    <a class="btn btn-secondary card-thumb-action"
+                       th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
+                       th:href="@{/trades/propose/{id}(id=${player.id})}">Bytte</a>
+                    <span th:if="${player.collectionVisibility.name() == 'PRIVATE' and session.player.id != player.id}"
+                          class="badge badge-completed">Privat profil</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop: tabel -->
+        <div class="table-wrapper desktop-table">
+            <table>
+                <thead>
+                <tr>
+                    <th th:if="${isAdmin}">Id</th>
+                    <th>Brugernavn</th>
+                    <th th:if="${isAdmin}">Email</th>
+                    <th th:if="${isAdmin}">Rolle</th>
+                    <th>Samlingssynlighed</th>
+                    <th th:if="${isAdmin}">Status</th>
+                    <th>Handlinger</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="player : ${players}">
+                    <td th:if="${isAdmin}" th:text="${player.id}"></td>
+                    <td>
+                        <a th:href="@{/players/{id}(id=${player.id})}"
+                           th:text="${player.username}"></a>
+                        <span th:if="${player.role.name() == 'ADMIN'}" class="badge badge-completed">Admin</span>
+                    </td>
+                    <td th:if="${isAdmin}" th:text="${player.email}"></td>
+                    <td th:if="${isAdmin}" th:text="${player.role.displayName}"></td>
+                    <td th:text="${player.collectionVisibility.displayName}"></td>
+                    <td th:if="${isAdmin}">
+                        <span th:text="${player.isActive() ? 'Aktiv' : 'Deaktiveret'}"></span>
+                    </td>
+                    <td>
+                        <div class="list-thumb-actions">
+                            <a class="btn btn-secondary card-thumb-action"
+                               th:if="${isAdmin or session.player.id == player.id}"
+                               th:href="@{/players/{id}/edit(id=${player.id})}">Rediger</a>
+                            <a class="btn btn-danger card-thumb-action"
+                               th:if="${isAdmin or session.player.id == player.id}"
+                               th:href="@{/players/{id}/delete(id=${player.id})}">Slet</a>
+                            <a class="btn btn-secondary card-thumb-action"
+                               th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
+                               th:href="@{/cards/player/{id}(id=${player.id})}">Samling</a>
+                            <a class="btn btn-secondary card-thumb-action"
+                               th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
+                               th:href="@{/decks/player/{id}(id=${player.id})}">Decks</a>
+                            <a class="btn btn-secondary card-thumb-action"
+                               th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
+                               th:href="@{/trades/propose/{id}(id=${player.id})}">Bytte</a>
+                            <span th:if="${player.collectionVisibility.name() == 'PRIVATE' and session.player.id != player.id}"
+                                  class="badge badge-completed">Privat profil</span>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
+<script th:src="@{/js/pagination.js}"></script>
 </body>
 </html>

@@ -40,6 +40,14 @@
             </select>
         </div>
 
+        <div th:if="${session.player.role.name() == 'ADMIN'}">
+            <label for="active">Status:</label>
+            <select id="active" name="active">
+                <option value="true" th:selected="${player.isActive()}">Aktiv</option>
+                <option value="false" th:selected="${!player.isActive()}">Deaktiveret</option>
+            </select>
+        </div>
+
         <button type="submit">Gem ændringer</button>
     </form>
     <div style="margin-top: 16px;">

@@ -3,42 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deck List</title>
+    <title>Deckforge - Decks</title>
     <link rel="stylesheet" th:href="@{/css/base.css}">
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/components.css}">
     <link rel="stylesheet" th:href="@{/css/utilities.css}">
+    <link rel="stylesheet" th:href="@{/css/cards.css}">
+    <link rel="stylesheet" th:href="@{/css/card-picker.css}">
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
 <main>
     <h2>Decks</h2>
-    <a class="btn" th:href="@{/decks/create}">Tilføj deck</a>
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Deck navn</th>
-            <th>Format</th>
-            <th>Ejer</th>
-            <th>Handlinger</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="deck : ${decks}">
-            <td th:text="${deck.id}"></td>
-            <td><a th:href="@{/decks/{id}(id=${deck.id})}" th:text="${deck.name}"></a></td>
-            <td th:text="${deck.format.displayName}"></td>
-            <td th:text="${deck.playerId}"></td>
-            <td>
-                <div class="action-col">
-                    <a class="btn" th:href="@{/decks/{id}/edit(id=${deck.id})}">Rediger</a>
-                    <a class="btn btn-danger" th:href="@{/decks/{id}/delete(id=${deck.id})}">Slet</a>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <a class="btn list-action" th:if="${isSelf}" th:href="@{/decks/create}">Tilføj deck</a>
+
+    <!-- Mobil: liste grid -->
+    <div class="list-grid">
+        <div th:each="deck : ${decks}" class="list-thumb">
+            <div class="list-thumb-title">
+                <a th:href="@{/decks/{id}(id=${deck.id})}" th:text="${deck.name}"></a>
+            </div>
+            <div class="list-thumb-meta">
+                <span th:text="${deck.format.displayName}"></span>
+            </div>
+            <div class="list-thumb-actions">
+                <a class="btn btn-secondary card-thumb-action"
+                   th:if="${isSelf or isAdmin}"
+                   th:href="@{/decks/{id}/edit(id=${deck.id})}">Rediger</a>
+                <a class="btn btn-danger card-thumb-action"
+                   th:if="${isSelf or isAdmin}"
+                   th:href="@{/decks/{id}/delete(id=${deck.id})}">Slet</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Desktop: tabel -->
+    <div class="table-wrapper desktop-table">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Deck navn</th>
+                <th>Format</th>
+                <th th:if="${isSelf or isAdmin}">Handlinger</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="deck : ${decks}">
+                <td th:text="${deck.id}"></td>
+                <td><a th:href="@{/decks/{id}(id=${deck.id})}" th:text="${deck.name}"></a></td>
+                <td th:text="${deck.format.displayName}"></td>
+                <td th:if="${isSelf or isAdmin}">
+                    <div class="action-col">
+                        <a class="btn" th:href="@{/decks/{id}/edit(id=${deck.id})}">Rediger</a>
+                        <a class="btn btn-danger" th:href="@{/decks/{id}/delete(id=${deck.id})}">Slet</a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </main>
+<footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

@@ -8,25 +8,70 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/components.css}">
     <link rel="stylesheet" th:href="@{/css/cards.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/card-picker.css}">
+    <link rel="stylesheet" th:href="@{/css/card-form.css}">
     <link rel="stylesheet" th:href="@{/css/utilities.css}">
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
+
 <main>
     <h2>Velkommen til Deckforge</h2>
+
     <div class="welcome-box">
         <p>Deckforge er en platform for Magic: The Gathering spillere i Næstved og omegn.</p>
         <p>Administrer din kortsamling, byg decks, tilmeld dig events og byt kort med andre spillere.</p>
-        <p th:if="${session.player == null}">Har du ikke en konto endnu? <a th:href="@{/players/register}">Opret en konto</a> og kom med i fællesskabet.</p>
+        <p th:if="${session.player == null}">
+            Har du ikke en konto endnu?
+            <a th:href="@{/players/register}">Opret en konto</a>
+            og kom med i fællesskabet.
+        </p>
     </div>
+
+    <div class="welcome-box"
+         th:if="${session.player != null and incomingTradeCount != null and incomingTradeCount > 0}">
+        <p>
+            Du har
+            <strong th:text="${incomingTradeCount}"></strong>
+            indgående bytteanmodning(er), der kræver handling.
+            <a th:href="@{/trades}">Gå til bytninger</a>
+        </p>
+    </div>
+
+    <div class="welcome-box"
+         th:if="${session.player != null and activeTradeCount != null and activeTradeCount > 0}">
+        <p>
+            Du har
+            <strong th:text="${activeTradeCount}"></strong>
+            aktiv(e) byttehandel/handler, der afventer gennemførsel.
+            <a th:href="@{/trades}">Gå til bytninger</a>
+        </p>
+    </div>
+
     <div class="quick-links">
         <a class="btn" th:href="@{/events}">Se events</a>
-        <a class="btn" th:if="${session.player != null}" th:href="@{/cards}">Se kort</a>
-        <a class="btn" th:if="${session.player == null}" th:href="@{/players/register}">Opret konto</a>
-        <a class="btn" th:if="${session.player == null}" th:href="@{/login}">Log ind</a>
-        <a class="btn" th:if="${session.player != null}" th:href="@{/trades}">Se bytninger</a>
+
+        <a class="btn" th:if="${session.player != null}" th:href="@{/cards}">
+            Se kort
+        </a>
+
+        <a class="btn" th:if="${session.player == null}" th:href="@{/players/register}">
+            Opret konto
+        </a>
+
+        <a class="btn" th:if="${session.player == null}" th:href="@{/login}">
+            Log ind
+        </a>
+
+        <a class="btn" th:if="${session.player != null}" th:href="@{/trades}">
+            Se bytninger
+            <span th:if="${incomingTradeCount != null and incomingTradeCount > 0}"
+                  th:text="'(' + ${incomingTradeCount} + ')'"></span>
+        </a>
     </div>
 </main>
+
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

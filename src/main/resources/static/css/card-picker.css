@@ -1,0 +1,217 @@
+/* --- Kortbillede-vælger --- */
+
+.card-picker {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.card-picker-item {
+    cursor: pointer;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+}
+
+.card-picker-item:hover { border-color: var(--primary-light); }
+
+.card-picker-item img { width: 100%; height: auto; display: block; }
+
+.card-picker-item-name {
+    padding: 3px 4px;
+    font-size: 0.7rem;
+    text-align: center;
+    color: var(--text);
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.card-picker-item-owned {
+    padding: 2px 4px;
+    font-size: 0.65rem;
+    text-align: center;
+    color: #2d6a2d;
+    background: #d5e8d4;
+}
+
+.card-picker-no-img {
+    padding: 8px;
+    font-size: 0.75rem;
+    text-align: center;
+    color: var(--text);
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filter-hidden { display: none !important; }
+.page-hidden   { display: none !important; }
+
+.card-picker-item.selected { border-color: var(--primary); }
+
+/* --- Vælger-label --- */
+
+.picker-label {
+    margin: 8px 0 4px 0;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.picker-label.selected { color: var(--primary); font-weight: bold; }
+
+/* --- Filter-knapper --- */
+
+.filter-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.filter-buttons .btn { width: auto; margin: 0; }
+
+/* --- Paginering --- */
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.pagination-controls .btn { width: auto; margin: 0; }
+
+.pagination-info {
+    flex: 1;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+/* --- Sticky bar (desktop) --- */
+
+.picker-sticky-bar {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    align-items: center;
+    gap: 16px;
+}
+
+.picker-sticky-bar.active { display: flex; }
+
+.picker-sticky-preview { display: flex; align-items: center; gap: 8px; flex: 1; }
+.picker-sticky-preview img { width: 40px; height: auto; border-radius: 4px; }
+
+.picker-sticky-actions { display: flex; align-items: center; gap: 8px; }
+.picker-sticky-actions label { margin: 0; font-weight: normal; }
+.picker-sticky-actions input[type="number"] { width: 60px; margin: 0; padding: 6px 8px; }
+.picker-sticky-actions .btn { width: auto; margin: 0; }
+
+/* --- Advarselsboks --- */
+
+.warning-box {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+/* --- Sektions-layout --- */
+
+.section-add {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.deck-actions { display: flex; gap: 8px; margin: 12px 0; }
+.deck-actions .btn { width: auto; margin: 0; }
+
+.back-link-wrapper { margin-top: 16px; }
+
+/* --- Kompakt antal-felt --- */
+
+.quantity-input-compact {
+    width: 60px;
+    display: inline-block;
+    margin: 0;
+    padding: 6px 8px;
+}
+
+/* --- Liste grid (deck og spillere) --- */
+
+.list-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.list-thumb {
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+}
+
+.list-thumb-title {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.list-thumb-meta {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    word-break: break-word;
+}
+
+.list-thumb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-top: 8px;
+}
+
+.list-thumb-actions .btn {
+    width: auto;
+    margin: 0;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    min-height: unset;
+    min-width: unset;
+}
+
+/* --- Desktop --- */
+
+@media (min-width: 768px) {
+    .card-picker {
+        grid-template-columns: repeat(4, 1fr);
+        max-width: unset;
+    }
+    .list-grid { display: none; }
+}
+
+/* --- Mobil --- */
+
+@media (max-width: 767px) {
+    .list-thumb-actions .btn {
+        min-height: 44px;
+    }
+}

@@ -8,14 +8,6 @@
     margin-bottom: 16px;
 }
 
-.success {
-    background-color: var(--success-bg);
-    color: var(--success);
-    border: 1px solid var(--success);
-    border-radius: 4px;
-    padding: 10px 16px;
-    margin-bottom: 16px;
-}
 
 .info {
     background-color: #eaf4fb;
@@ -28,8 +20,6 @@
 
 /* --- Fejlside --- */
 .error-container { max-width: 500px; margin: 60px auto; text-align: center; }
-ul.error-list { list-style: none; padding: 0; }
-ul.error-list li { color: var(--error); padding: 4px 0; }
 
 /* --- Indholdsbokse --- */
 .welcome-box {

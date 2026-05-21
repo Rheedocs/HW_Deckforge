@@ -19,6 +19,8 @@ class PlayerRepositoryTest {
     @Autowired
     private PlayerRepository repository;
 
+    // --- findAll ---
+
     @Test
     void findAll_returnsNonEmptyList() {
         List<Player> players = repository.findAll();
@@ -38,6 +40,8 @@ class PlayerRepositoryTest {
         assertTrue(found);
     }
 
+    // --- findById ---
+
     @Test
     void findById_existingId_returnsPlayer() {
         Player player = repository.findById(1);
@@ -51,6 +55,8 @@ class PlayerRepositoryTest {
         assertNull(player);
     }
 
+    // --- findByEmail ---
+
     @Test
     void findByEmail_existingEmail_returnsPlayer() {
         Player player = repository.findByEmail("goncalo@deckforge.dk");
@@ -63,6 +69,8 @@ class PlayerRepositoryTest {
         Player player = repository.findByEmail("ingen@deckforge.dk");
         assertNull(player);
     }
+
+    // --- save og opdater ---
 
     @Test
     void save_newPlayer_canBeFoundAfterwards() {
@@ -84,6 +92,8 @@ class PlayerRepositoryTest {
         Player updated = repository.findById(2);
         assertEquals("opdateretbrugernavn", updated.getUsername());
     }
+
+    // --- slet ---
 
     @Test
     void delete_existingPlayer_isDeactivated() {

@@ -16,6 +16,8 @@ public class EventService {
         this.eventRepository = eventRepository;
     }
 
+    // --- Forespørgsler ---
+
     public List<Event> getAll() {
         return eventRepository.findAll();
     }
@@ -30,6 +32,8 @@ public class EventService {
     public List<Event> getUpcoming() {
         return eventRepository.findUpcoming();
     }
+
+    // --- Livscyklus ---
 
     public void create(Event event) {
         if (event == null) throw new IllegalArgumentException("Event må ikke være null!");

@@ -19,11 +19,7 @@ class DeckRepositoryTest {
     @Autowired
     private DeckRepository repository;
 
-    @Test
-    void findAll() {
-        List<Deck> decks = repository.findAll();
-        assertFalse(decks.isEmpty());
-    }
+    // --- Forespørgsler ---
 
     @Test
     void findById() {
@@ -37,11 +33,13 @@ class DeckRepositoryTest {
         assertNotNull(decks);
     }
 
+    // --- Skriveoperationer ---
+
     @Test
     void save() {
         Deck newDeck = new Deck(-1, 1, "Defensive Deck", Format.COMMANDER, DeckVisibility.PRIVATE);
         repository.save(newDeck);
-        List<Deck> decks = repository.findAll();
+        List<Deck> decks = repository.findByPlayerId(1);
         boolean found = false;
         for (Deck d : decks) {
             if (d.getName().equals("Defensive Deck")) {
@@ -50,8 +48,8 @@ class DeckRepositoryTest {
             }
         }
         assertTrue(found);
-
     }
+
     @Test
     void update() {
         Deck deck = repository.findById(4);

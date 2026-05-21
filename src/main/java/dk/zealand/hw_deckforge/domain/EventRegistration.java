@@ -3,11 +3,11 @@ package dk.zealand.hw_deckforge.domain;
 import java.time.LocalDate;
 
 public class EventRegistration {
-    private int id;
-    private int playerId;
-    private int eventId;
-    private int deckId;
-    private LocalDate registrationDate;
+    private final int id;
+    private final int playerId;
+    private final int eventId;
+    private final int deckId;
+    private final LocalDate registrationDate;
 
     public EventRegistration(int id, int playerId, int eventId, int deckId, LocalDate registrationDate) {
         this.id = id;

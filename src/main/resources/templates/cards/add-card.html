@@ -8,51 +8,62 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/components.css}">
     <link rel="stylesheet" th:href="@{/css/utilities.css}">
+    <link rel="stylesheet" th:href="@{/css/cards.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/card-picker.css}">
+    <link rel="stylesheet" th:href="@{/css/card-form.css}">
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
 <main>
     <h2>Opret kort</h2>
-    <form th:action="@{/cards/create}" th:object="${card}" method="post">
-        <label for="name">Navn:</label>
-        <input type="text" id="name" th:field="*{name}" required>
+    <div class="card-form-layout">
+        <form class="card-form-fields" th:action="@{/cards/create}" th:object="${card}" method="post">
+            <label for="scryfallUrl">Scryfall link (valgfrit):</label>
+            <input type="text" id="scryfallUrl" name="scryfallUrl">
+            <a href="https://scryfall.com" target="_blank" style="font-size:0.8rem; color:var(--text-light);">Åbn
+                Scryfall</a>
 
-        <label for="cardType">Korttype:</label>
-        <select id="cardType" th:field="*{cardType}">
-            <option th:each="type : ${cardTypes}"
-                    th:value="${type.name()}"
-                    th:text="${type.displayName}"></option>
-        </select>
+            <label for="name">Navn:</label>
+            <input type="text" id="name" th:field="*{name}" required>
 
-        <label for="color">Farve:</label>
-        <select id="color" th:field="*{color}">
-            <option th:each="c : ${colors}"
-                    th:value="${c.name()}"
-                    th:text="${c.displayName}"></option>
-        </select>
+            <label for="cardType">Korttype:</label>
+            <select id="cardType" th:field="*{cardType}">
+                <option th:each="type : ${cardTypes}"
+                        th:value="${type.name()}"
+                        th:text="${type.displayName}"></option>
+            </select>
 
-        <label for="setName">Sæt:</label>
-        <input type="text" id="setName" th:field="*{setName}" required>
+            <label for="color">Farve:</label>
+            <select id="color" th:field="*{color}">
+                <option th:each="c : ${colors}"
+                        th:value="${c.name()}"
+                        th:text="${c.displayName}"></option>
+            </select>
 
-        <label for="rarity">Sjældenhed:</label>
-        <select id="rarity" th:field="*{rarity}">
-            <option th:each="r : ${rarities}"
-                    th:value="${r.name()}"
-                    th:text="${r.displayName}"></option>
-        </select>
+            <label for="setName">Sæt:</label>
+            <input type="text" id="setName" th:field="*{setName}" required>
 
-        <label for="ruleText">Regeltext:</label>
-        <textarea id="ruleText" th:field="*{ruleText}" rows="3"></textarea>
+            <label for="rarity">Sjældenhed:</label>
+            <select id="rarity" th:field="*{rarity}">
+                <option th:each="r : ${rarities}"
+                        th:value="${r.name()}"
+                        th:text="${r.displayName}"></option>
+            </select>
 
-        <label for="imageUrl">Billede URL:</label>
-        <input type="text" id="imageUrl" th:field="*{imageUrl}" placeholder="https://cards.scryfall.io/...">
+            <label for="ruleText">Regeltext:</label>
+            <textarea id="ruleText" th:field="*{ruleText}" rows="3"></textarea>
 
-        <button type="submit">Opret kort</button>
-    </form>
-    <div style="margin-top: 16px;">
-        <a th:href="@{/cards}">Tilbage</a>
+            <button type="submit">Opret kort</button>
+        </form>
+        <div class="card-form-preview">
+            <img id="cardPreview" src="" alt="Kortforhåndsvisning">
+        </div>
     </div>
+    <a th:href="@{/cards}">Tilbage</a>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
+<script th:src="@{/js/cards.js}"></script>
+<script th:src="@{/js/card-form.js}"></script>
 </body>
 </html>

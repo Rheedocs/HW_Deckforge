@@ -29,6 +29,8 @@ public class DeckCardRepository implements IDeckCardRepository {
             rs.getInt("quantity")
     );
 
+    // --- Forespørgsler ---
+
     @Override
     public List<DeckCard> findByDeckId(int deckId) {
         try {
@@ -58,6 +60,8 @@ public class DeckCardRepository implements IDeckCardRepository {
             throw new DatabaseException("Kunne ikke hente kort for deck", e);
         }
     }
+
+    // --- Skriveoperationer ---
 
     @Override
     public void save(DeckCard deckCard) {

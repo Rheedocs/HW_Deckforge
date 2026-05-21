@@ -15,6 +15,7 @@ public class Player {
     public Player() {}
 
     public Player(int id, String username, String email, String password, Role role, CollectionVisibility collectionVisibility) {
+        validate(username, email, password, role, collectionVisibility);
         this.id = id;
         this.username = username;
         this.email = email;
@@ -24,6 +25,8 @@ public class Player {
         this.active = true;
     }
 
+    // --- Getters ---
+
     public int getId() { return id; }
     public String getUsername() { return username; }
     public String getEmail() { return email; }
@@ -31,6 +34,8 @@ public class Player {
     public Role getRole() { return role; }
     public CollectionVisibility getCollectionVisibility() { return collectionVisibility; }
     public boolean isActive() { return active; }
+
+    // --- Setters ---
 
     public void setId(int id) { this.id = id; }
     public void setUsername(String username) { this.username = username; }
@@ -41,9 +46,9 @@ public class Player {
     }
     public void setActive(boolean active) { this.active = active; }
 
-    public void deactivate() {
-        this.active = false;
-    }
+    // --- Adfærd ---
+
+    public void deactivate() { this.active = false; }
 
     public void changeVisibility(CollectionVisibility visibility) {
         if (visibility == null) throw new IllegalArgumentException("Synlighed må ikke være null");
@@ -56,21 +61,25 @@ public class Player {
         this.password = hashedPassword;
     }
 
-    public void promoteToAdmin() {
-        this.role = Role.ADMIN;
-    }
-
-    public void demoteToPlayer() {
-        this.role = Role.PLAYER;
-    }
-
-    public boolean isAdmin() {
-        return this.role == Role.ADMIN;
-    }
+    public void promoteToAdmin() { this.role = Role.ADMIN; }
+    public void demoteToPlayer() { this.role = Role.PLAYER; }
+    public boolean isAdmin() { return this.role == Role.ADMIN; }
 
     public boolean isCollectionVisible(CollectionVisibility visibility) {
         return this.collectionVisibility == visibility;
     }
+
+    // --- Validering ---
+
+    private void validate(String username, String email, String password, Role role, CollectionVisibility collectionVisibility) {
+        if (username == null || username.isBlank()) throw new IllegalArgumentException("Brugernavn må ikke være tomt");
+        if (email == null || email.isBlank()) throw new IllegalArgumentException("Email må ikke være tom");
+        if (password == null || password.isBlank()) throw new IllegalArgumentException("Password må ikke være tomt");
+        if (role == null) throw new IllegalArgumentException("Rolle må ikke være null");
+        if (collectionVisibility == null) throw new IllegalArgumentException("Synlighed må ikke være null");
+    }
+
+    // --- Hjælpemetoder ---
 
     @Override
     public String toString() {

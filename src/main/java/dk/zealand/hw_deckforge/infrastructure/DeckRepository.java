@@ -32,14 +32,7 @@ public class DeckRepository implements IDeckRepository {
             DeckVisibility.valueOf(rs.getString("visibility"))
     );
 
-    @Override
-    public List<Deck> findAll() {
-        try {
-            return jdbcTemplate.query(BASE_SQL, deckRowMapper);
-        } catch (DataAccessException e) {
-            throw new DatabaseException("Kunne ikke hente decks", e);
-        }
-    }
+    // --- Forespørgsler ---
 
     @Override
     public Deck findById(int id) {
@@ -54,11 +47,14 @@ public class DeckRepository implements IDeckRepository {
     @Override
     public List<Deck> findByPlayerId(int playerId) {
         try {
-            return jdbcTemplate.query(BASE_SQL + " WHERE player_id = ?", deckRowMapper, playerId);
+            String sql = "SELECT id, player_id, name, format, visibility FROM deck WHERE player_id = ? ORDER BY name";
+            return jdbcTemplate.query(sql, deckRowMapper, playerId);
         } catch (DataAccessException e) {
-            throw new DatabaseException("Kunne ikke hente decks for spiller: " + playerId, e);
+            throw new DatabaseException("Kunne ikke hente decks for spiller!", e);
         }
     }
+
+    // --- Skriveoperationer ---
 
     @Override
     public void save(Deck deck) {
