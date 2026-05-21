@@ -178,6 +178,8 @@
     display: flex;
     gap: 8px;
     margin-bottom: 8px;
+    flex-wrap: wrap;
+    word-break: break-word;
 }
 
 .list-thumb-actions {

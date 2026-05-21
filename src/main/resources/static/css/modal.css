@@ -20,6 +20,8 @@
     max-width: 400px;
     width: 100%;
     position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal img { width: 100%; border-radius: 4px; margin-bottom: 16px; }

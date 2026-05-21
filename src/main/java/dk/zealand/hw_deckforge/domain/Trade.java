@@ -11,8 +11,10 @@ public class Trade {
     private TradeStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
+    private boolean proposerConfirmed;
+    private boolean receiverConfirmed;
 
-    public Trade(int id, int proposerId, int receiverId, TradeStatus status, LocalDateTime createdAt, LocalDateTime expiresAt) {
+    public Trade(int id, int proposerId, int receiverId, TradeStatus status, LocalDateTime createdAt, LocalDateTime expiresAt, boolean proposerConfirmed, boolean receiverConfirmed) {
         validate(proposerId, receiverId, status, createdAt, expiresAt);
         this.id = id;
         this.proposerId = proposerId;
@@ -20,6 +22,8 @@ public class Trade {
         this.status = status;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
+        this.proposerConfirmed = proposerConfirmed;
+        this.receiverConfirmed = receiverConfirmed;
     }
 
     // --- Getters ---
@@ -30,6 +34,8 @@ public class Trade {
     public TradeStatus getStatus() { return status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getExpiresAt() { return expiresAt; }
+    public boolean isProposerConfirmed() { return proposerConfirmed; }
+    public boolean isReceiverConfirmed() { return receiverConfirmed; }
 
     // --- Setters ---
 
@@ -44,6 +50,10 @@ public class Trade {
     public void accept() { this.status = TradeStatus.ACCEPTED; }
     public void decline() { this.status = TradeStatus.DECLINED; }
     public void cancel() { this.status = TradeStatus.CANCELLED; }
+    public void complete() { this.status = TradeStatus.COMPLETED; }
+    public void confirmProposer() { this.proposerConfirmed = true; }
+    public void confirmReceiver() { this.receiverConfirmed = true; }
+    public boolean isFullyConfirmed() { return proposerConfirmed && receiverConfirmed; }
 
     // --- Validering ---
 

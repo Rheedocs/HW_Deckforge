@@ -25,10 +25,10 @@
             <div th:each="player : ${players}" class="list-thumb">
                 <div class="list-thumb-title">
                     <a th:href="@{/players/{id}(id=${player.id})}" th:text="${player.username}"></a>
+                    <span th:if="${player.role.name() == 'ADMIN'}" class="badge badge-completed">Admin</span>
                 </div>
                 <div class="list-thumb-meta">
                     <span th:text="${player.collectionVisibility.displayName}"></span>
-                    <span th:if="${isAdmin}" th:text="${player.role.displayName}"></span>
                 </div>
                 <div class="list-thumb-actions">
                     <a class="btn btn-secondary card-thumb-action"
@@ -44,7 +44,7 @@
                        th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
                        th:href="@{/decks/player/{id}(id=${player.id})}">Decks</a>
                     <a class="btn btn-secondary card-thumb-action"
-                       th:if="${!isAdmin and session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
+                       th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
                        th:href="@{/trades/propose/{id}(id=${player.id})}">Bytte</a>
                     <span th:if="${player.collectionVisibility.name() == 'PRIVATE' and session.player.id != player.id}"
                           class="badge badge-completed">Privat profil</span>
@@ -72,6 +72,7 @@
                     <td>
                         <a th:href="@{/players/{id}(id=${player.id})}"
                            th:text="${player.username}"></a>
+                        <span th:if="${player.role.name() == 'ADMIN'}" class="badge badge-completed">Admin</span>
                     </td>
                     <td th:if="${isAdmin}" th:text="${player.email}"></td>
                     <td th:if="${isAdmin}" th:text="${player.role.displayName}"></td>
@@ -94,7 +95,7 @@
                                th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
                                th:href="@{/decks/player/{id}(id=${player.id})}">Decks</a>
                             <a class="btn btn-secondary card-thumb-action"
-                               th:if="${!isAdmin and session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
+                               th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
                                th:href="@{/trades/propose/{id}(id=${player.id})}">Bytte</a>
                             <span th:if="${player.collectionVisibility.name() == 'PRIVATE' and session.player.id != player.id}"
                                   class="badge badge-completed">Privat profil</span>

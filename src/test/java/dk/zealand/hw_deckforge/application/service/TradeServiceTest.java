@@ -1,6 +1,7 @@
 package dk.zealand.hw_deckforge.application.service;
 
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerCardRepository;
+import dk.zealand.hw_deckforge.application.interfaces.IPlayerRepository;
 import dk.zealand.hw_deckforge.application.interfaces.ITradeCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.ITradeRepository;
 import dk.zealand.hw_deckforge.domain.Trade;
@@ -30,6 +31,9 @@ class TradeServiceTest {
     @Mock
     private ITradeCardRepository tradeCardRepository;
 
+    @Mock
+    private IPlayerRepository playerRepository;
+
     @InjectMocks
     private TradeService tradeService;
 
@@ -37,7 +41,7 @@ class TradeServiceTest {
 
     @BeforeEach
     void setup() {
-        testTrade = new Trade(1, 20, 30, TradeStatus.PENDING, LocalDateTime.now(), LocalDateTime.now().plusHours(24));
+        testTrade = new Trade(1, 20, 30, TradeStatus.PENDING, LocalDateTime.now(), LocalDateTime.now().plusHours(24), false, false);
     }
 
     // --- Forespørgsler ---
@@ -99,6 +103,24 @@ class TradeServiceTest {
         when(tradeRepository.findById(1)).thenReturn(testTrade);
 
         assertThrows(IllegalArgumentException.class, () -> tradeService.cancel(1));
+        verify(tradeRepository, never()).update(any());
+    }
+
+    @Test
+    void complete_notAcceptedTrade_throwsIllegalArgument() {
+        when(tradeRepository.findById(1)).thenReturn(testTrade);
+
+        assertThrows(IllegalArgumentException.class, () -> tradeService.complete(1, 20));
+        verify(tradeRepository, never()).update(any());
+    }
+
+    @Test
+    void complete_notPartOfTrade_throwsAccessDenied() {
+        testTrade.accept();
+        when(tradeRepository.findById(1)).thenReturn(testTrade);
+
+        assertThrows(dk.zealand.hw_deckforge.domain.exceptions.AccessDeniedException.class,
+                () -> tradeService.complete(1, 99));
         verify(tradeRepository, never()).update(any());
     }
 

@@ -53,10 +53,11 @@
 
 .card-thumb-meta {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    font-size: 0.7rem;
-    padding: 3px 5px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 4px 5px;
     border-top: 1px solid var(--border);
     color: var(--text);
 }
@@ -121,10 +122,12 @@
     .card-thumb-meta { padding: 6px 5px; }
 
     .card-thumb-trade-toggle {
-        min-height: 44px;
-        font-size: 0.75rem;
+        min-height: 36px !important;
+        font-size: 0.7rem;
+        padding: 4px 6px;
         display: flex;
         align-items: center;
         justify-content: center;
+        border-radius: 0;
     }
 }

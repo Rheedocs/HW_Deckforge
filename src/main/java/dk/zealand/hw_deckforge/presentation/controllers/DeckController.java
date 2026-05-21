@@ -39,6 +39,9 @@ public class DeckController {
         playerService.checkCollectionAccess(playerId, isSelf, isAdmin);
         List<Deck> decks = deckService.getVisibleDecks(playerId, isSelf, isAdmin);
         model.addAttribute("decks", decks);
+        model.addAttribute("isSelf", isSelf);
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("playerId", playerId);
         return "decks/deck-list";
     }
 
@@ -73,8 +76,7 @@ public class DeckController {
 
     @PostMapping("/create")
     public String create(@ModelAttribute Deck deck, HttpSession session) {
-        if (!AuthHelper.isAdmin(session) && !AuthHelper.isSelf(session, deck.getPlayerId()))
-            return "redirect:/access-denied";
+        deckService.checkOwnerAccess(deck, AuthHelper.isSelf(session, deck.getPlayerId()), AuthHelper.isAdmin(session));
         deckService.create(deck);
         return "redirect:/decks/player/" + deck.getPlayerId();
     }
@@ -82,16 +84,14 @@ public class DeckController {
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable int id, Model model, HttpSession session) {
         Deck deck = deckService.getById(id);
-        if (!AuthHelper.isAdmin(session) && !AuthHelper.isSelf(session, deck.getPlayerId()))
-            return "redirect:/access-denied";
+        deckService.checkOwnerAccess(deck, AuthHelper.isSelf(session, deck.getPlayerId()), AuthHelper.isAdmin(session));
         model.addAttribute("deck", deck);
         return "decks/edit-deck";
     }
 
     @PostMapping("/{id}/edit")
     public String update(@PathVariable int id, @ModelAttribute Deck deck, HttpSession session) {
-        if (!AuthHelper.isAdmin(session) && !AuthHelper.isSelf(session, deck.getPlayerId()))
-            return "redirect:/access-denied";
+        deckService.checkOwnerAccess(deck, AuthHelper.isSelf(session, deck.getPlayerId()), AuthHelper.isAdmin(session));
         deck.setId(id);
         deckService.update(deck);
         return "redirect:/decks/player/" + deck.getPlayerId();
@@ -103,8 +103,7 @@ public class DeckController {
     public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session,
                                     @RequestHeader(value = "Referer", required = false) String referer) {
         Deck deck = deckService.getById(id);
-        if (!AuthHelper.isAdmin(session) && !AuthHelper.isSelf(session, deck.getPlayerId()))
-            return "redirect:/access-denied";
+        deckService.checkOwnerAccess(deck, AuthHelper.isSelf(session, deck.getPlayerId()), AuthHelper.isAdmin(session));
         model.addAttribute("navn", deck.getName());
         model.addAttribute("deleteUrl", "/decks/" + id + "/delete");
         model.addAttribute("tilbage", referer != null ? referer : "/decks/player/" + deck.getPlayerId());

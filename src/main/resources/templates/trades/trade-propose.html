@@ -20,15 +20,17 @@
             <option value="" disabled selected>Vælg dit kort</option>
             <option th:each="card : ${proposerCards}"
                     th:value="${card.id}"
-                    th:text="${cardMap[card.cardId] != null ? cardMap[card.cardId].name : card.cardId}"></option>
+                    th:text="${cardMap[card.cardId] != null ? cardMap[card.cardId].name + ' ('
+                    + card.quantity + ' ejet)' : card.cardId}"></option>
         </select>
 
         <label for="receiverCardIds">Modtagerens kort:</label>
         <select id="receiverCardIds" name="receiverCardIds" required>
-            <option value="" disabled selected>Vælg modtagerens kort</option>
+            <option value="" disabled th:selected="${preselectedReceiverCardId == null}">Vælg modtagerens kort</option>
             <option th:each="card : ${receiverCards}"
                     th:value="${card.id}"
-                    th:text="${cardMap[card.cardId] != null ? cardMap[card.cardId].name : card.cardId}"></option>
+                    th:selected="${preselectedReceiverCardId != null and preselectedReceiverCardId == card.id}"
+                    th:text="${cardMap[card.cardId] != null ? cardMap[card.cardId].name + ' (' + card.quantity + ' ejet)' : card.cardId}"></option>
         </select>
 
         <button type="submit">Send bytteforslag</button>

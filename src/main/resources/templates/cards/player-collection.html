@@ -49,6 +49,10 @@
                  th:alt="${card != null ? card.name : ''}">
             <div class="card-thumb-name" th:text="${card != null ? card.name : '–'}"></div>
             <div th:if="${pc.forTrade}" class="card-thumb-trade">Til bytte</div>
+            <a class="btn btn-secondary card-thumb-trade-toggle"
+               th:if="${!isSelf and pc.forTrade}"
+               th:href="@{/trades/propose/{id}(id=${owner.id}, receiverCardId=${pc.id})}"
+               onclick="event.stopPropagation()">Foreslå bytte</a>
             <div class="card-thumb-meta">
                 <span th:text="'×' + ${pc.quantity}"></span>
             </div>
@@ -68,6 +72,7 @@
                 <th>Antal</th>
                 <th>Til bytte</th>
                 <th th:if="${canManage}">Handlinger</th>
+                <th th:if="${!isSelf}">Bytte</th>
             </tr>
             </thead>
             <tbody>
@@ -118,6 +123,11 @@
                         </div>
                     </form>
                 </td>
+                <td th:if="${!isSelf}">
+                    <a class="btn btn-secondary"
+                       th:if="${pc.forTrade}"
+                       th:href="@{/trades/propose/{id}(id=${owner.id}, receiverCardId=${pc.id})}">Foreslå bytte</a>
+                </td>
             </tr>
             </tbody>
         </table>
@@ -128,7 +138,6 @@
         <h3>Tilføj kort</h3>
         <form th:action="@{/cards/player/{pid}/add(pid=${owner.id})}" method="post" id="addCollectionCardForm">
             <input type="hidden" id="collectionCardId" name="cardId">
-            <!-- Sticky bar: vises kun på desktop når et kort er valgt -->
             <div class="picker-sticky-bar" id="collectionPickerStickyBar">
                 <div class="picker-sticky-preview">
                     <img id="collectionPickerPreviewImg" src="" alt="">

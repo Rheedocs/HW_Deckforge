@@ -26,7 +26,7 @@ public class TradeRepository implements ITradeRepository {
     }
 
     private static final String BASE_SQL =
-            "SELECT id, proposer_id, receiver_id, status, created_at, expires_at FROM trade";
+            "SELECT id, proposer_id, receiver_id, status, created_at, expires_at, proposer_confirmed, receiver_confirmed FROM trade";
 
     private final RowMapper<Trade> tradeRowMapper = (rs, rowNum) -> new Trade(
             rs.getInt("id"),
@@ -34,7 +34,9 @@ public class TradeRepository implements ITradeRepository {
             rs.getInt("receiver_id"),
             TradeStatus.valueOf(rs.getString("status")),
             rs.getTimestamp("created_at").toLocalDateTime(),
-            rs.getTimestamp("expires_at").toLocalDateTime()
+            rs.getTimestamp("expires_at").toLocalDateTime(),
+            rs.getBoolean("proposer_confirmed"),
+            rs.getBoolean("receiver_confirmed")
     );
 
     @Override
@@ -68,7 +70,7 @@ public class TradeRepository implements ITradeRepository {
     @Override
     public int save(Trade trade) {
         try {
-            String sql = "INSERT INTO trade (proposer_id, receiver_id, status, created_at, expires_at) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO trade (proposer_id, receiver_id, status, created_at, expires_at, proposer_confirmed, receiver_confirmed) VALUES (?, ?, ?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -77,6 +79,8 @@ public class TradeRepository implements ITradeRepository {
                 ps.setString(3, trade.getStatus().name());
                 ps.setObject(4, trade.getCreatedAt());
                 ps.setObject(5, trade.getExpiresAt());
+                ps.setBoolean(6, trade.isProposerConfirmed());
+                ps.setBoolean(7, trade.isReceiverConfirmed());
                 return ps;
             }, keyHolder);
             return keyHolder.getKey().intValue();
@@ -88,13 +92,15 @@ public class TradeRepository implements ITradeRepository {
     @Override
     public void update(Trade trade) {
         try {
-            String sql = "UPDATE trade set proposer_id = ?, receiver_id = ?, status = ?, created_at = ?, expires_at = ? WHERE id = ?";
+            String sql = "UPDATE trade SET proposer_id = ?, receiver_id = ?, status = ?, created_at = ?, expires_at = ?, proposer_confirmed = ?, receiver_confirmed = ? WHERE id = ?";
             jdbcTemplate.update(sql,
                     trade.getProposerId(),
                     trade.getReceiverId(),
                     trade.getStatus().name(),
                     trade.getCreatedAt(),
                     trade.getExpiresAt(),
+                    trade.isProposerConfirmed(),
+                    trade.isReceiverConfirmed(),
                     trade.getId());
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke opdatere trades", e);
@@ -104,13 +110,14 @@ public class TradeRepository implements ITradeRepository {
     @Override
     public void expireOldTrades() {
         try {
-            String sql = "UPDATE trade SET status = ? WHERE id IN " +
-                    "(SELECT id FROM (SELECT id FROM trade WHERE expires_at < ? AND status = ?) AS t)";
-            jdbcTemplate.update(sql,
-                    TradeStatus.EXPIRED.name(),
-                    LocalDateTime.now(),
-                    TradeStatus.PENDING.name()
-            );
+            String selectSql = "SELECT id FROM trade WHERE expires_at < ? AND status = ?";
+            List<Integer> ids = jdbcTemplate.queryForList(selectSql, Integer.class,
+                    LocalDateTime.now(), TradeStatus.PENDING.name());
+            if (ids.isEmpty()) return;
+            for (int id : ids) {
+                String updateSql = "UPDATE trade SET status = ? WHERE id = ?";
+                jdbcTemplate.update(updateSql, TradeStatus.EXPIRED.name(), id);
+            }
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke udløbe gamle trades", e);
         }

@@ -1,13 +1,17 @@
 package dk.zealand.hw_deckforge.application.service;
 
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerCardRepository;
+import dk.zealand.hw_deckforge.application.interfaces.IPlayerRepository;
 import dk.zealand.hw_deckforge.application.interfaces.ITradeCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.ITradeRepository;
+import dk.zealand.hw_deckforge.domain.Player;
 import dk.zealand.hw_deckforge.domain.PlayerCard;
 import dk.zealand.hw_deckforge.domain.Trade;
 import dk.zealand.hw_deckforge.domain.TradeCard;
+import dk.zealand.hw_deckforge.domain.enums.CollectionVisibility;
 import dk.zealand.hw_deckforge.domain.enums.TradeRole;
 import dk.zealand.hw_deckforge.domain.enums.TradeStatus;
+import dk.zealand.hw_deckforge.domain.exceptions.AccessDeniedException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +27,14 @@ public class TradeService {
     private final ITradeRepository tradeRepository;
     private final IPlayerCardRepository playerCardRepository;
     private final ITradeCardRepository tradeCardRepository;
+    private final IPlayerRepository playerRepository;
 
-    public TradeService(ITradeRepository tradeRepository, IPlayerCardRepository playerCardRepository, ITradeCardRepository tradeCardRepository) {
+    public TradeService(ITradeRepository tradeRepository, IPlayerCardRepository playerCardRepository,
+                        ITradeCardRepository tradeCardRepository, IPlayerRepository playerRepository) {
         this.tradeRepository = tradeRepository;
         this.playerCardRepository = playerCardRepository;
         this.tradeCardRepository = tradeCardRepository;
+        this.playerRepository = playerRepository;
     }
 
     // --- Forespørgsler ---
@@ -50,6 +57,17 @@ public class TradeService {
             }
         }
         return sent;
+    }
+
+    public Map<Integer, Player> getPlayerMap(List<Trade> trades) {
+        Map<Integer, Player> map = new HashMap<>();
+        for (Trade trade : trades) {
+            if (!map.containsKey(trade.getProposerId()))
+                map.put(trade.getProposerId(), playerRepository.findById(trade.getProposerId()));
+            if (!map.containsKey(trade.getReceiverId()))
+                map.put(trade.getReceiverId(), playerRepository.findById(trade.getReceiverId()));
+        }
+        return map;
     }
 
     public List<Trade> getReceivedByPlayerId(List<Trade> all, int playerId) {
@@ -94,29 +112,42 @@ public class TradeService {
 
     public void accept(int tradeId) {
         Trade trade = getById(tradeId);
-        if (trade.getStatus() != TradeStatus.PENDING)
-            throw new IllegalArgumentException("Kun trades som er pending kan accepteres");
+        validatePending(trade, "accepteres");
         trade.accept();
         tradeRepository.update(trade);
     }
 
     public void decline(int tradeId) {
         Trade trade = getById(tradeId);
-        if (trade.getStatus() != TradeStatus.PENDING)
-            throw new IllegalArgumentException("Kun trades som er pending kan afvises");
+        validatePending(trade, "afvises");
         trade.decline();
         tradeRepository.update(trade);
     }
 
     public void cancel(int tradeId) {
         Trade trade = getById(tradeId);
-        if (trade.getStatus() != TradeStatus.PENDING)
-            throw new IllegalArgumentException("Kun trades som er pending kan annuleres");
+        validatePending(trade, "annulleres");
         trade.cancel();
         tradeRepository.update(trade);
     }
 
-    @Scheduled(fixedRate = 10000)
+    public void complete(int tradeId, int requestingPlayerId) {
+        Trade trade = getById(tradeId);
+        validateComplete(trade, requestingPlayerId);
+        if (trade.getProposerId() == requestingPlayerId) {
+            trade.confirmProposer();
+        } else {
+            trade.confirmReceiver();
+        }
+        if (trade.isFullyConfirmed()) {
+            trade.complete();
+            fjernFraBytteliste(tradeId);
+        }
+        tradeRepository.update(trade);
+    }
+
+    // 86400000 = 24 timer
+    @Scheduled(fixedRate = 86400000)
     public void expireOldTrades() {
         tradeRepository.expireOldTrades();
     }
@@ -130,9 +161,33 @@ public class TradeService {
                 receiverId,
                 TradeStatus.PENDING,
                 LocalDateTime.now(),
-                LocalDateTime.now().plusHours(24)
+                LocalDateTime.now().plusHours(24),
+                false,
+                false
         );
         proposeWithCards(trade, proposerCardIds, receiverCardIds);
+    }
+
+    public void validateProposal(int proposerId, int receiverId) {
+        Player receiver = playerRepository.findById(receiverId);
+        if (receiver.getCollectionVisibility() == CollectionVisibility.PRIVATE)
+            throw new AccessDeniedException("Denne spillers profil er privat");
+        if (playerCardRepository.findForTradeByPlayerId(proposerId).isEmpty())
+            throw new IllegalArgumentException("Du har ingen kort markeret til bytte");
+        if (playerCardRepository.findForTradeByPlayerId(receiverId).isEmpty())
+            throw new IllegalArgumentException("Denne spiller har ingen kort markeret til bytte");
+    }
+
+    private void validatePending(Trade trade, String handling) {
+        if (trade.getStatus() != TradeStatus.PENDING)
+            throw new IllegalArgumentException("Kun trades som er pending kan " + handling);
+    }
+
+    private void validateComplete(Trade trade, int requestingPlayerId) {
+        if (trade.getStatus() != TradeStatus.ACCEPTED)
+            throw new IllegalArgumentException("Kun accepterede trades kan bekræftes som gennemført");
+        if (trade.getProposerId() != requestingPlayerId && trade.getReceiverId() != requestingPlayerId)
+            throw new AccessDeniedException("Du er ikke en del af denne trade");
     }
 
     private void proposeWithCards(Trade trade, List<Integer> proposerCardIds, List<Integer> receiverCardIds) {
@@ -164,5 +219,17 @@ public class TradeService {
             if (pc.getId() == receiverCardId) return;
         }
         throw new IllegalArgumentException("Modtagerens kort er ikke markeret til bytte");
+    }
+
+    // --- Intern behandling ---
+
+    private void fjernFraBytteliste(int tradeId) {
+        for (TradeCard tc : tradeCardRepository.findByTradeId(tradeId)) {
+            PlayerCard pc = playerCardRepository.findById(tc.getPlayerCardId());
+            if (pc != null) {
+                pc.unmarkForTrade();
+                playerCardRepository.update(pc);
+            }
+        }
     }
 }

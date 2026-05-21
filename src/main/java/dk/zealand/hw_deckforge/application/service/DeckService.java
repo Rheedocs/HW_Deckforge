@@ -59,6 +59,11 @@ public class DeckService {
             throw new AccessDeniedException("Du har ikke adgang til dette deck");
     }
 
+    public void checkOwnerAccess(Deck deck, boolean isSelf, boolean isAdmin) {
+        if (!isSelf && !isAdmin)
+            throw new AccessDeniedException("Du har ikke adgang til dette deck");
+    }
+
     public void create(Deck deck) {
         validateDeck(deck);
         deckRepository.save(deck);
