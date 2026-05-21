@@ -2,9 +2,7 @@ package dk.zealand.hw_deckforge.presentation.controllers;
 
 import dk.zealand.hw_deckforge.application.service.CardService;
 import dk.zealand.hw_deckforge.application.service.PlayerCardService;
-import dk.zealand.hw_deckforge.application.service.PlayerService;
 import dk.zealand.hw_deckforge.domain.Card;
-import dk.zealand.hw_deckforge.domain.Player;
 import dk.zealand.hw_deckforge.domain.enums.CardType;
 import dk.zealand.hw_deckforge.domain.enums.Color;
 import dk.zealand.hw_deckforge.domain.enums.Rarity;
@@ -20,13 +18,10 @@ public class CardController {
 
     private final CardService cardService;
     private final PlayerCardService playerCardService;
-    private final PlayerService playerService;
 
-    public CardController(CardService cardService, PlayerCardService playerCardService,
-                          PlayerService playerService) {
+    public CardController(CardService cardService, PlayerCardService playerCardService) {
         this.cardService = cardService;
         this.playerCardService = playerCardService;
-        this.playerService = playerService;
     }
 
     // --- Kortliste ---
@@ -51,9 +46,7 @@ public class CardController {
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute Card card,
-                         @RequestParam(required = false) String scryfallUrl,
-                         HttpSession session) {
+    public String create(@ModelAttribute Card card, @RequestParam(required = false) String scryfallUrl, HttpSession session) {
         if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
         cardService.create(card, scryfallUrl);
         return "redirect:/cards";
@@ -70,10 +63,8 @@ public class CardController {
     }
 
     @PostMapping("/{id}/edit")
-    public String update(@PathVariable int id,
-                         @ModelAttribute Card card,
-                         @RequestParam(required = false) String scryfallUrl,
-                         HttpSession session) {
+    public String update(@PathVariable int id, @ModelAttribute Card card,
+                         @RequestParam(required = false) String scryfallUrl, HttpSession session) {
         if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
         card.setId(id);
         cardService.update(card, scryfallUrl);
@@ -101,52 +92,32 @@ public class CardController {
     // --- Spillersamling ---
 
     @GetMapping("/player/{playerId}")
-    public String getPlayerCollection(@PathVariable int playerId, Model model, HttpSession session) {
-        Player owner = playerService.getById(playerId);
-        boolean isSelf = AuthHelper.isSelf(session, playerId);
-        boolean isAdmin = AuthHelper.isAdmin(session);
-        playerService.checkCollectionAccess(playerId, isSelf, isAdmin);
-        model.addAttribute("playerCards", playerCardService.getVisibleCards(
-                playerId, owner.getCollectionVisibility(), isSelf, isAdmin));
-        model.addAttribute("cardMap", cardService.getCardMap());
-        boolean canManage = isSelf || isAdmin;
-        model.addAttribute("owner", owner);
-        model.addAttribute("isSelf", isSelf);
-        model.addAttribute("canManage", canManage);
-        if (canManage) {
-            model.addAttribute("allCards", cardService.getAll());
-            model.addAttribute("collectionMap", playerCardService.getPlayerCardMap(playerId));
-        }
-        return "cards/player-collection";
+    public String redirectPlayerCollection(@PathVariable int playerId) {
+        return "redirect:/players/" + playerId + "/collection";
     }
 
     @PostMapping("/player/{playerId}/add")
-    public String addToCollection(@PathVariable int playerId,
-                                  @RequestParam int cardId,
-                                  @RequestParam int quantity,
-                                  HttpSession session) {
+    public String addToCollection(@PathVariable int playerId, @RequestParam int cardId,
+                                  @RequestParam int quantity, HttpSession session) {
         if (!AuthHelper.isAdminOrSelf(session, playerId)) return "redirect:/access-denied";
         playerCardService.addCard(playerId, cardId, quantity);
-        return "redirect:/cards/player/" + playerId;
+        return "redirect:/players/" + playerId + "/collection";
     }
 
     @PostMapping("/player/{playerId}/{playerCardId}/remove")
-    public String removeFromCollection(@PathVariable int playerId,
-                                       @PathVariable int playerCardId,
-                                       @RequestParam(defaultValue = "1") int quantity,
-                                       HttpSession session) {
+    public String removeFromCollection(@PathVariable int playerId, @PathVariable int playerCardId,
+                                       @RequestParam(defaultValue = "1") int quantity, HttpSession session) {
         if (!AuthHelper.isAdminOrSelf(session, playerId)) return "redirect:/access-denied";
         playerCardService.removeCard(playerCardId, quantity);
-        return "redirect:/cards/player/" + playerId;
+        return "redirect:/players/" + playerId + "/collection";
     }
 
     @PostMapping("/player/{playerId}/{playerCardId}/set-trade")
-    public String setForTrade(@PathVariable int playerId,
-                              @PathVariable int playerCardId,
-                              @RequestParam boolean forTrade,
-                              HttpSession session) {
+    public String setForTrade(@PathVariable int playerId, @PathVariable int playerCardId,
+                              @RequestParam boolean forTrade, HttpSession session) {
         if (!AuthHelper.isAdminOrSelf(session, playerId)) return "redirect:/access-denied";
         playerCardService.setForTrade(playerCardId, forTrade);
-        return "redirect:/cards/player/" + playerId;
+        return "redirect:/players/" + playerId + "/collection";
     }
 }
+

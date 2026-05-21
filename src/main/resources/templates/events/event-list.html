@@ -8,25 +8,55 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}">
     <link rel="stylesheet" th:href="@{/css/components.css}">
     <link rel="stylesheet" th:href="@{/css/utilities.css}">
+    <link rel="stylesheet" th:href="@{/css/cards.css}">
+    <link rel="stylesheet" th:href="@{/css/card-picker.css}">
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
 
 <main>
     <div th:with="isAdmin=${session.player != null and session.player.role.name() == 'ADMIN'}">
-        <div class="action-col">
-            <h2>Events</h2>
-        </div>
+        <h2>Events</h2>
         <a class="btn list-action" th:if="${isAdmin}" th:href="@{/events/create}">Opret nyt event</a>
 
         <section class="info-section">
             <h3>Kommende events</h3>
 
-            <p class="info" th:if="${events == null or #lists.isEmpty(events)}">
-                Der er ingen events endnu.
-            </p>
+            <p class="info" th:if="${events == null or #lists.isEmpty(events)}">Der er ingen events endnu.</p>
 
-            <div class="table-wrapper" th:if="${events != null and !#lists.isEmpty(events)}">
+            <!-- Mobil -->
+            <div class="list-grid event-list-grid" th:if="${events != null and !#lists.isEmpty(events)}">
+                <div th:each="event : ${events}" th:if="${event.upcoming}" class="list-thumb event-thumb">
+                    <div class="list-thumb-title">
+                        <a th:href="@{/events/{id}(id=${event.id})}" th:text="${event.name}"></a>
+                    </div>
+                    <div class="list-thumb-meta">
+                        <span th:text="${event.date}"></span>
+                    </div>
+                    <div class="list-thumb-meta">
+                        <span th:text="${event.location}"></span>
+                    </div>
+                    <div class="list-thumb-meta">
+                        <span th:text="${event.format.displayName}"></span>
+                        <span> · </span>
+                        <span th:text="${event.maxPlayers} + ' pladser'"></span>
+                    </div>
+                    <div class="list-thumb-meta">
+                        <span class="badge badge-upcoming">Kommende</span>
+                    </div>
+                    <div class="list-thumb-actions">
+                        <a class="btn card-thumb-action event-thumb-primary-action"
+                           th:href="@{/events/{id}(id=${event.id})}">Se event</a>
+                        <a class="btn btn-secondary card-thumb-action" th:if="${isAdmin}"
+                           th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
+                        <a class="btn btn-danger card-thumb-action" th:if="${isAdmin}"
+                           th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop -->
+            <div class="table-wrapper desktop-table" th:if="${events != null and !#lists.isEmpty(events)}">
                 <table>
                     <thead>
                     <tr>
@@ -44,16 +74,14 @@
                         <td th:text="${event.name}"></td>
                         <td th:text="${event.date}"></td>
                         <td th:text="${event.location}"></td>
-                        <td th:text="${event.format}"></td>
+                        <td th:text="${event.format.displayName}"></td>
                         <td th:text="${event.maxPlayers}"></td>
                         <td><span class="badge badge-upcoming">Kommende</span></td>
                         <td>
                             <div class="action-col">
                                 <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
-                                <a class="btn" th:if="${isAdmin}"
-                                   th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
-                                <a class="btn btn-danger" th:if="${isAdmin}"
-                                   th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                                <a class="btn" th:if="${isAdmin}" th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
+                                <a class="btn btn-danger" th:if="${isAdmin}" th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
                             </div>
                         </td>
                     </tr>
@@ -65,7 +93,40 @@
         <section class="info-section">
             <h3>Tidligere events</h3>
 
-            <div class="table-wrapper" th:if="${events != null and !#lists.isEmpty(events)}">
+            <!-- Mobil -->
+            <div class="list-grid event-list-grid" th:if="${events != null and !#lists.isEmpty(events)}">
+                <div th:each="event : ${events}" th:if="${!event.upcoming}" class="list-thumb event-thumb">
+                    <div class="list-thumb-title">
+                        <a th:href="@{/events/{id}(id=${event.id})}" th:text="${event.name}"></a>
+                    </div>
+                    <div class="list-thumb-meta">
+                        <span th:text="${event.date}"></span>
+                    </div>
+                    <div class="list-thumb-meta">
+                        <span th:text="${event.location}"></span>
+                    </div>
+                    <div class="list-thumb-meta">
+                        <span th:text="${event.format.displayName}"></span>
+                        <span> · </span>
+                        <span th:text="${event.maxPlayers} + ' pladser'"></span>
+                    </div>
+                    <div class="list-thumb-meta">
+                        <span class="badge badge-ongoing" th:if="${event.ongoing}">Igangværende</span>
+                        <span class="badge badge-completed" th:if="${event.completed}">Afsluttet</span>
+                        <span class="badge badge-cancelled" th:if="${event.cancelled}">Aflyst</span>
+                    </div>
+                    <div class="list-thumb-actions">
+                        <a class="btn btn-secondary card-thumb-action" th:href="@{/events/{id}(id=${event.id})}">Se</a>
+                        <a class="btn btn-secondary card-thumb-action" th:if="${isAdmin}"
+                           th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
+                        <a class="btn btn-danger card-thumb-action" th:if="${isAdmin}"
+                           th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop -->
+            <div class="table-wrapper desktop-table" th:if="${events != null and !#lists.isEmpty(events)}">
                 <table>
                     <thead>
                     <tr>
@@ -83,7 +144,7 @@
                         <td th:text="${event.name}"></td>
                         <td th:text="${event.date}"></td>
                         <td th:text="${event.location}"></td>
-                        <td th:text="${event.format}"></td>
+                        <td th:text="${event.format.displayName}"></td>
                         <td th:text="${event.maxPlayers}"></td>
                         <td>
                             <span class="badge badge-ongoing" th:if="${event.ongoing}">Igangværende</span>
@@ -93,10 +154,8 @@
                         <td>
                             <div class="action-col">
                                 <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>
-                                <a class="btn" th:if="${isAdmin}"
-                                   th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
-                                <a class="btn btn-danger" th:if="${isAdmin}"
-                                   th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
+                                <a class="btn" th:if="${isAdmin}" th:href="@{/events/{id}/edit(id=${event.id})}">Rediger</a>
+                                <a class="btn btn-danger" th:if="${isAdmin}" th:href="@{/events/{id}/delete(id=${event.id})}">Slet</a>
                             </div>
                         </td>
                     </tr>

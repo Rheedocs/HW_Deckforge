@@ -27,7 +27,7 @@
     <p th:if="${#lists.isEmpty(playerCards)}">Ingen kort i samlingen.</p>
 
     <!-- Mobil: kortgrid med thumbnails -->
-    <div class="card-grid" th:unless="${#lists.isEmpty(playerCards)}">
+    <div class="card-grid" id="playerCollectionGrid" th:unless="${#lists.isEmpty(playerCards)}">
         <div th:each="pc : ${playerCards}" th:with="card=${cardMap[pc.cardId]}"
              class="card-thumb"
              th:data-name="${card != null ? card.name : '–'}"
@@ -57,6 +57,13 @@
                 <span th:text="'×' + ${pc.quantity}"></span>
             </div>
         </div>
+    </div>
+    <div class="pagination-controls" id="playerCollectionPagination" data-picker="playerCollectionGrid"
+         th:unless="${#lists.isEmpty(playerCards)}">
+        <button class="btn" id="playerCollectionPaginationForrige" type="button" onclick="changePage(this, -1)">←
+        </button>
+        <span class="pagination-info" id="playerCollectionPaginationInfo"></span>
+        <button class="btn" id="playerCollectionPaginationNæste" type="button" onclick="changePage(this, 1)">→</button>
     </div>
 
     <!-- Desktop: tabel -->

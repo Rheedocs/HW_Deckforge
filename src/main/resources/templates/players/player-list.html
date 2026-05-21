@@ -15,14 +15,13 @@
 <body>
 <header th:replace="~{fragments :: header}"></header>
 <main>
-    <div th:with="isAdmin=${session.player != null
-                  and session.player.role.name() == 'ADMIN'}">
+    <div th:with="isAdmin=${session.player != null and session.player.role.name() == 'ADMIN'}">
         <h2>Spillere</h2>
         <input type="text" id="playerSearch" placeholder="Søg spillere..." oninput="filterPlayerList()">
 
         <!-- Mobil: liste grid -->
-        <div class="list-grid">
-            <div th:each="player : ${players}" class="list-thumb">
+        <div class="list-grid player-list-grid">
+            <div th:each="player : ${players}" class="list-thumb player-thumb">
                 <div class="list-thumb-title">
                     <a th:href="@{/players/{id}(id=${player.id})}" th:text="${player.username}"></a>
                     <span th:if="${player.role.name() == 'ADMIN'}" class="badge badge-completed">Admin</span>
@@ -39,7 +38,7 @@
                        th:href="@{/players/{id}/delete(id=${player.id})}">Slet</a>
                     <a class="btn btn-secondary card-thumb-action"
                        th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
-                       th:href="@{/cards/player/{id}(id=${player.id})}">Samling</a>
+                       th:href="@{/players/{id}/collection(id=${player.id})}">Samling</a>
                     <a class="btn btn-secondary card-thumb-action"
                        th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
                        th:href="@{/decks/player/{id}(id=${player.id})}">Decks</a>
@@ -70,8 +69,7 @@
                 <tr th:each="player : ${players}">
                     <td th:if="${isAdmin}" th:text="${player.id}"></td>
                     <td>
-                        <a th:href="@{/players/{id}(id=${player.id})}"
-                           th:text="${player.username}"></a>
+                        <a th:href="@{/players/{id}(id=${player.id})}" th:text="${player.username}"></a>
                         <span th:if="${player.role.name() == 'ADMIN'}" class="badge badge-completed">Admin</span>
                     </td>
                     <td th:if="${isAdmin}" th:text="${player.email}"></td>
@@ -90,7 +88,7 @@
                                th:href="@{/players/{id}/delete(id=${player.id})}">Slet</a>
                             <a class="btn btn-secondary card-thumb-action"
                                th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
-                               th:href="@{/cards/player/{id}(id=${player.id})}">Samling</a>
+                               th:href="@{/players/{id}/collection(id=${player.id})}">Samling</a>
                             <a class="btn btn-secondary card-thumb-action"
                                th:if="${session.player.id != player.id and player.collectionVisibility.name() != 'PRIVATE'}"
                                th:href="@{/decks/player/{id}(id=${player.id})}">Decks</a>

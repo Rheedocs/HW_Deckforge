@@ -30,7 +30,7 @@
             </select>
         </div>
         <!-- Mobil: kortgrid med thumbnails -->
-        <div class="card-grid">
+        <div class="card-grid" id="cardListGrid">
             <div th:each="card : ${cards}"
                  class="card-thumb"
                  th:data-name="${card.name}"
@@ -47,6 +47,12 @@
                 <img th:if="${card.hasImage()}" th:src="${card.imageUrl}" th:alt="${card.name}">
                 <div class="card-thumb-name" th:text="${card.name}"></div>
             </div>
+        </div>
+
+        <div class="pagination-controls" id="cardListPagination" data-picker="cardListGrid">
+            <button class="btn" id="cardListPaginationForrige" type="button" onclick="changePage(this, -1)">←</button>
+            <span class="pagination-info" id="cardListPaginationInfo"></span>
+            <button class="btn" id="cardListPaginationNæste" type="button" onclick="changePage(this, 1)">→</button>
         </div>
 
         <!-- Desktop: tabel -->

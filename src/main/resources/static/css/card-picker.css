@@ -198,6 +198,23 @@
     min-width: unset;
 }
 
+.event-thumb {
+    gap: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.event-thumb .list-thumb-title {
+    margin-bottom: 6px;
+}
+
+.event-thumb .list-thumb-meta {
+    margin-bottom: 4px;
+}
+
+.event-thumb .list-thumb-actions {
+    margin-top: 10px;
+}
+
 /* --- Desktop --- */
 
 @media (min-width: 768px) {
@@ -214,4 +231,77 @@
     .list-thumb-actions .btn {
         min-height: 44px;
     }
+}
+
+/* --- Mobil: kortvisning --- */
+
+@media (max-width: 767px) {
+    .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .card-picker {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .card-thumb-name {
+        font-size: 0.85rem;
+        line-height: 1.2;
+        min-height: 2.4em;
+    }
+}
+
+/* --- Eventliste --- */
+
+.list-grid.event-list-grid {
+    grid-template-columns: 1fr;
+}
+
+.event-thumb-primary-action {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+}
+
+/* --- Listekort: spillere, decks og bytninger --- */
+
+main .list-grid.player-list-grid,
+main .list-grid.deck-list-grid,
+main .list-grid.trade-list-grid {
+    grid-template-columns: 1fr;
+}
+
+.player-thumb,
+.deck-thumb,
+.trade-thumb {
+    gap: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.player-thumb .list-thumb-title,
+.deck-thumb .list-thumb-title,
+.trade-thumb .list-thumb-title {
+    margin-bottom: 6px;
+}
+
+.player-thumb .list-thumb-meta,
+.deck-thumb .list-thumb-meta,
+.trade-thumb .list-thumb-meta {
+    margin-bottom: 4px;
+}
+
+.player-thumb .list-thumb-actions,
+.deck-thumb .list-thumb-actions,
+.trade-thumb .list-thumb-actions {
+    margin-top: 10px;
+}
+
+.player-thumb .list-thumb-actions .btn,
+.deck-thumb .list-thumb-actions .btn,
+.trade-thumb .list-thumb-actions .btn {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
 }

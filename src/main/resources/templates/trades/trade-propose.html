@@ -12,31 +12,35 @@
 <body>
 <header th:replace="~{fragments :: header}"></header>
 <main>
-    <h2>Foreslå bytte</h2>
-    <form th:action="@{/trades/propose/{receiverId}(receiverId=${receiverId})}" method="post">
+    <section class="info-section">
+        <h2>Foreslå bytte</h2>
 
-        <label for="proposerCardIds">Dit kort:</label>
-        <select id="proposerCardIds" name="proposerCardIds" required>
-            <option value="" disabled selected>Vælg dit kort</option>
-            <option th:each="card : ${proposerCards}"
-                    th:value="${card.id}"
-                    th:text="${cardMap[card.cardId] != null ? cardMap[card.cardId].name + ' ('
-                    + card.quantity + ' ejet)' : card.cardId}"></option>
-        </select>
+        <form th:action="@{/trades/propose/{receiverId}(receiverId=${receiverId})}" method="post">
+            <label for="proposerCardIds">Dit kort:</label>
+            <select id="proposerCardIds" name="proposerCardIds" required>
+                <option value="" disabled selected>Vælg dit kort</option>
+                <option th:each="card : ${proposerCards}"
+                        th:value="${card.id}"
+                        th:text="${cardMap[card.cardId] != null ? cardMap[card.cardId].name + ' (' + card.quantity + ' ejet)' : card.cardId}">
+                </option>
+            </select>
 
-        <label for="receiverCardIds">Modtagerens kort:</label>
-        <select id="receiverCardIds" name="receiverCardIds" required>
-            <option value="" disabled th:selected="${preselectedReceiverCardId == null}">Vælg modtagerens kort</option>
-            <option th:each="card : ${receiverCards}"
-                    th:value="${card.id}"
-                    th:selected="${preselectedReceiverCardId != null and preselectedReceiverCardId == card.id}"
-                    th:text="${cardMap[card.cardId] != null ? cardMap[card.cardId].name + ' (' + card.quantity + ' ejet)' : card.cardId}"></option>
-        </select>
+            <label for="receiverCardIds">Modtagerens kort:</label>
+            <select id="receiverCardIds" name="receiverCardIds" required>
+                <option value="" disabled th:selected="${preselectedReceiverCardId == null}">Vælg modtagerens kort</option>
+                <option th:each="card : ${receiverCards}"
+                        th:value="${card.id}"
+                        th:selected="${preselectedReceiverCardId != null and preselectedReceiverCardId == card.id}"
+                        th:text="${cardMap[card.cardId] != null ? cardMap[card.cardId].name + ' (' + card.quantity + ' ejet)' : card.cardId}">
+                </option>
+            </select>
 
-        <button type="submit">Send bytteforslag</button>
-    </form>
-
-    <a class="btn" th:href="@{/trades}">Tilbage</a>
+            <div class="action-col">
+                <button type="submit">Send bytteforslag</button>
+                <a class="btn btn-secondary" th:href="@{/trades}">Tilbage</a>
+            </div>
+        </form>
+    </section>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>

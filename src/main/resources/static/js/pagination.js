@@ -53,6 +53,7 @@ function filterCardList() {
     document.querySelectorAll(".card-grid .card-thumb").forEach(function (el) {
         el.classList.toggle("filter-hidden", !matchesFilter(el, searchText, selectedColor, selectedType));
     });
+    if (document.getElementById("cardListGrid")) showPage("cardListGrid", "cardListPagination", 1);
 
     // Desktop: filtrer tabelrækker — name=1, type=2, color=3
     document.querySelectorAll(".desktop-table tbody tr").forEach(function (tr) {
@@ -140,22 +141,23 @@ function initPagination(pickerId, controlId) {
 
 function showPage(pickerId, controlId, side) {
     let pageSize = getPageSize();
-    let items = document.querySelectorAll("#" + pickerId + " .card-picker-item:not(.filter-hidden)");
+    let selector = "#" + pickerId + " .card-picker-item:not(.filter-hidden), " +
+        "#" + pickerId + " .card-thumb:not(.filter-hidden)";
+    let items = document.querySelectorAll(selector);
     let total = items.length;
     let pages = Math.max(1, Math.ceil(total / pageSize));
     if (side < 1) side = 1;
     if (side > pages) side = pages;
     pagination[pickerId] = side;
 
-    document.querySelectorAll("#" + pickerId + " .card-picker-item").forEach(function (item) {
+    let allSelector = "#" + pickerId + " .card-picker-item, " +
+        "#" + pickerId + " .card-thumb";
+    document.querySelectorAll(allSelector).forEach(function (item) {
         item.classList.add("page-hidden");
     });
-    let counter = 0;
+
     for (let i = 0; i < items.length; i++) {
-        if (counter >= (side - 1) * pageSize && counter < side * pageSize) {
-            items[i].classList.remove("page-hidden");
-        }
-        counter++;
+        if (i >= (side - 1) * pageSize && i < side * pageSize) items[i].classList.remove("page-hidden");
     }
 
     let controls = document.getElementById(controlId);
@@ -180,10 +182,20 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (document.getElementById("collectionCardPicker")) {
         initPagination("collectionCardPicker", "collectionCardPagination");
-        buildFilterDropdowns("#collectionCardPicker .card-picker-item", "collectionCardColor", "collectionCardType");
+        buildFilterDropdowns("#collectionCardPicker .card-picker-item", "collectionCardColor",
+            "collectionCardType");
+    }
+    if (document.getElementById("playerCollectionGrid")) {
+        initPagination("playerCollectionGrid", "playerCollectionPagination");
+    }
+    if (document.getElementById("deckCardsGrid")) {
+        initPagination("deckCardsGrid", "deckCardsPagination");
     }
     if (document.getElementById("cardListSearch")) {
         buildFilterDropdowns(".card-grid .card-thumb", "cardListColor", "cardListType");
+    }
+    if (document.getElementById("cardListGrid")) {
+        initPagination("cardListGrid", "cardListPagination");
     }
     let quantityInput = document.getElementById("quantity");
     if (quantityInput) {

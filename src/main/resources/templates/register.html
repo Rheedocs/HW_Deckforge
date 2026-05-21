@@ -12,25 +12,34 @@
 <body>
 <header th:replace="~{fragments :: header}"></header>
 <main>
-    <h2>Opret konto</h2>
-    <div th:if="${error}" class="error" th:text="${error}"></div>
-    <form th:action="@{/players/register}" method="post">
-        <label for="username">Brugernavn:</label>
-        <input type="text" id="username" name="username" placeholder="Dit Brugernavn" required>
+    <section class="info-section">
+        <h2>Opret konto</h2>
 
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" placeholder="navn@domæne.dk" required>
+        <div th:if="${error}" class="error" th:text="${error}"></div>
 
-        <label for="password">Adgangskode:</label>
-        <input type="password" id="password" name="password" required>
-        <div class="consent">
-            <input type="checkbox" id="consent" name="consent" required>
-            <label for="consent">Jeg accepterer at Deckforge gemmer mine oplysninger i henhold til vores <a
-                    th:href="@{/privacy}">privatlivspolitik</a>.</label>
-        </div>
-        <button type="submit">Opret konto</button>
-    </form>
-    <p>Har du allerede en konto? <a th:href="@{/login}">Log ind</a></p>
+        <form th:action="@{/players/register}" method="post">
+            <label for="username">Brugernavn:</label>
+            <input type="text" id="username" name="username" placeholder="Dit brugernavn" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="navn@domæne.dk" required>
+
+            <label for="password">Adgangskode:</label>
+            <input type="password" id="password" name="password" required>
+
+            <div class="consent">
+                <input type="checkbox" id="consent" name="consent" required>
+                <label for="consent">
+                    Jeg accepterer at Deckforge gemmer mine oplysninger i henhold til vores
+                    <a th:href="@{/privacy}">privatlivspolitik</a>.
+                </label>
+            </div>
+
+            <button type="submit">Opret konto</button>
+        </form>
+
+        <p>Har du allerede en konto? <a th:href="@{/login}">Log ind</a></p>
+    </section>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>

@@ -12,14 +12,18 @@
 <body>
 <header th:replace="~{fragments :: header}"></header>
 <main>
-    <h2>Bekræft sletning</h2>
-    <p>Er du sikker på at du vil slette <strong th:text="${navn}"></strong>?</p>
-    <div style="margin-top: 16px; display: flex; gap: 8px; align-items: center;">
-        <form th:action="${deleteUrl}" method="post">
-            <button type="submit" class="btn btn-danger">Ja, slet</button>
-        </form>
-        <a class="btn" th:href="${tilbage}">Tilbage</a>
-    </div>
+    <section class="info-section">
+        <h2>Bekræft sletning</h2>
+
+        <p>Er du sikker på at du vil slette <strong th:text="${navn != null ? navn : event.name}"></strong>?</p>
+
+        <div class="action-col">
+            <form th:action="${deleteUrl}" method="post">
+                <button type="submit" class="btn btn-danger">Ja, slet</button>
+            </form>
+            <a class="btn btn-secondary" th:href="${cancelUrl != null ? cancelUrl : tilbage}">Tilbage</a>
+        </div>
+    </section>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>

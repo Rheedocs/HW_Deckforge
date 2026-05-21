@@ -26,11 +26,13 @@
 
     <div class="profile-stats-grid" th:unless="${isPrivate}">
         <div class="info-section stat-box">
-            <span class="stat-number">0</span>
-            <span class="stat-label">Turneringer</span>
+            <a th:href="@{/events}">
+                <span class="stat-number" th:text="${eventCount}">0</span>
+                <span class="stat-label">Turneringer</span>
+            </a>
         </div>
         <div class="info-section stat-box">
-            <a th:href="@{/cards/player/{id}(id=${player.id})}">
+            <a th:href="@{/players/{id}/collection(id=${player.id})}">
                 <span class="stat-number" th:text="${cardCount}">0</span>
                 <span class="stat-label">Kort</span>
             </a>
