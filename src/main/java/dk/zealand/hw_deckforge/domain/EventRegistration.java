@@ -8,13 +8,22 @@ public class EventRegistration {
     private final int eventId;
     private final int deckId;
     private final LocalDate registrationDate;
+    private final String playerName;
+    private final String deckName;
 
     public EventRegistration(int id, int playerId, int eventId, int deckId, LocalDate registrationDate) {
+        this(id, playerId, eventId, deckId, registrationDate, null, null);
+    }
+
+    public EventRegistration(int id, int playerId, int eventId, int deckId, LocalDate registrationDate,
+                             String playerName, String deckName) {
         this.id = id;
         this.playerId = playerId;
         this.eventId = eventId;
         this.deckId = deckId;
         this.registrationDate = registrationDate;
+        this.playerName = playerName;
+        this.deckName = deckName;
     }
 
     public int getId() { return id; }
@@ -22,4 +31,6 @@ public class EventRegistration {
     public int getEventId() { return eventId; }
     public int getDeckId() { return deckId; }
     public LocalDate getRegistrationDate() { return registrationDate; }
+    public String getPlayerName() { return playerName; }
+    public String getDeckName() { return deckName; }
 }

@@ -2,6 +2,7 @@ package dk.zealand.hw_deckforge.application.service;
 
 import dk.zealand.hw_deckforge.application.interfaces.IEventRepository;
 import dk.zealand.hw_deckforge.domain.Event;
+import dk.zealand.hw_deckforge.domain.EventRegistration;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +32,11 @@ public class EventService {
 
     public List<Event> getUpcoming() {
         return eventRepository.findUpcoming();
+    }
+
+    public List<EventRegistration> getRegistrationsByEventId(int eventId) {
+        if (eventId <= 0) throw new IllegalArgumentException("EventId skal være større end nul");
+        return eventRepository.findRegistrationsByEventId(eventId);
     }
 
     // --- Livscyklus ---
@@ -65,8 +71,11 @@ public class EventService {
     public void registerPlayer(int playerId, int eventId, int deckId) {
         if (playerId <= 0 || eventId <= 0 || deckId <= 0)
             throw new IllegalArgumentException("playerId, eventId og deckId skal alle være større end nul!");
-        if (eventRepository.findById(eventId) == null)
-            throw new NoSuchElementException("Ingen event fundet med id: " + eventId);
+        Event event = eventRepository.findById(eventId);
+        if (event == null) throw new NoSuchElementException("Ingen event fundet med id: " + eventId);
+        if (!event.isUpcoming()) throw new IllegalArgumentException("Du kan kun tilmelde dig kommende events");
+        if (eventRepository.existsRegistration(playerId, eventId)) throw new IllegalArgumentException("Du er allerede tilmeldt dette event");
+        if (eventRepository.countRegistrations(eventId) >= event.getMaxPlayers()) throw new IllegalArgumentException("Eventet er fuldt");
         eventRepository.registerPlayer(playerId, eventId, deckId);
     }
 

@@ -34,11 +34,11 @@ public class EventController {
     public String showDetail(@PathVariable int id, Model model, HttpSession session) {
         Event event = eventService.getById(id);
         model.addAttribute("event", event);
+        model.addAttribute("registrations", eventService.getRegistrationsByEventId(id));
         Player player = (Player) session.getAttribute("player");
         if (player != null) model.addAttribute("decks", deckService.getByPlayerIdAndFormat(player.getId(), event.getFormat()));
         return "events/event-detail";
     }
-
     // --- Livscyklus ---
 
     @GetMapping("/create")

@@ -40,7 +40,7 @@
         </div>
     </section>
 
-    <section class="info-section">
+    <section class="info-section" th:with="isAdmin=${session.player != null and session.player.role.name() == 'ADMIN'}">
         <h3>Tilmeldte spillere</h3>
 
         <p class="info" th:if="${registrations == null or #lists.isEmpty(registrations)}">
@@ -51,16 +51,22 @@
             <table>
                 <thead>
                 <tr>
+                    <th th:if="${isAdmin}">Tilmelding ID</th>
+                    <th th:if="${isAdmin}">Spiller ID</th>
                     <th>Spiller</th>
+                    <th th:if="${isAdmin}">Deck ID</th>
                     <th>Deck</th>
-                    <th>Tilmeldingsdato</th>
+                    <th th:if="${isAdmin}">Tilmeldingsdato</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="reg : ${registrations}">
-                    <td th:text="${reg.playerId}"></td>
-                    <td th:text="${reg.deckId}"></td>
-                    <td th:text="${reg.registrationDate}"></td>
+                    <td th:if="${isAdmin}" th:text="${reg.id}"></td>
+                    <td th:if="${isAdmin}" th:text="${reg.playerId}"></td>
+                    <td th:text="${reg.playerName}"></td>
+                    <td th:if="${isAdmin}" th:text="${reg.deckId}"></td>
+                    <td th:text="${reg.deckName}"></td>
+                    <td th:if="${isAdmin}" th:text="${reg.registrationDate}"></td>
                 </tr>
                 </tbody>
             </table>

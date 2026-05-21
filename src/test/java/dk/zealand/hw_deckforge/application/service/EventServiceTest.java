@@ -126,9 +126,21 @@ class EventServiceTest {
     @Test
     void registerPlayer_callsRegisterPlayer() {
         when(eventRepository.findById(1)).thenReturn(validEvent);
+        when(eventRepository.existsRegistration(20, 1)).thenReturn(false);
+        when(eventRepository.countRegistrations(1)).thenReturn(0);
 
         eventService.registerPlayer(20, 1, 5);
 
         verify(eventRepository).registerPlayer(20, 1, 5);
+    }
+
+    @Test
+    void registerPlayer_fullEvent_throwsIllegalArgument() {
+        when(eventRepository.findById(1)).thenReturn(validEvent);
+        when(eventRepository.existsRegistration(20, 1)).thenReturn(false);
+        when(eventRepository.countRegistrations(1)).thenReturn(16);
+
+        assertThrows(IllegalArgumentException.class, () -> eventService.registerPlayer(20, 1, 5));
+        verify(eventRepository, never()).registerPlayer(anyInt(), anyInt(), anyInt());
     }
 }
