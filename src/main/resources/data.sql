@@ -229,108 +229,398 @@ INSERT INTO card (
 INSERT INTO player_card (
     player_id, card_id, quantity, for_trade
 ) VALUES
-      -- Con Galo (id 2) - rød aggro spiller
-      (2, 1, 3, TRUE),   -- Shivan Dragon
-      (2, 3, 4, TRUE),   -- Lightning Bolt
-      (2, 18, 2, TRUE),  -- Chaos Warp
-      (2, 19, 2, FALSE), -- Goblin Guide
-      (2, 26, 4, FALSE), -- Mountain
-      (2, 6, 1, TRUE),   -- Sol Ring
-      (2, 22, 1, FALSE), -- Arcane Signet
-      -- Mattam Ei (id 3) - blå/sort kontrol spiller
-      (3, 2, 1, FALSE),  -- Black Lotus
-      (3, 5, 3, TRUE),   -- Counterspell
-      (3, 13, 4, TRUE),  -- Brainstorm
-      (3, 14, 1, FALSE), -- Cyclonic Rift
-      (3, 15, 2, TRUE),  -- Dark Ritual
-      (3, 16, 1, FALSE), -- Demonic Tutor
-      (3, 25, 4, FALSE), -- Island
-      (3, 27, 4, FALSE), -- Swamp
-      (3, 6, 1, FALSE),  -- Sol Ring
-      -- Wicky Icki (id 4) - hvid/grøn spiller
-      (4, 7, 1, FALSE),  -- Wrath of God
-      (4, 8, 4, FALSE),  -- Llanowar Elves
-      (4, 9, 1, TRUE),   -- Giada, Font of Hope
-      (4, 10, 2, TRUE),  -- Serra Angel
-      (4, 11, 2, FALSE), -- Path to Exile
-      (4, 20, 3, FALSE), -- Cultivate
-      (4, 24, 4, FALSE), -- Plains
-      (4, 4, 4, FALSE),  -- Forest
-      -- Holger Bluetooth (id 5) - mixed spiller
-      (5, 1, 1, TRUE),   -- Shivan Dragon
-      (5, 3, 2, FALSE),  -- Lightning Bolt
-      (5, 5, 2, TRUE),   -- Counterspell
-      (5, 9, 1, TRUE),   -- Giada, Font of Hope
-      (5, 17, 2, FALSE), -- Vampire Nighthawk
-      (5, 21, 2, TRUE),  -- Kodama's Reach
-      (5, 23, 1, FALSE), -- Command Tower
-      (5, 6, 1, FALSE),  -- Sol Ring
-      -- testspiller (id 6) - til bytte test:
-      (6, 3, 2, TRUE),   -- Lightning Bolt
-      (6, 6, 1, TRUE),   -- Sol Ring
-      (6, 12, 2, TRUE),  -- Swords to Plowshares
-      (6, 5, 2, FALSE),  -- Counterspell
-      (6, 24, 4, FALSE); -- Plains
+      -- Admin ejer bred demo-samling
+      (1, 1, 4, TRUE),
+      (1, 2, 1, FALSE),
+      (1, 3, 4, TRUE),
+      (1, 4, 40, FALSE),
+      (1, 5, 4, FALSE),
+      (1, 6, 4, TRUE),
+      (1, 7, 4, FALSE),
+      (1, 8, 4, FALSE),
+      (1, 9, 4, FALSE),
+      (1, 10, 4, FALSE),
+      (1, 11, 4, FALSE),
+      (1, 12, 4, FALSE),
+      (1, 13, 4, FALSE),
+      (1, 14, 4, FALSE),
+      (1, 15, 4, FALSE),
+      (1, 16, 4, FALSE),
+      (1, 17, 4, FALSE),
+      (1, 18, 4, TRUE),
+      (1, 19, 4, TRUE),
+      (1, 20, 4, FALSE),
+      (1, 21, 4, FALSE),
+      (1, 22, 4, FALSE),
+      (1, 23, 4, FALSE),
+      (1, 24, 40, FALSE),
+      (1, 25, 40, FALSE),
+      (1, 26, 40, FALSE),
+      (1, 27, 40, FALSE),
+
+      -- Con Galo
+      (2, 1, 4, TRUE),
+      (2, 3, 4, TRUE),
+      (2, 4, 40, FALSE),
+      (2, 6, 4, TRUE),
+      (2, 8, 4, FALSE),
+      (2, 18, 4, TRUE),
+      (2, 19, 4, FALSE),
+      (2, 20, 4, FALSE),
+      (2, 21, 4, FALSE),
+      (2, 22, 4, FALSE),
+      (2, 23, 4, FALSE),
+      (2, 24, 20, FALSE),
+      (2, 25, 20, FALSE),
+      (2, 26, 50, FALSE),
+      (2, 27, 20, FALSE),
+
+      -- Mattam Ei
+      (3, 2, 4, FALSE),
+      (3, 4, 30, FALSE),
+      (3, 5, 4, TRUE),
+      (3, 6, 4, FALSE),
+      (3, 13, 4, TRUE),
+      (3, 14, 4, FALSE),
+      (3, 15, 4, TRUE),
+      (3, 16, 4, FALSE),
+      (3, 17, 4, FALSE),
+      (3, 22, 4, FALSE),
+      (3, 23, 4, FALSE),
+      (3, 24, 30, FALSE),
+      (3, 25, 50, FALSE),
+      (3, 26, 20, FALSE),
+      (3, 27, 50, FALSE),
+
+      -- Wicky Icki
+      (4, 4, 40, FALSE),
+      (4, 7, 4, FALSE),
+      (4, 8, 4, FALSE),
+      (4, 9, 4, TRUE),
+      (4, 10, 4, TRUE),
+      (4, 11, 4, FALSE),
+      (4, 12, 4, FALSE),
+      (4, 20, 4, FALSE),
+      (4, 24, 50, FALSE),
+
+      -- Holger Bluetooth
+      (5, 1, 4, TRUE),
+      (5, 2, 1, FALSE),
+      (5, 3, 4, FALSE),
+      (5, 4, 40, FALSE),
+      (5, 5, 4, TRUE),
+      (5, 6, 4, FALSE),
+      (5, 9, 4, TRUE),
+      (5, 10, 4, FALSE),
+      (5, 14, 1, FALSE),
+      (5, 16, 1, FALSE),
+      (5, 17, 4, FALSE),
+      (5, 18, 4, FALSE),
+      (5, 21, 4, TRUE),
+      (5, 22, 4, FALSE),
+      (5, 23, 4, FALSE),
+      (5, 24, 40, FALSE),
+      (5, 25, 50, FALSE),
+      (5, 26, 40, FALSE),
+      (5, 27, 40, FALSE),
+
+      -- testspiller
+      (6, 3, 4, TRUE),
+      (6, 4, 40, FALSE),
+      (6, 5, 4, FALSE),
+      (6, 6, 4, TRUE),
+      (6, 10, 4, FALSE),
+      (6, 11, 4, FALSE),
+      (6, 12, 4, TRUE),
+      (6, 13, 4, FALSE),
+      (6, 17, 4, FALSE),
+      (6, 20, 4, FALSE),
+      (6, 22, 4, FALSE),
+      (6, 23, 4, FALSE),
+      (6, 24, 50, FALSE),
+      (6, 25, 40, FALSE),
+      (6, 26, 30, FALSE),
+      (6, 27, 40, FALSE);
 
 INSERT INTO deck (
     player_id, name, format, visibility
 ) VALUES
-      (1, 'Admin Test Deck', 'CASUAL', 'PUBLIC'),
-      (2, 'Goncalos Rod Aggro', 'STANDARD', 'PUBLIC'),
-      (3, 'Mattias Commander Deck', 'COMMANDER', 'PUBLIC'),
-      (4, 'Nickis Casual', 'CASUAL', 'PRIVATE'),
-      (5, 'Holgers Standard', 'STANDARD', 'PUBLIC');
+      (1, 'Admin Arena Toolbox', 'CASUAL', 'PUBLIC'),
+      (2, 'Goncalos Goblin Rush', 'STANDARD', 'PUBLIC'),
+      (3, 'Mattias Mind Control', 'COMMANDER', 'PUBLIC'),
+      (4, 'Nickis Angel Grove', 'CASUAL', 'PRIVATE'),
+      (5, 'Holgers Shop Meta', 'STANDARD', 'PUBLIC'),
+
+      -- Ekstra decks til test og fremlæggelse
+      (1, 'Admin Dragon Council', 'COMMANDER', 'PUBLIC'),
+      (1, 'Admin Lightning League', 'STANDARD', 'PUBLIC'),
+      (1, 'Admin Draft Survival Kit', 'DRAFT', 'PUBLIC'),
+      (2, 'Goncalos Command Zone Chaos', 'COMMANDER', 'PUBLIC'),
+      (2, 'Goncalos Kitchen Table Burn', 'CASUAL', 'PUBLIC'),
+      (3, 'Mattias Counterspell Clinic', 'STANDARD', 'PUBLIC'),
+      (3, 'Mattias Booster Brainstorm', 'DRAFT', 'PUBLIC'),
+      (4, 'Nickis Draft Angels', 'DRAFT', 'PRIVATE'),
+      (5, 'Holgers Friday Night Pile', 'CASUAL', 'PUBLIC'),
+      (5, 'Holgers Commander Counter', 'COMMANDER', 'PUBLIC'),
+      (6, 'Testspillers Sofa Magic', 'CASUAL', 'PUBLIC'),
+      (6, 'Testspillers Store Showdown', 'STANDARD', 'PUBLIC'),
+      (6, 'Testspillers Legendary Pile', 'COMMANDER', 'PUBLIC');
 
 INSERT INTO deck_card (
     deck_id, card_id, quantity
 ) VALUES
-      -- Deck 1: Admin Test Deck (casual)
-      (1, 1, 2),   -- Shivan Dragon
-      (1, 3, 4),   -- Lightning Bolt
-      (1, 7, 1),   -- Wrath of God
-      (1, 6, 1),   -- Sol Ring
-      (1, 26, 10), -- Mountain
-      -- Deck 2: Goncalos Rod Aggro (standard)
-      (2, 1, 3),   -- Shivan Dragon
-      (2, 3, 4),   -- Lightning Bolt
-      (2, 19, 2),  -- Goblin Guide
-      (2, 18, 2),  -- Chaos Warp
-      (2, 26, 10), -- Mountain
-      (2, 6, 1),   -- Sol Ring
-      -- Deck 3: Mattias Commander Deck (commander)
-      (3, 5, 3),   -- Counterspell
-      (3, 6, 1),   -- Sol Ring
-      (3, 13, 4),  -- Brainstorm
-      (3, 14, 1),  -- Cyclonic Rift
-      (3, 15, 2),  -- Dark Ritual
-      (3, 16, 1),  -- Demonic Tutor
-      (3, 25, 15), -- Island
-      (3, 27, 15), -- Swamp
-      (3, 23, 1),  -- Command Tower
-      -- Deck 4: Nickis Casual (casual)
-      (4, 7, 1),   -- Wrath of God
-      (4, 8, 4),   -- Llanowar Elves
-      (4, 9, 1),   -- Giada, Font of Hope
-      (4, 10, 2),  -- Serra Angel
-      (4, 11, 2),  -- Path to Exile
-      (4, 20, 3),  -- Cultivate
-      (4, 24, 10), -- Plains
-      (4, 4, 10),  -- Forest
-      -- Deck 5: Holgers Standard (standard)
-      (5, 1, 2),   -- Shivan Dragon
-      (5, 3, 3),   -- Lightning Bolt
-      (5, 5, 2),   -- Counterspell
-      (5, 17, 2),  -- Vampire Nighthawk
-      (5, 26, 8),  -- Mountain
-      (5, 25, 8),  -- Island
-      (5, 6, 1);   -- Sol Ring
+      -- Deck 1: Admin Arena Toolbox (casual)
+      (1, 1, 2),
+      (1, 3, 4),
+      (1, 7, 1),
+      (1, 6, 1),
+      (1, 26, 10),
+
+      -- Deck 2: Goncalos Goblin Rush (standard, 60 kort)
+      (2, 1, 4),
+      (2, 3, 4),
+      (2, 6, 4),
+      (2, 8, 4),
+      (2, 18, 4),
+      (2, 19, 4),
+      (2, 20, 4),
+      (2, 21, 4),
+      (2, 22, 4),
+      (2, 23, 4),
+      (2, 4, 4),
+      (2, 24, 4),
+      (2, 25, 4),
+      (2, 26, 4),
+      (2, 27, 4),
+
+      -- Deck 3: Mattias Mind Control (commander, 100 kort)
+      (3, 2, 1),
+      (3, 5, 1),
+      (3, 6, 1),
+      (3, 13, 1),
+      (3, 14, 1),
+      (3, 15, 1),
+      (3, 16, 1),
+      (3, 17, 1),
+      (3, 22, 1),
+      (3, 23, 1),
+      (3, 4, 20),
+      (3, 24, 18),
+      (3, 25, 25),
+      (3, 26, 10),
+      (3, 27, 25),
+
+      -- Deck 4: Nickis Angel Grove (casual)
+      (4, 7, 1),
+      (4, 8, 4),
+      (4, 9, 1),
+      (4, 10, 2),
+      (4, 11, 2),
+      (4, 20, 3),
+      (4, 24, 10),
+      (4, 4, 10),
+
+      -- Deck 5: Holgers Shop Meta (standard, 60 kort)
+      (5, 1, 4),
+      (5, 3, 4),
+      (5, 5, 4),
+      (5, 6, 4),
+      (5, 9, 4),
+      (5, 10, 4),
+      (5, 17, 4),
+      (5, 18, 4),
+      (5, 21, 4),
+      (5, 23, 4),
+      (5, 4, 4),
+      (5, 24, 4),
+      (5, 25, 4),
+      (5, 26, 4),
+      (5, 27, 4),
+
+      -- Deck 6: Admin Dragon Council (commander, 100 kort)
+      (6, 1, 1),
+      (6, 3, 1),
+      (6, 5, 1),
+      (6, 6, 1),
+      (6, 7, 1),
+      (6, 18, 1),
+      (6, 19, 1),
+      (6, 20, 1),
+      (6, 21, 1),
+      (6, 22, 1),
+      (6, 23, 1),
+      (6, 4, 24),
+      (6, 24, 20),
+      (6, 25, 10),
+      (6, 26, 25),
+      (6, 27, 10),
+
+      -- Deck 7: Admin Lightning League (standard, 60 kort)
+      (7, 3, 4),
+      (7, 5, 4),
+      (7, 6, 4),
+      (7, 8, 4),
+      (7, 12, 4),
+      (7, 13, 4),
+      (7, 18, 4),
+      (7, 19, 4),
+      (7, 20, 4),
+      (7, 22, 4),
+      (7, 4, 4),
+      (7, 24, 4),
+      (7, 25, 4),
+      (7, 26, 4),
+      (7, 27, 4),
+
+      -- Deck 8: Admin Draft Survival Kit (draft, 40 kort)
+      (8, 10, 2),
+      (8, 11, 2),
+      (8, 12, 2),
+      (8, 13, 2),
+      (8, 20, 2),
+      (8, 4, 8),
+      (8, 24, 8),
+      (8, 25, 8),
+      (8, 26, 4),
+      (8, 27, 4),
+
+      -- Deck 9: Goncalos Command Zone Chaos (commander, 100 kort)
+      (9, 1, 1),
+      (9, 3, 1),
+      (9, 6, 1),
+      (9, 8, 1),
+      (9, 18, 1),
+      (9, 19, 1),
+      (9, 20, 1),
+      (9, 21, 1),
+      (9, 22, 1),
+      (9, 23, 1),
+      (9, 4, 25),
+      (9, 24, 10),
+      (9, 25, 10),
+      (9, 26, 35),
+      (9, 27, 10),
+
+      -- Deck 10: Goncalos Kitchen Table Burn (casual)
+      (10, 1, 3),
+      (10, 3, 4),
+      (10, 18, 3),
+      (10, 19, 3),
+      (10, 6, 1),
+      (10, 26, 16),
+
+      -- Deck 11: Mattias Counterspell Clinic (standard, 60 kort)
+      (11, 2, 4),
+      (11, 5, 4),
+      (11, 6, 4),
+      (11, 13, 4),
+      (11, 14, 4),
+      (11, 15, 4),
+      (11, 16, 4),
+      (11, 17, 4),
+      (11, 22, 4),
+      (11, 23, 4),
+      (11, 4, 4),
+      (11, 24, 4),
+      (11, 25, 4),
+      (11, 26, 4),
+      (11, 27, 4),
+
+      -- Deck 12: Mattias Booster Brainstorm (draft, 40 kort)
+      (12, 5, 3),
+      (12, 13, 3),
+      (12, 15, 2),
+      (12, 17, 2),
+      (12, 25, 15),
+      (12, 27, 15),
+
+      -- Deck 13: Nickis Draft Angels (draft, 40 kort)
+      (13, 7, 1),
+      (13, 9, 1),
+      (13, 10, 3),
+      (13, 11, 2),
+      (13, 12, 2),
+      (13, 8, 3),
+      (13, 4, 14),
+      (13, 24, 14),
+
+      -- Deck 14: Holgers Friday Night Pile (casual)
+      (14, 1, 1),
+      (14, 3, 2),
+      (14, 5, 2),
+      (14, 9, 1),
+      (14, 17, 2),
+      (14, 21, 2),
+      (14, 23, 1),
+      (14, 6, 1),
+      (14, 4, 8),
+      (14, 25, 8),
+      (14, 26, 8),
+
+      -- Deck 15: Holgers Commander Counter (commander, 100 kort)
+      (15, 1, 1),
+      (15, 2, 1),
+      (15, 5, 1),
+      (15, 6, 1),
+      (15, 9, 1),
+      (15, 14, 1),
+      (15, 16, 1),
+      (15, 17, 1),
+      (15, 21, 1),
+      (15, 22, 1),
+      (15, 23, 1),
+      (15, 4, 20),
+      (15, 24, 15),
+      (15, 25, 25),
+      (15, 26, 15),
+      (15, 27, 24),
+
+      -- Deck 16: Testspillers Sofa Magic (casual)
+      (16, 3, 2),
+      (16, 6, 1),
+      (16, 12, 2),
+      (16, 24, 8),
+      (16, 25, 6),
+
+      -- Deck 17: Testspillers Store Showdown (standard, 60 kort)
+      (17, 3, 4),
+      (17, 5, 4),
+      (17, 6, 4),
+      (17, 10, 4),
+      (17, 11, 4),
+      (17, 12, 4),
+      (17, 13, 4),
+      (17, 17, 4),
+      (17, 22, 4),
+      (17, 23, 4),
+      (17, 4, 4),
+      (17, 24, 4),
+      (17, 25, 4),
+      (17, 26, 4),
+      (17, 27, 4),
+
+      -- Deck 18: Testspillers Legendary Pile (commander, 100 kort)
+      (18, 3, 1),
+      (18, 5, 1),
+      (18, 6, 1),
+      (18, 11, 1),
+      (18, 12, 1),
+      (18, 13, 1),
+      (18, 20, 1),
+      (18, 22, 1),
+      (18, 23, 1),
+      (18, 4, 20),
+      (18, 24, 30),
+      (18, 25, 20),
+      (18, 26, 10),
+      (18, 27, 21);
 
 INSERT INTO event (
     name, location, date,
     format, max_players, status
 ) VALUES
       (
-          'Commander Aften',
+          'Commander Clash i Næstved',
           'Deckforge Naestved',
           '2026-06-15',
           'COMMANDER',
@@ -338,7 +628,7 @@ INSERT INTO event (
           'UPCOMING'
       ),
       (
-          'Standard Turnering',
+          'Standard Showdown Søndag',
           'Deckforge Naestved',
           '2026-06-20',
           'STANDARD',
@@ -346,7 +636,7 @@ INSERT INTO event (
           'UPCOMING'
       ),
       (
-          'Casual Meetup',
+          'Casual Kort & Kaffe',
           'Deckforge Naestved',
           '2026-04-15',
           'CASUAL',
@@ -354,22 +644,62 @@ INSERT INTO event (
           'COMPLETED'
       ),
       (
-          'Draft Night',
+          'Draft Night: Boosters og Bragging Rights',
           'Deckforge Naestved',
           '2026-06-25',
           'DRAFT',
           8,
           'UPCOMING'
+      ),
+      (
+          'Fuldt Hus: Casual Chaos',
+          'Deckforge Naestved',
+          '2026-07-01',
+          'CASUAL',
+          2,
+          'UPCOMING'
+      ),
+      (
+          'Standard Sprint: Én Plads Tilbage',
+          'Deckforge Naestved',
+          '2026-07-05',
+          'STANDARD',
+          3,
+          'UPCOMING'
+      ),
+      (
+          'Commander Finale: Kongen af Bordet',
+          'Deckforge Naestved',
+          '2026-04-30',
+          'COMMANDER',
+          8,
+          'COMPLETED'
       );
 
 INSERT INTO event_registration (
     player_id, event_id, deck_id, registration_date
 ) VALUES
-      (2, 1, 2, '2026-05-01'),
-      (3, 1, 3, '2026-05-02'),
-      (4, 3, 4, '2026-04-10'),
-      (5, 3, 5, '2026-04-10'),
-      (2, 3, 2, '2026-04-11');
+      -- Commander Clash i Næstved, event 1
+      (1, 1, 6, '2026-05-01'),  -- Admin Dragon Council
+      (3, 1, 3, '2026-05-02'),  -- Mattias Mind Control
+
+      -- Casual Kort & Kaffe, event 3, afsluttet
+      (1, 3, 1, '2026-04-10'),  -- Admin Arena Toolbox
+      (4, 3, 4, '2026-04-10'),  -- Nickis Angel Grove
+      (5, 3, 14, '2026-04-11'), -- Holgers Friday Night Pile
+
+      -- Fuldt Hus: Casual Chaos, event 5, max 2
+      (4, 5, 4, '2026-05-12'),  -- Nickis Angel Grove
+      (6, 5, 16, '2026-05-12'), -- Testspillers Sofa Magic
+
+      -- Standard Sprint: Én Plads Tilbage, event 6, max 3
+      (2, 6, 2, '2026-05-13'),  -- Goncalos Goblin Rush
+      (5, 6, 5, '2026-05-13'),  -- Holgers Shop Meta
+
+      -- Commander Finale: Kongen af Bordet, event 7
+      (1, 7, 6, '2026-04-20'),  -- Admin Dragon Council
+      (3, 7, 3, '2026-04-20'),  -- Mattias Mind Control
+      (5, 7, 15, '2026-04-21'); -- Holgers Commander Counter
 
 INSERT INTO trade (
     proposer_id, receiver_id, status,
@@ -410,8 +740,14 @@ INSERT INTO trade_card (
 INSERT INTO result (
     player_id, event_id, placement
 ) VALUES
+      -- Casual Kort & Kaffe, event 3
       (4, 3, 1),
       (5, 3, 2),
-      (2, 3, 3);
+      (1, 3, 3),
+
+      -- Commander Finale: Kongen af Bordet, event 7
+      (3, 7, 1),
+      (1, 7, 2),
+      (5, 7, 3);
 
 SET SQL_SAFE_UPDATES = 1;
