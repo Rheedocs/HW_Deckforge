@@ -1,5 +1,9 @@
 package dk.zealand.hw_deckforge.application.service;
 
+import dk.zealand.hw_deckforge.domain.exceptions.NotFoundException;
+
+import dk.zealand.hw_deckforge.domain.exceptions.ValidationException;
+
 import dk.zealand.hw_deckforge.application.interfaces.ICardRepository;
 import dk.zealand.hw_deckforge.domain.Card;
 import dk.zealand.hw_deckforge.infrastructure.external.ScryfallService;
@@ -11,6 +15,8 @@ import java.util.Map;
 
 @Service
 public class CardService {
+
+    private static final String SCRYFALL_CARD_URL_PREFIX = "https://scryfall.com/card/";
 
     private final ICardRepository cardRepository;
     private final ScryfallService scryfallService;
@@ -35,58 +41,69 @@ public class CardService {
     }
 
     public Card getById(int id) {
-        if (id <= 0) throw new IllegalArgumentException("Id skal være større end 0!");
+        validateId(id, "Id");
         Card card = cardRepository.findById(id);
-        if (card == null) throw new IllegalArgumentException("Kort med id " + id + " blev ikke fundet!");
+        if (card == null) throw new NotFoundException("Kort med id " + id + " blev ikke fundet");
         return card;
     }
 
     // --- Livscyklus ---
 
     public void create(Card card, String scryfallUrl) {
-        if (card == null) throw new IllegalArgumentException("Kort må ikke være null!");
-        applyImageFromScryfallLink(card, sanitizeScryfallUrl(scryfallUrl));
-        validateCard(card);
+        prepareCardForSave(card, scryfallUrl);
         cardRepository.save(card);
     }
 
     public void update(Card card, String scryfallUrl) {
-        if (card == null) throw new IllegalArgumentException("Kort må ikke være null!");
-        if (card.getId() == null || card.getId() <= 0) throw new IllegalArgumentException("Ugyldigt kort-id!");
-        applyImageFromScryfallLink(card, sanitizeScryfallUrl(scryfallUrl));
-        validateCard(card);
+        validateCardForUpdate(card);
+        prepareCardForSave(card, scryfallUrl);
         cardRepository.update(card);
     }
 
     public void delete(int id) {
-        if (id <= 0) throw new IllegalArgumentException("Ugyldigt id!");
+        validateId(id, "Id");
         cardRepository.delete(id);
     }
 
-    // --- Billeder ---
+    // --- Intern behandling ---
+
+    private void prepareCardForSave(Card card, String scryfallUrl) {
+        validateCard(card);
+        applyImageFromScryfallLink(card, sanitizeScryfallUrl(scryfallUrl));
+    }
 
     private void applyImageFromScryfallLink(Card card, String scryfallUrl) {
-        if (scryfallUrl == null || scryfallUrl.isBlank()) return;
+        if (scryfallUrl == null) return;
         String imageUrl = scryfallService.fetchImageUrlByScryfallLink(scryfallUrl);
         if (imageUrl != null) card.setImageUrl(imageUrl);
     }
 
     private String sanitizeScryfallUrl(String scryfallUrl) {
         if (scryfallUrl == null || scryfallUrl.isBlank()) return null;
-        if (!scryfallUrl.startsWith("https://scryfall.com/card/")) return null;
-        return scryfallUrl.strip();
+        String trimmedUrl = scryfallUrl.strip();
+        return trimmedUrl.startsWith(SCRYFALL_CARD_URL_PREFIX) ? trimmedUrl : null;
     }
 
     // --- Validering ---
 
     private void validateCard(Card card) {
-        if (card.getName() == null || card.getName().isBlank())
-            throw new IllegalArgumentException("Kort skal have et navn!");
-        if (card.getCardType() == null)
-            throw new IllegalArgumentException("Kortet skal have en type!");
-        if (card.getColor() == null)
-            throw new IllegalArgumentException("Kortet skal have en farve!");
-        if (card.getRarity() == null)
-            throw new IllegalArgumentException("Kortet skal have en sjældenhed!");
+        if (card == null) throw new IllegalArgumentException("Kort må ikke være null");
+        if (card.getName() == null || card.getName().isBlank()) throw new IllegalArgumentException("Kort skal have et navn");
+        if (card.getCardType() == null) throw new IllegalArgumentException("Kortet skal have en type");
+        if (card.getColor() == null) throw new IllegalArgumentException("Kortet skal have en farve");
+        if (card.getRarity() == null) throw new IllegalArgumentException("Kortet skal have en sjældenhed");
+    }
+
+    private void validateCardForUpdate(Card card) {
+        validateCard(card);
+        if (card.getId() == null || card.getId() <= 0) throw new IllegalArgumentException("Ugyldigt kort-id");
+    }
+
+    private void validateId(int id, String fieldName) {
+        if (id <= 0) throw new IllegalArgumentException(fieldName + " skal være større end nul");
     }
 }
+
+
+
+

@@ -9,3 +9,4 @@ public enum DeckVisibility {
     DeckVisibility(String displayName) { this.displayName = displayName; }
     public String getDisplayName() { return displayName; }
 }
+

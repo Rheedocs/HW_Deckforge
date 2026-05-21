@@ -79,3 +79,4 @@ public class Card {
                 + ", rarity=" + rarity + ", setName='" + setName + "'}";
     }
 }
+

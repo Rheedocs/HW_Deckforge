@@ -1,9 +1,13 @@
 package dk.zealand.hw_deckforge.application.service;
 
 import dk.zealand.hw_deckforge.application.interfaces.IEventRepository;
+import dk.zealand.hw_deckforge.domain.Deck;
 import dk.zealand.hw_deckforge.domain.Event;
+import dk.zealand.hw_deckforge.domain.enums.DeckVisibility;
 import dk.zealand.hw_deckforge.domain.enums.EventStatus;
 import dk.zealand.hw_deckforge.domain.enums.Format;
+import dk.zealand.hw_deckforge.domain.exceptions.NotFoundException;
+import dk.zealand.hw_deckforge.domain.exceptions.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -20,25 +23,18 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class EventServiceTest {
 
-    @Mock
-    private IEventRepository eventRepository;
+    @Mock private IEventRepository eventRepository;
+    @Mock private DeckService deckService;
 
     private EventService eventService;
     private Event validEvent;
+    private Deck validDeck;
 
     @BeforeEach
     void setup() {
-        eventService = new EventService(eventRepository);
-
-        validEvent = new Event(
-                1,
-                "Commander Night",
-                "Næstved",
-                LocalDate.now().plusDays(7),
-                16,
-                EventStatus.UPCOMING,
-                Format.COMMANDER
-        );
+        eventService = new EventService(eventRepository, deckService);
+        validEvent = new Event(1, "Commander Night", "Næstved", LocalDate.now().plusDays(7), 16, EventStatus.UPCOMING, Format.COMMANDER);
+        validDeck = new Deck(5, 20, "Commander Deck", Format.COMMANDER, DeckVisibility.PUBLIC);
     }
 
     // --- Forespørgsler ---
@@ -73,10 +69,10 @@ class EventServiceTest {
     }
 
     @Test
-    void getById_notFound_throwsNoSuchElement() {
+    void getById_notFound_throwsNotFoundException() {
         when(eventRepository.findById(1)).thenReturn(null);
 
-        assertThrows(NoSuchElementException.class, () -> eventService.getById(1));
+        assertThrows(NotFoundException.class, () -> eventService.getById(1));
     }
 
     @Test
@@ -126,6 +122,8 @@ class EventServiceTest {
     @Test
     void registerPlayer_callsRegisterPlayer() {
         when(eventRepository.findById(1)).thenReturn(validEvent);
+        when(deckService.getById(5)).thenReturn(validDeck);
+        when(deckService.getTotalCardCount(5)).thenReturn(100);
         when(eventRepository.existsRegistration(20, 1)).thenReturn(false);
         when(eventRepository.countRegistrations(1)).thenReturn(0);
 
@@ -135,12 +133,14 @@ class EventServiceTest {
     }
 
     @Test
-    void registerPlayer_fullEvent_throwsIllegalArgument() {
+    void registerPlayer_fullEvent_throwsValidationException() {
         when(eventRepository.findById(1)).thenReturn(validEvent);
+        when(deckService.getById(5)).thenReturn(validDeck);
+        when(deckService.getTotalCardCount(5)).thenReturn(100);
         when(eventRepository.existsRegistration(20, 1)).thenReturn(false);
         when(eventRepository.countRegistrations(1)).thenReturn(16);
 
-        assertThrows(IllegalArgumentException.class, () -> eventService.registerPlayer(20, 1, 5));
+        assertThrows(ValidationException.class, () -> eventService.registerPlayer(20, 1, 5));
         verify(eventRepository, never()).registerPlayer(anyInt(), anyInt(), anyInt());
     }
 }

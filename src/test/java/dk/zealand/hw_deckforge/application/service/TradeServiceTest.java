@@ -5,8 +5,14 @@ import dk.zealand.hw_deckforge.application.interfaces.IPlayerRepository;
 import dk.zealand.hw_deckforge.application.interfaces.ITradeCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.ITradeRepository;
 import dk.zealand.hw_deckforge.application.validation.TradeValidator;
+import dk.zealand.hw_deckforge.domain.Player;
+import dk.zealand.hw_deckforge.domain.PlayerCard;
 import dk.zealand.hw_deckforge.domain.Trade;
+import dk.zealand.hw_deckforge.domain.enums.CollectionVisibility;
+import dk.zealand.hw_deckforge.domain.enums.Role;
 import dk.zealand.hw_deckforge.domain.enums.TradeStatus;
+import dk.zealand.hw_deckforge.domain.exceptions.AccessDeniedException;
+import dk.zealand.hw_deckforge.domain.exceptions.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,29 +29,26 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TradeServiceTest {
 
-    @Mock
-    private ITradeRepository tradeRepository;
-
-    @Mock
-    private IPlayerCardRepository playerCardRepository;
-
-    @Mock
-    private ITradeCardRepository tradeCardRepository;
-
-    @Mock
-    private IPlayerRepository playerRepository;
-
-    @Mock
-    private TradeValidator tradeValidator;
+    @Mock private ITradeRepository tradeRepository;
+    @Mock private IPlayerCardRepository playerCardRepository;
+    @Mock private ITradeCardRepository tradeCardRepository;
+    @Mock private IPlayerRepository playerRepository;
+    @Mock private TradeValidator tradeValidator;
 
     @InjectMocks
     private TradeService tradeService;
 
     private Trade testTrade;
+    private Player receiver;
+    private PlayerCard proposerCard;
+    private PlayerCard receiverCard;
 
     @BeforeEach
     void setup() {
         testTrade = new Trade(1, 20, 30, TradeStatus.PENDING, LocalDateTime.now(), LocalDateTime.now().plusHours(24), false, false);
+        receiver = new Player(30, "Receiver", "receiver@test.dk", "hashed-password", Role.PLAYER, CollectionVisibility.PUBLIC);
+        proposerCard = new PlayerCard(10, 20, 1, 1, true);
+        receiverCard = new PlayerCard(20, 30, 2, 1, true);
     }
 
     // --- Forespørgsler ---
@@ -123,21 +126,23 @@ class TradeServiceTest {
         testTrade.accept();
         when(tradeRepository.findById(1)).thenReturn(testTrade);
 
-        assertThrows(dk.zealand.hw_deckforge.domain.exceptions.AccessDeniedException.class,
-                () -> tradeService.complete(1, 99));
+        assertThrows(AccessDeniedException.class, () -> tradeService.complete(1, 99));
         verify(tradeRepository, never()).update(any());
     }
 
     // --- Validering ---
 
     @Test
-    void propose_proposerCardNotTradeable_throwsIllegalArgument() {
-        doThrow(new IllegalArgumentException("Proposerens kort er ikke markeret til bytte"))
+    void propose_proposerCardNotTradeable_throwsValidationException() {
+        when(playerRepository.findById(30)).thenReturn(receiver);
+        when(playerCardRepository.findForTradeByPlayerId(20)).thenReturn(List.of(proposerCard));
+        when(playerCardRepository.findForTradeByPlayerId(30)).thenReturn(List.of(receiverCard));
+
+        doThrow(new ValidationException("Proposerens kort er ikke markeret til bytte"))
                 .when(tradeValidator)
                 .validateProposerCard(20, 10);
 
-        assertThrows(IllegalArgumentException.class,
-                () -> tradeService.propose(20, 30, List.of(10), List.of(20)));
+        assertThrows(ValidationException.class, () -> tradeService.propose(20, 30, List.of(10), List.of(20)));
 
         verify(tradeRepository, never()).save(any());
         verify(tradeCardRepository, never()).save(any());

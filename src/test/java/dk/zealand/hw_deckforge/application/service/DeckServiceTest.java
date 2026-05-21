@@ -12,6 +12,7 @@ import dk.zealand.hw_deckforge.domain.enums.DeckVisibility;
 import dk.zealand.hw_deckforge.domain.enums.Format;
 import dk.zealand.hw_deckforge.domain.enums.Rarity;
 import dk.zealand.hw_deckforge.domain.exceptions.AccessDeniedException;
+import dk.zealand.hw_deckforge.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,9 +59,9 @@ class DeckServiceTest {
     }
 
     @Test
-    void getById_withNonExistingId_throwsIllegalArgumentException() {
+    void getById_withNonExistingId_throwsNotFoundException() {
         when(deckRepository.findById(99)).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> deckService.getById(99));
+        assertThrows(NotFoundException.class, () -> deckService.getById(99));
     }
 
     @Test
@@ -134,7 +135,7 @@ class DeckServiceTest {
         when(deckRepository.findByPlayerId(1)).thenReturn(List.of(deck, privatDeck));
         List<Deck> result = deckService.getVisibleDecks(1, false, false);
         assertEquals(1, result.size());
-        assertTrue(result.get(0).isPublic());
+        assertTrue(result.getFirst().isPublic());
     }
 
     // --- checkAccess ---

@@ -38,3 +38,4 @@ public class TradeCard {
         if (role == null) throw new IllegalArgumentException("Rolle må ikke være null");
     }
 }
+

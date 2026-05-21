@@ -34,3 +34,4 @@ public class EventRegistration {
     public String getPlayerName() { return playerName; }
     public String getDeckName() { return deckName; }
 }
+

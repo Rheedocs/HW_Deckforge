@@ -1,16 +1,21 @@
 package dk.zealand.hw_deckforge.application.service;
 
+import dk.zealand.hw_deckforge.domain.exceptions.NotFoundException;
+
+import dk.zealand.hw_deckforge.domain.exceptions.ValidationException;
+
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerCardRepository;
-import dk.zealand.hw_deckforge.domain.validation.PlayerValidator;
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerRepository;
 import dk.zealand.hw_deckforge.domain.Player;
 import dk.zealand.hw_deckforge.domain.PlayerCard;
 import dk.zealand.hw_deckforge.domain.enums.CollectionVisibility;
 import dk.zealand.hw_deckforge.domain.enums.Role;
 import dk.zealand.hw_deckforge.domain.exceptions.AccessDeniedException;
+import dk.zealand.hw_deckforge.domain.validation.PlayerValidator;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,21 +43,19 @@ public class PlayerService {
     }
 
     public Player getById(int id) {
-        if (id <= 0) throw new IllegalArgumentException("Id skal være større end nul");
+        validateId(id, "Id");
         Player player = playerRepository.findById(id);
-        if (player == null) throw new IllegalArgumentException("Spiller med id " + id + " findes ikke");
+        if (player == null) throw new NotFoundException("Spiller med id " + id + " findes ikke");
         return player;
     }
 
     public List<Player> getAllSortedByLoggedIn(int loggedInId, boolean isAdmin) {
-        List<Player> all = isAdmin
-                ? playerRepository.findAllIncludingInactive()
-                : playerRepository.findAll();
-        List<Player> sorted = new java.util.ArrayList<>();
+        List<Player> all = isAdmin ? playerRepository.findAllIncludingInactive() : playerRepository.findAll();
+        List<Player> sorted = new ArrayList<>();
         Player self = null;
-        for (Player p : all) {
-            if (p.getId() == loggedInId) self = p;
-            else sorted.add(p);
+        for (Player player : all) {
+            if (player.getId() == loggedInId) self = player;
+            else sorted.add(player);
         }
         if (self != null) sorted.addFirst(self);
         return sorted;
@@ -60,19 +63,14 @@ public class PlayerService {
 
     // --- Auth og livscyklus ---
 
-    // fejlbesked er bevidst generisk — afslører ikke om email eller adgangskode er forkert
     public Player login(String email, String password) {
         Player player = playerRepository.findByEmail(email);
-        if (player == null || !passwordEncoder.matches(password, player.getPassword()))
-            throw new IllegalArgumentException("Forkert email eller adgangskode");
-        if (!player.isActive())
-            throw new IllegalArgumentException("Denne konto er deaktiveret");
+        validateLogin(player, password);
         return player;
     }
 
     public void create(String username, String email, String password) {
-        if (playerRepository.findByEmail(email) != null)
-            throw new IllegalArgumentException("Email er allerede i brug");
+        validateNewEmail(email);
         PlayerValidator.validatePassword(password);
         Player player = new Player(0, username, email, password, Role.PLAYER, CollectionVisibility.TRADE_ONLY);
         validatePlayer(player);
@@ -90,10 +88,9 @@ public class PlayerService {
     }
 
     public void delete(int id) {
-        if (id <= 0) throw new IllegalArgumentException("Id skal være større end 0");
-        if (isOnlyAdmin(id)) throw new IllegalArgumentException("Du kan ikke slette den eneste admin");
-        if (playerRepository.findById(id) == null) throw new IllegalArgumentException("Spiller med id " + id
-                + " findes ikke");
+        validateId(id, "Id");
+        Player player = getById(id);
+        validateCanDelete(player);
         playerRepository.delete(id);
     }
 
@@ -105,8 +102,21 @@ public class PlayerService {
 
     public void checkCollectionAccess(int playerId, boolean isSelf, boolean isAdmin) {
         Player owner = getById(playerId);
-        if (!isSelf && !isAdmin && owner.getCollectionVisibility() == CollectionVisibility.PRIVATE)
-            throw new AccessDeniedException("Denne spillers profil er privat");
+        if (!canAccessCollection(owner, isSelf, isAdmin)) throw new AccessDeniedException("Denne spillers profil er privat");
+    }
+
+    // --- Samling ---
+
+    public void addToCollection(int playerId, int cardId) {
+        validateId(playerId, "Spiller-id");
+        validateId(cardId, "Kort-id");
+        getById(playerId);
+        playerCardRepository.save(new PlayerCard(0, playerId, cardId, 1, false));
+    }
+
+    public void removeFromCollection(int id) {
+        validateId(id, "Samlings-id");
+        playerCardRepository.delete(id);
     }
 
     // --- Opdateringshjælpere ---
@@ -134,26 +144,39 @@ public class PlayerService {
         existing.changePassword(passwordEncoder.encode(newPassword));
     }
 
-    // --- Samling ---
-
-    public void addToCollection(int playerId, int cardId) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
-        if (cardId <= 0) throw new IllegalArgumentException("Ugyldigt kort-id");
-        getById(playerId);
-        PlayerCard playerCard = new PlayerCard(0, playerId, cardId, 1, false);
-        playerCardRepository.save(playerCard);
-    }
-
-    public void removeFromCollection(int id) {
-        if (id <= 0) throw new IllegalArgumentException("Ugyldigt samlings-id");
-        playerCardRepository.delete(id);
-    }
-
     // --- Validering ---
 
     private void validatePlayer(Player player) {
         if (player == null) throw new IllegalArgumentException("Spiller må ikke være null");
-        if (!PlayerValidator.isValidEmail(player.getEmail()))
-            throw new IllegalArgumentException("Email er ikke gyldig");
+        if (player.getUsername() == null || player.getUsername().isBlank()) throw new IllegalArgumentException("Brugernavn må ikke være tomt");
+        if (!PlayerValidator.isValidEmail(player.getEmail())) throw new IllegalArgumentException("Email er ikke gyldig");
+        if (player.getCollectionVisibility() == null) throw new IllegalArgumentException("Samlingssynlighed skal angives");
+        if (player.getRole() == null) throw new IllegalArgumentException("Rolle skal angives");
+    }
+
+    private void validateLogin(Player player, String password) {
+        if (player == null || !passwordEncoder.matches(password, player.getPassword()))
+            throw new IllegalArgumentException("Forkert email eller adgangskode");
+        if (!player.isActive()) throw new IllegalArgumentException("Denne konto er deaktiveret");
+    }
+
+    private void validateNewEmail(String email) {
+        if (playerRepository.findByEmail(email) != null) throw new ValidationException("Email er allerede i brug");
+    }
+
+    private void validateCanDelete(Player player) {
+        if (isOnlyAdmin(player.getId())) throw new ValidationException("Du kan ikke slette den eneste admin");
+    }
+
+    private boolean canAccessCollection(Player owner, boolean isSelf, boolean isAdmin) {
+        return isSelf || isAdmin || owner.getCollectionVisibility() != CollectionVisibility.PRIVATE;
+    }
+
+    private void validateId(int id, String fieldName) {
+        if (id <= 0) throw new IllegalArgumentException(fieldName + " skal være større end nul");
     }
 }
+
+
+
+

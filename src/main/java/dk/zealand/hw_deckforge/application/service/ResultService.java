@@ -1,11 +1,12 @@
 package dk.zealand.hw_deckforge.application.service;
 
+import dk.zealand.hw_deckforge.domain.exceptions.NotFoundException;
+
 import dk.zealand.hw_deckforge.application.interfaces.IResultRepository;
 import dk.zealand.hw_deckforge.domain.Result;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 public class ResultService {
@@ -19,23 +20,31 @@ public class ResultService {
     // --- Forespørgsler ---
 
     public List<Result> getByEventId(int eventId) {
-        if (eventId <= 0) throw new IllegalArgumentException("Id skal være større end nul!");
+        validateId(eventId, "EventId");
         return resultRepository.findByEventId(eventId);
     }
 
     public List<Result> getByPlayerId(int playerId) {
-        if (playerId <= 0) throw new IllegalArgumentException("Id skal være større end nul!");
+        validateId(playerId, "PlayerId");
         List<Result> results = resultRepository.findByPlayerId(playerId);
-        if (results == null || results.isEmpty()) throw new NoSuchElementException("Ingen resultater for spiller fundet!");
+        if (results == null || results.isEmpty()) throw new NotFoundException("Ingen resultater for spiller fundet");
         return results;
     }
 
     // --- Livscyklus ---
 
     public void save(Result result) {
-        if (result == null) throw new IllegalArgumentException("Resultat må ikke være nul!");
-        List<String> errors = result.validate();
-        if (!errors.isEmpty()) throw new IllegalArgumentException(String.join(", ", errors));
+        if (result == null) throw new IllegalArgumentException("Resultat må ikke være null");
+        result.validateOrThrow();
         resultRepository.save(result);
     }
+
+    // --- Validering ---
+
+    private void validateId(int id, String fieldName) {
+        if (id <= 0) throw new IllegalArgumentException(fieldName + " skal være større end nul");
+    }
 }
+
+
+

@@ -10,3 +10,4 @@ public enum CollectionVisibility {
     CollectionVisibility(String displayName) { this.displayName = displayName; }
     public String getDisplayName() { return displayName; }
 }
+

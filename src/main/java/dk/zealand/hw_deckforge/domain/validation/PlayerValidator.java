@@ -16,3 +16,4 @@ public class PlayerValidator {
             throw new IllegalArgumentException("Adgangskode skal være mindst 8 tegn");
     }
 }
+

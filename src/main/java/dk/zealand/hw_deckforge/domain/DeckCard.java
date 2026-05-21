@@ -36,3 +36,4 @@ public class DeckCard {
         if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");
     }
 }
+

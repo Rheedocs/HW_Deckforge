@@ -87,3 +87,4 @@ public class Player {
                 + ", password='[hidden]', active=" + active + "}";
     }
 }
+

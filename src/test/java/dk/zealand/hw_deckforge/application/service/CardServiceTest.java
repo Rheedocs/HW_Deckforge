@@ -5,6 +5,7 @@ import dk.zealand.hw_deckforge.domain.Card;
 import dk.zealand.hw_deckforge.domain.enums.CardType;
 import dk.zealand.hw_deckforge.domain.enums.Color;
 import dk.zealand.hw_deckforge.domain.enums.Rarity;
+import dk.zealand.hw_deckforge.domain.exceptions.NotFoundException;
 import dk.zealand.hw_deckforge.infrastructure.external.ScryfallService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,9 +64,9 @@ class CardServiceTest {
     }
 
     @Test
-    void getById_notFound_throwsIllegalArgument() {
+    void getById_notFound_throwsNotFoundException() {
         when(cardRepository.findById(99)).thenReturn(null);
-        assertThrows(IllegalArgumentException.class, () -> cardService.getById(99));
+        assertThrows(NotFoundException.class, () -> cardService.getById(99));
     }
 
     // --- create ---

@@ -2,6 +2,8 @@ package dk.zealand.hw_deckforge.presentation.exceptions;
 
 import dk.zealand.hw_deckforge.domain.exceptions.AccessDeniedException;
 import dk.zealand.hw_deckforge.domain.exceptions.DatabaseException;
+import dk.zealand.hw_deckforge.domain.exceptions.NotFoundException;
+import dk.zealand.hw_deckforge.domain.exceptions.ValidationException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -25,6 +27,20 @@ public class GlobalExceptionHandler {
         return "error";
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    public String handleNotFound(NotFoundException ex, Model model, HttpServletRequest request) {
+        model.addAttribute("fejl", List.of(ex.getMessage()));
+        model.addAttribute("tilbage", request.getHeader("Referer"));
+        return "error";
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public String handleValidation(ValidationException ex, Model model, HttpServletRequest request) {
+        model.addAttribute("fejl", List.of(ex.getMessage()));
+        model.addAttribute("tilbage", request.getHeader("Referer"));
+        return "error";
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleIllegalArgument(IllegalArgumentException ex, Model model, HttpServletRequest request) {
         model.addAttribute("fejl", List.of(ex.getMessage()));
@@ -44,3 +60,5 @@ public class GlobalExceptionHandler {
         return "error";
     }
 }
+
+

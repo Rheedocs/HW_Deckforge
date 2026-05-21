@@ -22,22 +22,22 @@ public class PlayerCardService {
     // --- Forespørgsler ---
 
     public int countByPlayerId(int playerId) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        validateId(playerId, "Spiller-id");
         return playerCardRepository.countByPlayerId(playerId);
     }
 
     public List<PlayerCard> getByPlayerId(int playerId) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        validateId(playerId, "Spiller-id");
         return playerCardRepository.findByPlayerId(playerId);
     }
 
     public List<PlayerCard> getForTradeByPlayerId(int playerId) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        validateId(playerId, "Spiller-id");
         return playerCardRepository.findForTradeByPlayerId(playerId);
     }
-    
+
     public Map<Integer, PlayerCard> getPlayerCardMap(int playerId) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        validateId(playerId, "Spiller-id");
         Map<Integer, PlayerCard> map = new HashMap<>();
         for (PlayerCard pc : playerCardRepository.findByPlayerId(playerId)) {
             map.put(pc.getCardId(), pc);
@@ -57,39 +57,76 @@ public class PlayerCardService {
     // --- Synlighed ---
 
     public List<PlayerCard> getVisibleCards(int playerId, CollectionVisibility visibility, boolean isSelf, boolean isAdmin) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
+        validateId(playerId, "Spiller-id");
         List<PlayerCard> all = playerCardRepository.findByPlayerId(playerId);
-        if (isSelf || isAdmin || visibility == CollectionVisibility.PUBLIC) {
-            return all;
-        }
-        if (visibility == CollectionVisibility.TRADE_ONLY) {
-            List<PlayerCard> filtered = new ArrayList<>();
-            for (PlayerCard pc : all) {
-                if (pc.isForTrade()) filtered.add(pc);
-            }
-            return filtered;
-        }
+        if (canSeeFullCollection(visibility, isSelf, isAdmin)) return all;
+        if (visibility == CollectionVisibility.TRADE_ONLY) return getTradeOnlyCards(all);
         return new ArrayList<>();
     }
 
     public int getVisibleCount(int playerId, CollectionVisibility visibility, boolean isSelf, boolean isAdmin) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
-        if (isSelf || isAdmin || visibility == CollectionVisibility.PUBLIC) {
-            return playerCardRepository.countByPlayerId(playerId);
-        } else if (visibility == CollectionVisibility.TRADE_ONLY) {
-            return playerCardRepository.countForTradeByPlayerId(playerId);
-        } else {
-            return 0;
-        }
+        validateId(playerId, "Spiller-id");
+        if (canSeeFullCollection(visibility, isSelf, isAdmin)) return playerCardRepository.countByPlayerId(playerId);
+        if (visibility == CollectionVisibility.TRADE_ONLY) return playerCardRepository.countForTradeByPlayerId(playerId);
+        return 0;
     }
 
     // --- Samling ---
 
     public void addCard(int playerId, int cardId, int quantity) {
-        if (playerId <= 0) throw new IllegalArgumentException("Ugyldigt spiller-id");
-        if (cardId <= 0) throw new IllegalArgumentException("Ugyldigt kort-id");
-        if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");
+        validateId(playerId, "Spiller-id");
+        validateId(cardId, "Kort-id");
+        validateQuantity(quantity);
         PlayerCard existing = playerCardRepository.findByPlayerIdAndCardId(playerId, cardId);
+        saveOrUpdatePlayerCard(playerId, cardId, quantity, existing);
+    }
+
+    public void removeCard(int playerCardId, int quantity) {
+        validateId(playerCardId, "Spillerkort-id");
+        validateQuantity(quantity);
+        PlayerCard playerCard = getExistingPlayerCard(playerCardId);
+        removeOrReducePlayerCard(playerCard, quantity);
+    }
+
+    public void save(PlayerCard playerCard) {
+        validatePlayerCard(playerCard);
+        playerCardRepository.save(playerCard);
+    }
+
+    public void delete(int id) {
+        validateId(id, "Id");
+        playerCardRepository.delete(id);
+    }
+
+    public void setForTrade(int id, boolean forTrade) {
+        validateId(id, "Id");
+        PlayerCard playerCard = getExistingPlayerCard(id);
+        if (forTrade) playerCard.markForTrade();
+        else playerCard.unmarkForTrade();
+        playerCardRepository.update(playerCard);
+    }
+
+    // --- Intern behandling ---
+
+    private boolean canSeeFullCollection(CollectionVisibility visibility, boolean isSelf, boolean isAdmin) {
+        return isSelf || isAdmin || visibility == CollectionVisibility.PUBLIC;
+    }
+
+    private List<PlayerCard> getTradeOnlyCards(List<PlayerCard> playerCards) {
+        List<PlayerCard> filtered = new ArrayList<>();
+        for (PlayerCard pc : playerCards) {
+            if (pc.isForTrade()) filtered.add(pc);
+        }
+        return filtered;
+    }
+
+    private PlayerCard getExistingPlayerCard(int id) {
+        PlayerCard playerCard = playerCardRepository.findById(id);
+        if (playerCard == null) throw new IllegalArgumentException("Kortet findes ikke i samlingen");
+        return playerCard;
+    }
+
+    private void saveOrUpdatePlayerCard(int playerId, int cardId, int quantity, PlayerCard existing) {
         if (existing != null) {
             existing.setQuantity(existing.getQuantity() + quantity);
             playerCardRepository.update(existing);
@@ -98,35 +135,31 @@ public class PlayerCardService {
         }
     }
 
-    public void removeCard(int playerCardId, int quantity) {
-        if (playerCardId <= 0) throw new IllegalArgumentException("Ugyldigt spillerkort-id");
-        if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");
-        PlayerCard playerCard = playerCardRepository.findById(playerCardId);
-        if (playerCard == null) throw new IllegalArgumentException("Kortet findes ikke i samlingen");
+    private void removeOrReducePlayerCard(PlayerCard playerCard, int quantity) {
         if (quantity >= playerCard.getQuantity()) {
-            playerCardRepository.delete(playerCardId);
+            playerCardRepository.delete(playerCard.getId());
         } else {
             playerCard.setQuantity(playerCard.getQuantity() - quantity);
             playerCardRepository.update(playerCard);
         }
     }
 
-    public void save(PlayerCard playerCard) {
+    // --- Validering ---
+
+    private void validatePlayerCard(PlayerCard playerCard) {
         if (playerCard == null) throw new IllegalArgumentException("SpillerKort må ikke være null");
-        playerCardRepository.save(playerCard);
+        validateId(playerCard.getPlayerId(), "Spiller-id");
+        validateId(playerCard.getCardId(), "Kort-id");
+        validateQuantity(playerCard.getQuantity());
     }
 
-    public void delete(int id) {
-        if (id <= 0) throw new IllegalArgumentException("Ugyldigt id");
-        playerCardRepository.delete(id);
+    private void validateId(int id, String fieldName) {
+        if (id <= 0) throw new IllegalArgumentException("Ugyldigt " + fieldName.toLowerCase());
     }
 
-    public void setForTrade(int id, boolean forTrade) {
-        if (id <= 0) throw new IllegalArgumentException("Ugyldigt id");
-        PlayerCard playerCard = playerCardRepository.findById(id);
-        if (playerCard == null) throw new IllegalArgumentException("Kortet findes ikke i samlingen");
-        if (forTrade) playerCard.markForTrade();
-        else playerCard.unmarkForTrade();
-        playerCardRepository.update(playerCard);
+    private void validateQuantity(int quantity) {
+        if (quantity < 1) throw new IllegalArgumentException("Antal skal være mindst 1");
     }
 }
+
+

@@ -50,4 +50,10 @@ public class Result {
         if (placement <= 0) errors.add("Placering skal være mindst 1");
         return errors;
     }
+
+    public void validateOrThrow() {
+        List<String> errors = validate();
+        if (!errors.isEmpty()) throw new IllegalArgumentException(String.join(", ", errors));
+    }
 }
+

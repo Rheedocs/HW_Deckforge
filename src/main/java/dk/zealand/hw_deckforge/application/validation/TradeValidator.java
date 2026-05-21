@@ -1,5 +1,7 @@
 package dk.zealand.hw_deckforge.application.validation;
 
+import dk.zealand.hw_deckforge.domain.exceptions.ValidationException;
+
 import dk.zealand.hw_deckforge.application.interfaces.IPlayerCardRepository;
 import dk.zealand.hw_deckforge.domain.PlayerCard;
 import org.springframework.stereotype.Component;
@@ -16,16 +18,19 @@ public class TradeValidator {
     // --- Validering ---
 
     public void validateProposerCard(int proposerId, int proposerCardId) {
-        for (PlayerCard pc : playerCardRepository.findForTradeByPlayerId(proposerId)) {
-            if (pc.getId() == proposerCardId) return;
-        }
-        throw new IllegalArgumentException("Proposerens kort er ikke markeret til bytte");
+        validateTradeCard(proposerId, proposerCardId, "Proposerens kort er ikke markeret til bytte");
     }
 
     public void validateReceiverCard(int receiverId, int receiverCardId) {
-        for (PlayerCard pc : playerCardRepository.findForTradeByPlayerId(receiverId)) {
-            if (pc.getId() == receiverCardId) return;
+        validateTradeCard(receiverId, receiverCardId, "Modtagerens kort er ikke markeret til bytte");
+    }
+
+    private void validateTradeCard(int playerId, int playerCardId, String errorMessage) {
+        for (PlayerCard pc : playerCardRepository.findForTradeByPlayerId(playerId)) {
+            if (pc.getId() == playerCardId) return;
         }
-        throw new IllegalArgumentException("Modtagerens kort er ikke markeret til bytte");
+        throw new IllegalArgumentException(errorMessage);
     }
 }
+
+

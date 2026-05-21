@@ -59,13 +59,19 @@ public class Event {
 
     public List<String> validate() {
         List<String> errors = new ArrayList<>();
-        if (name == null || name.isBlank()) {errors.add("Navn må ikke være tomt");}
-        if (location == null || location.isBlank()) {errors.add("Lokation må ikke være tom");}
-        if (date == null) {errors.add("Dato må ikke være tom");}
-        else if (date.isBefore(LocalDate.now())) {errors.add("Dato må ikke være i fortiden");}
-        if (maxPlayers < 2) {errors.add("Maks spillere skal være mindst 2");}
-        if (status == null) {errors.add("Status skal angives");}
-        if (format == null) {errors.add("Format skal angives");}
+        if (name == null || name.isBlank()) errors.add("Navn må ikke være tomt");
+        if (location == null || location.isBlank()) errors.add("Lokation må ikke være tom");
+        if (date == null) errors.add("Dato må ikke være tom");
+        else if (date.isBefore(LocalDate.now()) && status == EventStatus.UPCOMING) errors.add("Kommende events må ikke være i fortiden");
+        if (maxPlayers < 2) errors.add("Maks spillere skal være mindst 2");
+        if (status == null) errors.add("Status skal angives");
+        if (format == null) errors.add("Format skal angives");
         return errors;
     }
+
+    public void validateOrThrow() {
+        List<String> errors = validate();
+        if (!errors.isEmpty()) throw new IllegalArgumentException(String.join(", ", errors));
+    }
 }
+
