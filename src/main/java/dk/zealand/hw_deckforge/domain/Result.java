@@ -23,21 +23,18 @@ public class Result {
     public int getEventId() { return eventId; }
     public int getPlacement() { return placement; }
 
-    public void setPlacement(int placement) { this.placement = placement; }
+    public void setId(int id) { this.id = id; }
+    public void setPlayerId(int playerId) { this.playerId = playerId; }
     public void setEventId(int eventId) { this.eventId = eventId; }
+    public void setPlacement(int placement) { this.placement = placement; }
+
+    // --- Validering ---
 
     public List<String> validate() {
         List<String> errors = new ArrayList<>();
-
-        if (playerId <= 0)
-            errors.add("Spiller skal vælges");
-
-        if (eventId <= 0)
-            errors.add("Event skal angives");
-
-        if (placement <= 0)
-            errors.add("Placering skal være mindst 1");
-
+        if (playerId <= 0) {errors.add("Spiller skal vælges");}
+        if (eventId <= 0) {errors.add("Event skal angives");}
+        if (placement <= 0) {errors.add("Placering skal være mindst 1");}
         return errors;
     }
 }

@@ -13,24 +13,27 @@
 <header th:replace="~{fragments :: header}"></header>
 <main>
     <h2>Resultater</h2>
-    <table>
-        <thead>
-        <tr>
-            <th>Event</th>
-            <th>Player ID</th>
-            <th>Navn</th>
-            <th>Placering</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="result : ${result}">
-            <td th:text="${result.eventId}"></td>
-            <td th:text="${result.playerId}"></td>
-            <td th:text="${result.username}"></td>
-            <td th:text="${result.placement}"></td>
-        </tr>
-        </tbody>
-    </table>
+
+    <p th:if="${results == null or #lists.isEmpty(results)}">Der er endnu ingen resultater for dette event.</p>
+
+    <div class="table-wrapper" th:if="${results != null and !#lists.isEmpty(results)}">
+        <table>
+            <thead>
+            <tr>
+                <th>Event ID</th>
+                <th>Spiller ID</th>
+                <th>Placering</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="result : ${results}">
+                <td th:text="${result.eventId}"></td>
+                <td th:text="${result.playerId}"></td>
+                <td th:text="${result.placement}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>

@@ -13,12 +13,14 @@
 <header th:replace="~{fragments :: header}"></header>
 <main>
     <h2>Registrer resultat for <span th:text="${event.name}"></span></h2>
-    <form th:action="@{/results/event/{eventId}/register(eventId=${event.id})}" th:object="${result}" method="post">
 
+    <form th:action="@{/results/event/{eventId}/register(eventId=${event.id})}" th:object="${result}" method="post">
         <label for="playerId">Spiller</label>
-        <select id="playerId" name="playerId">
+        <select id="playerId" name="playerId" required>
+            <option value="">Vælg spiller</option>
             <option th:each="player : ${players}"
-                    th:value="${player.id}">
+                    th:value="${player.id}"
+                    th:text="${player.username}">
             </option>
         </select>
 
@@ -27,6 +29,10 @@
 
         <button type="submit">Gem resultat</button>
     </form>
+
+    <div style="margin-top: 16px;">
+        <a th:href="@{/results/event/{eventId}(eventId=${event.id})}">Tilbage</a>
+    </div>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>

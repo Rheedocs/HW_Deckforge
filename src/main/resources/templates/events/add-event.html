@@ -14,6 +14,7 @@
 <main>
     <h2>Opret event</h2>
     <form th:action="@{/events/create}" th:object="${event}" method="post">
+        <input type="hidden" name="status" value="UPCOMING">
         <label for="name">Navn:</label>
         <input type="text" id="name" th:field="*{name}" required>
 

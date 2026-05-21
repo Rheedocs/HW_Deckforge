@@ -1,14 +1,19 @@
 package dk.zealand.hw_deckforge.application.service;
+
 import dk.zealand.hw_deckforge.application.interfaces.IEventRepository;
 import dk.zealand.hw_deckforge.domain.Event;
+import dk.zealand.hw_deckforge.domain.enums.EventStatus;
+import dk.zealand.hw_deckforge.domain.enums.Format;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -18,99 +23,112 @@ class EventServiceTest {
     @Mock
     private IEventRepository eventRepository;
 
-    @InjectMocks
     private EventService eventService;
-
-    private Event testEvent;
+    private Event validEvent;
 
     @BeforeEach
-    void setUp() {
-        testEvent = new Event();
-        testEvent.setId(1);
-        testEvent.setName("Test Event");
+    void setup() {
+        eventService = new EventService(eventRepository);
+
+        validEvent = new Event(
+                1,
+                "Commander Night",
+                "Næstved",
+                LocalDate.now().plusDays(7),
+                16,
+                EventStatus.UPCOMING,
+                Format.COMMANDER
+        );
     }
 
-    // --- getAll ---
+    // --- Forespørgsler ---
 
     @Test
     void getAll_returnsList() {
-        when(eventRepository.findAll()).thenReturn(List.of(testEvent));
+        when(eventRepository.findAll()).thenReturn(List.of(validEvent));
+
         List<Event> result = eventService.getAll();
+
         assertEquals(1, result.size());
-        verify(eventRepository).findAll();
-    }
-
-    @Test
-    void getAll_returnsEmptyList_whenNoEvents() {
-        when(eventRepository.findAll()).thenReturn(List.of());
-        List<Event> result = eventService.getAll();
-        assertTrue(result.isEmpty());
-    }
-
-    // --- getById ---
-
-    @Test
-    void getById_throwsIllegalArgument_whenIdIsZero() {
-        assertThrows(IllegalArgumentException.class, () -> eventService.getById(0));
-    }
-
-    @Test
-    void getById_throwsIllegalArgument_whenIdIsNegative() {
-        assertThrows(IllegalArgumentException.class, () -> eventService.getById(-5));
+        assertEquals(validEvent, result.getFirst());
     }
 
     @Test
     void getById_returnsEvent_whenFound() {
-        when(eventRepository.findById(1)).thenReturn(testEvent);
+        when(eventRepository.findById(1)).thenReturn(validEvent);
+
         Event result = eventService.getById(1);
-        assertEquals(testEvent, result);
+
+        assertEquals(validEvent, result);
     }
 
     @Test
-    void getById_throwsNoSuchElement_whenNotFound() {
-        when(eventRepository.findById(99)).thenReturn(null);
-        assertThrows(NoSuchElementException.class, () -> eventService.getById(99));
+    void getById_idIsZero_throwsIllegalArgument() {
+        assertThrows(IllegalArgumentException.class, () -> eventService.getById(0));
     }
 
-    // --- getUpcoming ---
+    @Test
+    void getById_idIsNegative_throwsIllegalArgument() {
+        assertThrows(IllegalArgumentException.class, () -> eventService.getById(-1));
+    }
+
+    @Test
+    void getById_notFound_throwsNoSuchElement() {
+        when(eventRepository.findById(1)).thenReturn(null);
+
+        assertThrows(NoSuchElementException.class, () -> eventService.getById(1));
+    }
 
     @Test
     void getUpcoming_returnsList() {
-        when(eventRepository.findUpcoming()).thenReturn(List.of(testEvent));
+        when(eventRepository.findUpcoming()).thenReturn(List.of(validEvent));
+
         List<Event> result = eventService.getUpcoming();
+
         assertEquals(1, result.size());
-        verify(eventRepository).findUpcoming();
+        assertEquals(validEvent, result.getFirst());
     }
 
-    // --- create ---
+    // --- Livscyklus ---
 
     @Test
     void create_callsSave() {
-        eventService.create(testEvent);
-        verify(eventRepository).save(testEvent);
+        eventService.create(validEvent);
+
+        verify(eventRepository).save(validEvent);
     }
 
-    // --- update ---
+    @Test
+    void create_nullEvent_throwsIllegalArgument() {
+        assertThrows(IllegalArgumentException.class, () -> eventService.create(null));
+
+        verify(eventRepository, never()).save(any());
+    }
 
     @Test
     void update_callsUpdate() {
-        eventService.update(testEvent);
-        verify(eventRepository).update(testEvent);
-    }
+        when(eventRepository.findById(1)).thenReturn(validEvent);
 
-    // --- delete ---
+        eventService.update(validEvent);
+
+        verify(eventRepository).update(validEvent);
+    }
 
     @Test
     void delete_callsDelete() {
+        when(eventRepository.findById(1)).thenReturn(validEvent);
+
         eventService.delete(1);
+
         verify(eventRepository).delete(1);
     }
 
-    // --- registerPlayer ---
-
     @Test
     void registerPlayer_callsRegisterPlayer() {
-        eventService.registerPlayer(10, 1, 5);
-        verify(eventRepository).registerPlayer(10, 1, 5);
+        when(eventRepository.findById(1)).thenReturn(validEvent);
+
+        eventService.registerPlayer(20, 1, 5);
+
+        verify(eventRepository).registerPlayer(20, 1, 5);
     }
 }
