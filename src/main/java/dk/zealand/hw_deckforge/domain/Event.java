@@ -14,6 +14,8 @@ public class Event {
     private EventStatus status;
     private Format format;
 
+    public Event() {}
+
     public Event(int id, String name, String location, LocalDate date, int maxPlayers, EventStatus status, Format format) {
         this.id = id;
         this.name = name;
@@ -32,6 +34,7 @@ public class Event {
     public EventStatus getStatus() { return status; }
     public Format getFormat() { return format; }
 
+    public void setId(int id) { this.id = id; }
     public void setName(String name) { this.name = name; }
     public void setLocation(String location) { this.location = location; }
     public void setDate(LocalDate date) { this.date = date; }
