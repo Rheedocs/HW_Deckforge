@@ -20,10 +20,7 @@
             <label for="playerId">Spiller</label>
             <select id="playerId" name="playerId" required>
                 <option value="">Vælg spiller</option>
-                <option th:each="player : ${players}"
-                        th:value="${player.id}"
-                        th:text="${player.username}">
-                </option>
+                <option th:each="player : ${players}" th:value="${player.id}" th:text="${player.username}"></option>
             </select>
 
             <label for="placement">Placering</label>
@@ -31,10 +28,7 @@
 
             <div class="action-col">
                 <button type="submit">Gem resultat</button>
-                <a class="btn btn-secondary"
-                   th:href="@{/results/event/{eventId}(eventId=${event.id})}">
-                    Tilbage
-                </a>
+                <a class="btn btn-secondary" th:href="@{/events/{id}(id=${event.id})}">Tilbage</a>
             </div>
         </form>
     </section>

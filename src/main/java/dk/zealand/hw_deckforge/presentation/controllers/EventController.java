@@ -2,6 +2,7 @@ package dk.zealand.hw_deckforge.presentation.controllers;
 
 import dk.zealand.hw_deckforge.application.service.DeckService;
 import dk.zealand.hw_deckforge.application.service.EventService;
+import dk.zealand.hw_deckforge.application.service.ResultService;
 import dk.zealand.hw_deckforge.domain.Event;
 import dk.zealand.hw_deckforge.domain.Player;
 import dk.zealand.hw_deckforge.presentation.helpers.AuthHelper;
@@ -16,10 +17,12 @@ public class EventController {
 
     private final EventService eventService;
     private final DeckService deckService;
+    private final ResultService resultService;
 
-    public EventController(EventService eventService, DeckService deckService) {
+    public EventController(EventService eventService, DeckService deckService, ResultService resultService) {
         this.eventService = eventService;
         this.deckService = deckService;
+        this.resultService = resultService;
     }
 
     // --- Forespørgsler ---
@@ -35,10 +38,16 @@ public class EventController {
         Event event = eventService.getById(id);
         model.addAttribute("event", event);
         model.addAttribute("registrations", eventService.getRegistrationsByEventId(id));
+        model.addAttribute("results", resultService.getByEventId(id));
+        model.addAttribute("isFull", eventService.isFull(id));
         Player player = (Player) session.getAttribute("player");
-        if (player != null) model.addAttribute("decks", deckService.getByPlayerIdAndFormat(player.getId(), event.getFormat()));
+        if (player != null) {
+            model.addAttribute("isRegistered", eventService.isPlayerRegistered(player.getId(), id));
+            model.addAttribute("decks", deckService.getByPlayerIdAndFormat(player.getId(), event.getFormat()));
+        }
         return "events/event-detail";
     }
+
     // --- Livscyklus ---
 
     @GetMapping("/create")

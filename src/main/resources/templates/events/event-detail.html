@@ -31,9 +31,8 @@
 
         <div class="action-col">
             <a class="btn" th:href="@{/events}">Tilbage til events</a>
-            <a class="btn" th:href="@{/results/event/{eventId}(eventId=${event.id})}">Se resultater</a>
             <a class="btn"
-               th:if="${session.player != null and session.player.role.name() == 'ADMIN'}"
+               th:if="${session.player != null and session.player.role.name() == 'ADMIN' and (event.ongoing or event.completed)}"
                th:href="@{/results/event/{eventId}/register(eventId=${event.id})}">
                 Registrer resultat
             </a>
@@ -73,14 +72,47 @@
         </div>
     </section>
 
+    <section class="info-section" th:if="${event.ongoing or event.completed}">
+        <h3>Resultater</h3>
+
+        <p class="info" th:if="${results == null or #lists.isEmpty(results)}">
+            Der er endnu ingen resultater for dette event.
+        </p>
+
+        <div class="table-wrapper" th:if="${results != null and !#lists.isEmpty(results)}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Spiller</th>
+                    <th>Placering</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="result : ${results}">
+                    <td th:text="${result.playerName}"></td>
+                    <td th:text="${result.placementText}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
     <section class="info-section" th:if="${event.upcoming and session.player != null}">
         <h3>Tilmeld dig</h3>
 
-        <p class="info" th:if="${decks == null or #lists.isEmpty(decks)}">
+        <p class="info" th:if="${isRegistered}">
+            Du er allerede tilmeldt dette event.
+        </p>
+
+        <p class="info" th:if="${!isRegistered and isFull}">
+            Eventet er fuldt.
+        </p>
+
+        <p class="info" th:if="${!isRegistered and !isFull and (decks == null or #lists.isEmpty(decks))}">
             Du har ingen decks, der kan bruges til tilmelding.
         </p>
 
-        <form th:if="${decks != null and !#lists.isEmpty(decks)}"
+        <form th:if="${!isRegistered and !isFull and decks != null and !#lists.isEmpty(decks)}"
               th:action="@{/events/{id}/register(id=${event.id})}" method="post">
             <label for="deckId">Vælg deck:</label>
             <select id="deckId" name="deckId" required>

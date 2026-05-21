@@ -24,26 +24,15 @@ public class ResultController {
         this.resultService = resultService;
     }
 
-    // --- Forespørgsler ---
-
-    @GetMapping("/event/{eventId}")
-    public String showResults(@PathVariable int eventId, Model model) {
-        model.addAttribute("event", eventService.getById(eventId));
-        model.addAttribute("results", resultService.getByEventId(eventId));
-        return "results/result-list";
-    }
-
     // --- Livscyklus ---
 
     @GetMapping("/event/{eventId}/register")
     public String showRegisterForm(@PathVariable int eventId, Model model, HttpSession session) {
         if (session.getAttribute("player") == null) return "redirect:/login";
         if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
-
         model.addAttribute("event", eventService.getById(eventId));
         model.addAttribute("players", playerService.getAll());
         model.addAttribute("result", new Result());
-
         return "results/result-register";
     }
 
@@ -51,10 +40,8 @@ public class ResultController {
     public String save(@PathVariable int eventId, @ModelAttribute Result result, HttpSession session) {
         if (session.getAttribute("player") == null) return "redirect:/login";
         if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
-
         result.setEventId(eventId);
         resultService.save(result);
-
-        return "redirect:/results/event/" + eventId;
+        return "redirect:/events/" + eventId;
     }
 }

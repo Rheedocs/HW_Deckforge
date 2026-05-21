@@ -22,7 +22,13 @@ public class ResultRepository implements IResultRepository {
     @Override
     public List<Result> findByEventId(int eventId) {
         try {
-            String sql = "SELECT id, player_id, event_id, placement FROM result WHERE event_id = ?";
+            String sql = """
+                    SELECT r.id, r.player_id, r.event_id, r.placement, p.username AS player_name
+                    FROM result r
+                    JOIN player p ON r.player_id = p.id
+                    WHERE r.event_id = ?
+                    ORDER BY r.placement
+                    """;
             return jdbcTemplate.query(sql, this::mapRow, eventId);
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke hente resultater for event: " + eventId, e);
@@ -32,7 +38,13 @@ public class ResultRepository implements IResultRepository {
     @Override
     public List<Result> findByPlayerId(int playerId) {
         try {
-            String sql = "SELECT id, player_id, event_id, placement FROM result WHERE player_id = ?";
+            String sql = """
+                    SELECT r.id, r.player_id, r.event_id, r.placement, p.username AS player_name
+                    FROM result r
+                    JOIN player p ON r.player_id = p.id
+                    WHERE r.player_id = ?
+                    ORDER BY r.placement
+                    """;
             return jdbcTemplate.query(sql, this::mapRow, playerId);
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke hente resultater for spiller: " + playerId, e);
@@ -45,11 +57,7 @@ public class ResultRepository implements IResultRepository {
     public void save(Result result) {
         try {
             String sql = "INSERT INTO result (player_id, event_id, placement) VALUES (?, ?, ?)";
-            jdbcTemplate.update(sql,
-                    result.getPlayerId(),
-                    result.getEventId(),
-                    result.getPlacement()
-            );
+            jdbcTemplate.update(sql, result.getPlayerId(), result.getEventId(), result.getPlacement());
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke gemme resultat", e);
         }
@@ -58,11 +66,7 @@ public class ResultRepository implements IResultRepository {
     // --- Intern mapping ---
 
     private Result mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
-        return new Result(
-                rs.getInt("id"),
-                rs.getInt("player_id"),
-                rs.getInt("event_id"),
-                rs.getInt("placement")
-        );
+        return new Result(rs.getInt("id"), rs.getInt("player_id"), rs.getInt("event_id"),
+                rs.getInt("placement"), rs.getString("player_name"));
     }
 }
