@@ -42,14 +42,14 @@ public class EventRepository implements IEventRepository {
     @Override
     public List<EventRegistration> findRegistrationsByEventId(int eventId) {
         String sql = """
-            SELECT er.id, er.player_id, er.event_id, er.deck_id, er.registration_date,
-                   p.username AS player_name, d.name AS deck_name
-            FROM event_registration er
-            JOIN player p ON er.player_id = p.id
-            JOIN deck d ON er.deck_id = d.id
-            WHERE er.event_id = ?
-            ORDER BY er.registration_date, er.id
-            """;
+                SELECT er.id, er.player_id, er.event_id, er.deck_id, er.registration_date,
+                       p.username AS player_name, d.name AS deck_name
+                FROM event_registration er
+                JOIN player p ON er.player_id = p.id
+                JOIN deck d ON er.deck_id = d.id
+                WHERE er.event_id = ?
+                ORDER BY er.registration_date, p.username
+                """;
         return jdbcTemplate.query(sql, (rs, rowNum) -> new EventRegistration(
                 rs.getInt("id"),
                 rs.getInt("player_id"),
@@ -60,6 +60,7 @@ public class EventRepository implements IEventRepository {
                 rs.getString("deck_name")
         ), eventId);
     }
+
     // --- Skriveoperationer ---
 
     @Override
@@ -71,8 +72,7 @@ public class EventRepository implements IEventRepository {
                 event.getDate(),
                 event.getFormat().name(),
                 event.getMaxPlayers(),
-                event.getStatus().name()
-        );
+                event.getStatus().name());
     }
 
     @Override
@@ -82,7 +82,6 @@ public class EventRepository implements IEventRepository {
                 SET name = ?, location = ?, date = ?, format = ?, max_players = ?, status = ?
                 WHERE id = ?
                 """;
-
         jdbcTemplate.update(sql,
                 event.getName(),
                 event.getLocation(),
@@ -90,8 +89,7 @@ public class EventRepository implements IEventRepository {
                 event.getFormat().name(),
                 event.getMaxPlayers(),
                 event.getStatus().name(),
-                event.getId()
-        );
+                event.getId());
     }
 
     @Override
@@ -105,11 +103,17 @@ public class EventRepository implements IEventRepository {
     @Override
     public void registerPlayer(int playerId, int eventId, int deckId) {
         String sql = """
-            INSERT INTO event_registration (player_id, event_id, deck_id, registration_date)
-            VALUES (?, ?, ?, CURRENT_DATE)
-            """;
-
+                INSERT INTO event_registration (player_id, event_id, deck_id, registration_date)
+                VALUES (?, ?, ?, CURRENT_DATE)
+                """;
         jdbcTemplate.update(sql, playerId, eventId, deckId);
+    }
+
+    @Override
+    public boolean existsRegistration(int playerId, int eventId) {
+        String sql = "SELECT COUNT(*) FROM event_registration WHERE player_id = ? AND event_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, playerId, eventId);
+        return count != null && count > 0;
     }
 
     @Override
@@ -120,10 +124,10 @@ public class EventRepository implements IEventRepository {
     }
 
     @Override
-    public boolean existsRegistration(int playerId, int eventId) {
-        String sql = "SELECT COUNT(*) FROM event_registration WHERE player_id = ? AND event_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, playerId, eventId);
-        return count != null && count > 0;
+    public int countRegistrationsByPlayerId(int playerId) {
+        String sql = "SELECT COUNT(*) FROM event_registration WHERE player_id = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, playerId);
+        return count != null ? count : 0;
     }
 
     // --- Intern mapping ---
