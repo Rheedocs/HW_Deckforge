@@ -33,6 +33,10 @@ public class EventService {
 
     public void create(Event event) {
         if (event == null) throw new IllegalArgumentException("Event må ikke være null!");
+
+        List<String> errors = event.validate();
+        if (!errors.isEmpty()) throw new IllegalArgumentException(String.join(", ", errors));
+
         eventRepository.save(event);
     }
 
@@ -40,6 +44,10 @@ public class EventService {
         if (event == null) throw new IllegalArgumentException("Event må ikke være null!");
         if (eventRepository.findById(event.getId()) == null)
             throw new NoSuchElementException("Ingen event fundet med id: " + event.getId());
+
+        List<String> errors = event.validate();
+        if (!errors.isEmpty()) throw new IllegalArgumentException(String.join(", ", errors));
+
         eventRepository.update(event);
     }
 

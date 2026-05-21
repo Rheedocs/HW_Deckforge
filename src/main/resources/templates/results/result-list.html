@@ -17,6 +17,7 @@
         <thead>
         <tr>
             <th>Event</th>
+            <th>Player ID</th>
             <th>Navn</th>
             <th>Placering</th>
         </tr>
@@ -25,6 +26,7 @@
         <tr th:each="result : ${result}">
             <td th:text="${result.eventId}"></td>
             <td th:text="${result.playerId}"></td>
+            <td th:text="${result.username}"></td>
             <td th:text="${result.placement}"></td>
         </tr>
         </tbody>

@@ -17,15 +17,15 @@ import java.util.List;
 @RequestMapping("/results")
 public class ResultController {
 
-    @Autowired
-    private EventService eventService;
+    private final EventService eventService;
+    private final PlayerService playerService;
+    private final ResultService resultService;
 
-    @Autowired
-    private PlayerService playerService;
-
-    @Autowired
-    private ResultService resultService;
-
+    public ResultController(EventService eventService, PlayerService playerService, ResultService resultService){
+        this.eventService = eventService;
+        this.playerService = playerService;
+        this.resultService = resultService;
+    }
     @GetMapping("/event/{eventId}")
     public String showResults(@PathVariable int eventId, Model model, HttpSession session) {
         model.addAttribute("result", resultService.getByEventId(eventId));
@@ -34,7 +34,8 @@ public class ResultController {
 
     @GetMapping("/event/{eventId}/register")
     public String showRegisterForm(@PathVariable int eventId, Model model, HttpSession session) {
-        if (session.getAttribute("user") == null) return "redirect:/login";
+        if (session.getAttribute("player") == null) return "redirect:/login";
+        if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
         model.addAttribute("event", eventService.getById(eventId));
         model.addAttribute("players", playerService.getAll());
         model.addAttribute("result", new Result());
@@ -43,7 +44,8 @@ public class ResultController {
 
     @PostMapping("/event/{eventId}/register")
     public String save(@PathVariable int eventId, @ModelAttribute Result result, HttpSession session) {
-        if (session.getAttribute("user") == null) return "redirect:/login";
+        if (session.getAttribute("player") == null) return "redirect:/login";
+        if (!AuthHelper.isAdmin(session)) return "redirect:/access-denied";
         result.setEventId(eventId);
         resultService.save(result);
         return "redirect:/results/event/" + eventId;

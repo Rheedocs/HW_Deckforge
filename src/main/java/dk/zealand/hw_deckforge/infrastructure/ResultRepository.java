@@ -50,7 +50,7 @@ public class ResultRepository implements IResultRepository {
     @Override
     public void save(Result result) {
         try {
-            String sql = "INSERT INTO result (playerId, eventId, placements) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO result (player_id, event_id, placement) VALUES (?, ?, ?)";
             jdbcTemplate.update(sql,
                     result.getId(),
                     result.getPlayerId(),

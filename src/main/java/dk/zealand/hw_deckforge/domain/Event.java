@@ -4,6 +4,8 @@ import dk.zealand.hw_deckforge.domain.enums.EventStatus;
 import dk.zealand.hw_deckforge.domain.enums.Format;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Event {
     private int id;
@@ -41,9 +43,36 @@ public class Event {
     public void setMaxPlayers(int maxPlayers) { this.maxPlayers = maxPlayers; }
     public void setFormat(Format format) { this.format = format; }
     public void setStatus(EventStatus status) { this.status = status; }
+    public void setEventId(int eventId){this.id = eventId; }
 
     public boolean isUpcoming() { return this.status == EventStatus.UPCOMING; }
     public boolean isOngoing() { return this.status == EventStatus.ONGOING; }
     public boolean isCompleted() { return this.status == EventStatus.COMPLETED; }
     public boolean isCancelled() { return this.status == EventStatus.CANCELLED; }
+
+    public List<String> validate() {
+        List<String> errors = new ArrayList<>();
+
+        if (name == null || name.isBlank())
+            errors.add("Navn må ikke være tomt");
+
+        if (location == null || location.isBlank())
+            errors.add("Lokation må ikke være tom");
+
+        if (date == null)
+            errors.add("Dato må ikke være tom");
+        else if (date.isBefore(LocalDate.now()))
+            errors.add("Dato må ikke være i fortiden");
+
+        if (maxPlayers <= 1)
+            errors.add("Maks spillere skal være mindst 2");
+
+        if (status == null)
+            errors.add("Status skal angives");
+
+        if (format == null)
+            errors.add("Format skal angives");
+
+        return errors;
+    }
 }

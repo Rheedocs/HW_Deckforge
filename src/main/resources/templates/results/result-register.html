@@ -18,8 +18,7 @@
         <label for="playerId">Spiller</label>
         <select id="playerId" name="playerId">
             <option th:each="player : ${players}"
-                    th:value="${player.id}"
-                    th:text="${player.name}">
+                    th:value="${player.id}">
             </option>
         </select>
 
