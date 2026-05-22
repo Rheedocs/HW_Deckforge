@@ -31,10 +31,23 @@ Four-layer package structure under `dk.zealand.hw_deckforge`:
 |---|---|---|
 | Presentation | `presentation/controllers`, `presentation/helpers`, `presentation/config` | MVC controllers, session interceptor, AuthHelper |
 | Application | `application/service`, `application/interfaces` | Business logic, repository interfaces |
-| Domain | `domain`, `domain/enums`, `domain/exceptions` | Entities and enums |
-| Infrastructure | `infrastructure`, `infrastructure/external` | JDBC repositories, Scryfall API client |
+| Domain | `domain`, `domain/enums`, `domain/exceptions`, `domain/validation` | Entities, enums, domain validators, custom exceptions |
+| Infrastructure | `infrastructure`, `infrastructure/external`, `infrastructure/config` | JDBC repositories, MySQL persistence, Scryfall API client, infrastructure config |
 
-Dependencies only flow downward. Controllers depend on services; services depend on interfaces; repositories implement those interfaces.
+Dependencies follow a Clean Architecture-inspired structure. Controllers depend on services; services depend on repository interfaces and domain objects; repositories implement those interfaces with JdbcTemplate/MySQL. Services may also use validators and infrastructure services such as `ScryfallService` where needed.
+
+
+## Current Implementation Status
+
+`feature/result` has been merged into `master`. `feature/trade` was already merged into `feature/result`. The current stable state has 211 passing tests and 0 failures.
+
+Major implemented areas:
+
+- Event/result flow completed and collected mostly around event detail pages
+- Trade flow cleaned up with double confirmation and completed status
+- Custom exceptions: `NotFoundException` and `ValidationException`
+- Service validation cleaned up with helper methods and validators
+- Mobile views, card pagination, and demo data improved
 
 ## Authentication & Access Control
 
@@ -48,15 +61,25 @@ There is no Spring Security filter chain. Auth is handled manually:
 
 Each entity has an interface in `application/interfaces` (e.g. `IPlayerRepository`) and a `JdbcTemplate`-based implementation in `infrastructure/`. Services depend only on the interface.
 
-- All JDBC calls are wrapped in `try/catch (DataAccessException)` and rethrow as `DatabaseException`.
-- `GlobalExceptionHandler` catches `DatabaseException`, `IllegalArgumentException`, and `RuntimeException` and renders the `error` Thymeleaf template.
-- `PlayerRepository.delete()` performs a **soft delete** (`active = FALSE`), not a real SQL DELETE. All `findAll()` queries filter by `active = TRUE`.
+- JDBC repositories use `JdbcTemplate` and map rows to domain objects.
+- Database errors are wrapped as `DatabaseException` where relevant.
+- `GlobalExceptionHandler` catches `AccessDeniedException`, `DatabaseException`, `NotFoundException`, `ValidationException`, `IllegalArgumentException`, `RuntimeException`, and generic `Exception`.
+- `PlayerRepository.delete()` performs a **soft delete** (`active = FALSE`), not a real SQL DELETE. Normal `findAll()` queries filter by `active = TRUE`; admin flows can use `findAllIncludingInactive()`.
 
 ## Key Domain Rules
 
 - **Player delete** is soft (`active = FALSE`). Deleting the last admin is blocked in `PlayerService.isOnlyAdmin()`.
 - **Passwords** are BCrypt-encoded. The error message for login failures is intentionally generic to avoid revealing which field is wrong.
-- **Scryfall integration** (`ScryfallService`) fetches card images by fuzzy name match. Image URL is built from the card's Scryfall UUID following the pattern `/normal/front/{char1}/{char2}/{id}.jpg`. Failures return `null` silently.
+- **Deck rules** are handled through `Format` and `FormatValidator`:
+    - Commander: exactly 100 cards, max 1 copy of each non-basic card
+    - Standard: minimum 60 cards, max 4 copies of each non-basic card
+    - Draft: minimum 40 cards
+    - Casual: minimum 60 cards, max 4 copies of each non-basic card
+    - Basic lands may exceed copy limits
+- **Event registration** is validated in `EventService`: event must be upcoming, not full, player must not already be registered, deck must belong to the player, deck format must match event format, and deck size must be valid.
+- **Trade flow** uses these statuses: `PENDING`, `ACCEPTED`, `COMPLETED`, `DECLINED`, `CANCELLED`, `EXPIRED`. Accepted trades require double confirmation through `proposerConfirmed` and `receiverConfirmed`; only when both confirm is the trade completed.
+- **Result display** uses `Result.getPlacementText()` for labels like `1. plads`.
+- **Scryfall integration** (`ScryfallService`) fetches card images from valid `https://scryfall.com/card/...` links by extracting set code and collector number, calling Scryfall's card endpoint, and reading `image_uris.normal` or `card_faces[0].image_uris.normal`. Failures return `null` silently.
 
 ## Testing
 
@@ -90,6 +113,7 @@ This is a 2nd semester Datamatiker exam project. Code quality is assessed at the
 - Section dividers use: // --- Sektionsnavn ---
 - Commit messages: short and lowercase, max 10 words, conventional commits prefix (feat/fix/test/chore)
 - No Co-Authored-By in commit messages
+- Static usage: `private static final` constants are fine; avoid static services, static mutable state, and static initializer blocks for application logic
 
 ## Project Requirements
 
@@ -98,5 +122,4 @@ See `docs/holger-dialog.md` for product owner decisions and approved features.
 
 ## Project Structure Note
 
-All classes, repositories, services, and controllers were created as empty stubs from the class diagram in Sprint 1. 
-Empty stubs in trade, event, and result are intentional — not errors.
+The original Sprint 1 class diagram was used as a starting point, but the current code has moved beyond empty stubs. Trade, event, result, deck validation, custom exceptions, pagination support, Scryfall image lookup, and demo data are now implemented. Keep diagrams and documentation synchronized with the current `master` branch.

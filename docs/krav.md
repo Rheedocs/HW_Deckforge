@@ -40,6 +40,33 @@ Applikationen skal understøtte:
 
 Løsningen skal fungere på mobil, tablet og computer og persistere data i en database.
 
+
+## MVP-status – 22. maj 2026
+
+Første samlede MVP er implementeret, testet og merged til `master`.
+
+Status efter merge:
+
+- 211 tests, 0 fejl
+- `feature/result` er merged til `master`
+- `feature/trade` var allerede merged ind i `feature/result`
+- Projektet er klar til rapport- og demo-polish
+
+Implementeret MVP dækker nu de centrale flows:
+
+- Brugeroprettelse, login, roller og profil
+- Kortdatabase med Scryfall-billeder
+- Spillerens samling og markering af kort til bytte
+- Decks med kort og formatregler
+- Events med tilmelding, kapacitet og deck-formatvalidering
+- Tilmeldte spillere og decks på event-siden
+- Resultater vist samlet på event-siden
+- Trade-flow med forslag, accept, afvisning, annullering, double confirmation, historik og completed status
+- Responsivt UI med mobilvisning og pagination
+- Udvidet demo-data til test og fremlæggelse
+
+Holgers seneste vurdering var, at systemet kan betragtes som en fuld MVP og mere til. Fokus efter dette punkt er derfor polish, tydelig feedback og et smooth demo-flow frem for store nye features.
+
 ---
 
 ## Eksamensperiode
@@ -379,20 +406,27 @@ Eventstatus:
 - UPCOMING
 - ONGOING
 - COMPLETED
+- CANCELLED
 
 Ved fuldt event:
 
 - Tydelig fejlbesked
 - Disabled knap
 
-Spillere kan afmelde sig indtil eventet starter.
+Eventtilmelding skal validere:
 
-Ved afmelding frigives pladsen.
+- Eventet må ikke være fuldt
+- Spilleren må ikke allerede være tilmeldt
+- Spilleren må kun bruge sit eget deck
+- Deck-format skal matche event-format
+- Decket skal opfylde formatets deck-regler
+- Eventet skal være kommende
 
 Events skal sorteres efter dato, kommende først.
 
 Nice-to-have:
 
+- Afmelding før eventstart
 - Venteliste
 
 ---
@@ -402,9 +436,11 @@ Nice-to-have:
 MVP skal understøtte:
 
 - Resultater på events
-- Resultater registreres kun når event = COMPLETED
-- Resultater vises på event-siden
-- Resultater kan vises på spillerens profil, hvis profilen ikke er privat
+- Resultater vises samlet på event-siden
+- Placeringer vises brugervenligt, fx "1. plads"
+- Resultater kan bruges som grundlag for spillerens turneringshistorik
+
+Nuværende MVP prioriterer event-siden som primær resultatvisning. En separat resultatliste eller mere avanceret spillerhistorik kan beskrives som version 2, hvis der ønskes statistik/leaderboard senere.
 
 Ved privat profil vises turneringer og resultater ikke for andre spillere.
 
@@ -416,7 +452,7 @@ MVP skal understøtte:
 
 - Markering af kort til bytte
 - Forslag af bytte
-- Reservation af kort
+- Reservation af kort i aktivt trade-flow
 - Accept
 - Afvisning
 - Annullering
@@ -584,6 +620,18 @@ Prioritet:
 
 ---
 
+Endelig MVP-afklaring:
+
+Holger har godkendt den nuværende visuelle retning. Designet skal føles som et praktisk butik/community-system fremfor 
+et flashy gaming-site.
+
+Vigtige principper:
+- Orange/rød-orange bruges som handlingsfarve.
+- Kontrast og læsbarhed prioriteres, især på mobil.
+- Indhold opdeles i tydelige bokse/cards.
+- Cards skal have nok spacing, så layoutet ikke føles for tæt.
+- Der er ikke behov for større visuelle ændringer i MVP.
+
 ## Vigtige ting at huske ved implementering
 
 - Tjek at private spillere skjules for almindelige spillere
@@ -596,3 +644,29 @@ Prioritet:
 - Kort fjernes fra byttelisten efter completed trade
 - Desktop tabel, mobil grid
 - Søgning på kortliste er vigtigere end avanceret filter
+
+---
+
+## Implementeringsstatus efter første samlede MVP
+
+Følgende områder er implementeret og testet som samlet MVP:
+
+- Bruger/login/roller/profil
+- Kortdatabase og Scryfall-billeder
+- Spillersamling og byttemarkering
+- Decks, deck-kort og formatvalidering
+- Eventliste, eventdetalje, tilmelding og kapacitetstjek
+- Event/result-flow samlet på event-siden
+- Trade-flow med 1:1 bytte, statuser, double confirmation og historik
+- Responsivt layout, mobilkortvisning og pagination
+- Udvidet demo-data
+
+Følgende bør behandles som polish eller version 2, hvis der ikke nås mere:
+
+- Afmelding fra events
+- Venteliste
+- Avanceret statistik/leaderboard
+- Push/email/realtime notifikationer
+- Multi-kort bytter
+- Avancerede filtre og ønskelister
+

@@ -204,11 +204,25 @@ Hvis implementeret:
 
 ### Eventtilmelding og resultater
 
+Første afklaring:
+
 - Spillere kan afmelde sig indtil eventet starter
 - Pladsen frigives ved afmelding
 - Resultater registreres kun når event = COMPLETED
 - Resultater vises på både event-siden og spillerens profil
 - Tydelig eventstatus: UPCOMING → ONGOING → COMPLETED
+
+Senere MVP-implementering prioriterede:
+
+- Tilmelding til events med deck
+- Tjek af fuldt event
+- Tjek af allerede tilmeldt spiller
+- Tjek af at deck tilhører spilleren
+- Tjek af at deck-format matcher event-format
+- Tjek af at decket opfylder formatets regler
+- Resultater samlet på event-siden
+
+Afmelding og venteliste kan behandles som polish/version 2, hvis der ikke nås mere.
 
 ---
 
@@ -542,3 +556,47 @@ Begrundelse:
 - Datakvalitet er kritisk: ingen dubletter, ingen overbooking, ingen kort i to bytter samtidig
 - Bytning understøtter bæredygtighed via cirkulation af eksisterende kort
 - Alt skal pege tilbage på: "Det skal være nemt og trygt at bytte og deltage i events"
+
+---
+
+## Sprint 4 – Samlet MVP-status og Holgers vurdering
+
+Efter første samlede udkast blev Holger præsenteret for systemets aktuelle funktioner: login/roller, kort, samlinger, decks, deck-regler, events, tilmelding, resultater, trades, visibility, mobilvisning og teststatus.
+
+Holgers vurdering:
+
+> Det her er stærkt. Det er en fuld MVP – og mere til.
+
+Holger fremhævede, at systemet nu har:
+
+- Core flows: deck, event og trade
+- Forretningslogik: regler og validation
+- UX-overvejelser: mobil, visibility og tydeligere flows
+- Stabilitet: 211 grønne tests
+
+Holgers vigtigste konklusion:
+
+> Jeg kan forstå, bruge og stole på systemet.
+
+Efter denne vurdering er fokus ændret fra nye features til polish:
+
+- Små UX-forbedringer
+- Tydelig feedback ved fejl, status og success
+- Smooth demo-flow
+- Rapport og dokumentation
+
+Holgers konklusion var, at han ville godkende systemet som MVP uden problemer.
+
+## Visuel stil – endelig MVP-retning
+
+Holger blev præsenteret for den nuværende visuelle stil: varme grå/hvide toner, mørk header/navigation, orange/rød-orange 
+accentfarve til handlinger, tydelige bokse/cards og et roligt butik/community-udtryk fremfor flashy gaming UI.
+
+Holger godkendte retningen og vurderede, at designet føles roligt, troværdigt og praktisk til butik/events.
+
+Vigtige designprincipper:
+- Orange bruges konsekvent til handlinger som tilmeld, accepter bytte og andre vigtige knapper.
+- Kontrast og læsbarhed skal prioriteres, især på mobil.
+- Cards/bokse skal have nok spacing og må ikke føles for tætte.
+
+Holgers konklusion var, at stilen er spot on, og at der ikke er behov for store visuelle ændringer.
