@@ -705,37 +705,63 @@ INSERT INTO trade (
     proposer_id, receiver_id, status,
     created_at, expires_at
 ) VALUES
+      -- Con Galo foreslår til Mattam Ei (PENDING)
       (
           2,
           3,
           'PENDING',
-          '2026-05-07 10:00:00',
-          '2026-05-08 10:00:00'
+          '2026-05-24 10:00:00',
+          '2026-05-26 10:00:00'
       ),
+      -- Mattam Ei foreslår til Holger (ACCEPTED - aktiv bytte)
       (
           3,
           5,
           'ACCEPTED',
-          '2026-05-01 12:00:00',
-          '2026-05-02 12:00:00'
+          '2026-05-23 12:00:00',
+          '2026-05-25 12:00:00'
       ),
+      -- Wicky Icki afvist af Con Galo (DECLINED - historik)
       (
           4,
           2,
           'DECLINED',
           '2026-04-28 09:00:00',
           '2026-04-29 09:00:00'
+      ),
+      -- Holger foreslår til Con Galo (PENDING - Con Galo har noget i kræver handling)
+      (
+          5,
+          2,
+          'PENDING',
+          '2026-05-24 14:00:00',
+          '2026-05-26 14:00:00'
+      ),
+      -- Con Galo og testspiller (COMPLETED - historik)
+      (
+          2,
+          6,
+          'COMPLETED',
+          '2026-05-20 09:00:00',
+          '2026-05-21 09:00:00'
       );
 
-INSERT INTO trade_card (
-    trade_id, player_card_id, role
-) VALUES
-      (1, 1, 'PROPOSER'),
-      (1, 5, 'RECEIVER'),
-      (2, 6, 'PROPOSER'),
-      (2, 8, 'RECEIVER'),
-      (3, 7, 'PROPOSER'),
-      (3, 2, 'RECEIVER');
+INSERT INTO trade_card (trade_id, player_card_id, role) VALUES
+      -- Trade 1: Con Galo (Shivan Dragon) → Mattam Ei vil have Counterspell
+      (1, 28, 'PROPOSER'),
+      (1, 45, 'RECEIVER'),
+      -- Trade 2: Mattam Ei (Brainstorm) → Holger vil have Counterspell
+      (2, 47, 'PROPOSER'),
+      (2, 81, 'RECEIVER'),
+      -- Trade 3: Wicky Icki → Con Galo (DECLINED)
+      (3, 58, 'PROPOSER'),
+      (3, 28, 'RECEIVER'),
+      -- Trade 4: Holger (Shivan Dragon) → Con Galo vil have Lightning Bolt
+      (4, 77, 'PROPOSER'),
+      (4, 29, 'RECEIVER'),
+      -- Trade 5: Con Galo → Testspiller (COMPLETED)
+      (5, 29, 'PROPOSER'),
+      (5, 96, 'RECEIVER');
 
 INSERT INTO result (
     player_id, event_id, placement

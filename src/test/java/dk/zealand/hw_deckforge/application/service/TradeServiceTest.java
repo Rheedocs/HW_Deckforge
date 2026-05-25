@@ -29,11 +29,16 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TradeServiceTest {
 
-    @Mock private ITradeRepository tradeRepository;
-    @Mock private IPlayerCardRepository playerCardRepository;
-    @Mock private ITradeCardRepository tradeCardRepository;
-    @Mock private IPlayerRepository playerRepository;
-    @Mock private TradeValidator tradeValidator;
+    @Mock
+    private ITradeRepository tradeRepository;
+    @Mock
+    private IPlayerCardRepository playerCardRepository;
+    @Mock
+    private ITradeCardRepository tradeCardRepository;
+    @Mock
+    private IPlayerRepository playerRepository;
+    @Mock
+    private TradeValidator tradeValidator;
 
     @InjectMocks
     private TradeService tradeService;
@@ -45,8 +50,10 @@ class TradeServiceTest {
 
     @BeforeEach
     void setup() {
-        testTrade = new Trade(1, 20, 30, TradeStatus.PENDING, LocalDateTime.now(), LocalDateTime.now().plusHours(24), false, false);
-        receiver = new Player(30, "Receiver", "receiver@test.dk", "hashed-password", Role.PLAYER, CollectionVisibility.PUBLIC);
+        testTrade = new Trade(1, 20, 30, TradeStatus.PENDING, LocalDateTime.now(),
+                LocalDateTime.now().plusHours(24), false, false);
+        receiver = new Player(30, "Receiver", "receiver@test.dk", "hashed-password",
+                Role.PLAYER, CollectionVisibility.PUBLIC);
         proposerCard = new PlayerCard(10, 20, 1, 1, true);
         receiverCard = new PlayerCard(20, 30, 2, 1, true);
     }
@@ -133,7 +140,27 @@ class TradeServiceTest {
     // --- Validering ---
 
     @Test
+    void propose_proposerAndReceiverSame_throwsValidationException() {
+        assertThrows(ValidationException.class, () -> tradeService.validateProposal(20, 20));
+    }
+
+    @Test
+    void propose_receiverIsPrivate_throwsAccessDenied() {
+        Player proposer = new Player(20, "Proposer", "proposer@test.dk", "hashed-password",
+                Role.PLAYER, CollectionVisibility.PUBLIC);
+        Player privateReceiver = new Player(30, "Private", "private@test.dk", "hashed-password",
+                Role.PLAYER, CollectionVisibility.PRIVATE);
+        when(playerRepository.findById(20)).thenReturn(proposer);
+        when(playerRepository.findById(30)).thenReturn(privateReceiver);
+
+        assertThrows(AccessDeniedException.class, () -> tradeService.validateProposal(20, 30));
+    }
+
+    @Test
     void propose_proposerCardNotTradeable_throwsValidationException() {
+        Player proposer = new Player(20, "Proposer", "proposer@test.dk", "hashed-password",
+                Role.PLAYER, CollectionVisibility.PUBLIC);
+        when(playerRepository.findById(20)).thenReturn(proposer);
         when(playerRepository.findById(30)).thenReturn(receiver);
         when(playerCardRepository.findForTradeByPlayerId(20)).thenReturn(List.of(proposerCard));
         when(playerCardRepository.findForTradeByPlayerId(30)).thenReturn(List.of(receiverCard));
@@ -142,7 +169,8 @@ class TradeServiceTest {
                 .when(tradeValidator)
                 .validateProposerCard(20, 10);
 
-        assertThrows(ValidationException.class, () -> tradeService.propose(20, 30, List.of(10), List.of(20)));
+        assertThrows(ValidationException.class, () -> tradeService.propose(20, 30, List.of(10),
+                List.of(20)));
 
         verify(tradeRepository, never()).save(any());
         verify(tradeCardRepository, never()).save(any());
@@ -151,7 +179,7 @@ class TradeServiceTest {
     // --- Scheduler ---
 
     @Test
-    void expireOldTrades_kalderRepository() {
+    void expireOldTrades_callsRepository() {
         tradeService.expireOldTrades();
 
         verify(tradeRepository).expireOldTrades();

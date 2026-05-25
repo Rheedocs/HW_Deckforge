@@ -184,8 +184,10 @@ public class TradeService {
         validateId(receiverId, "Receiver-id");
         if (proposerId == receiverId) throw new ValidationException("Du kan ikke bytte med dig selv");
 
+        Player proposer = playerRepository.findById(proposerId);
         Player receiver = playerRepository.findById(receiverId);
         if (receiver == null) throw new IllegalArgumentException("Modtager findes ikke");
+        if (proposer == null) throw new IllegalArgumentException("Afsender findes ikke");
         if (receiver.getCollectionVisibility() == CollectionVisibility.PRIVATE)
             throw new AccessDeniedException("Denne spillers profil er privat");
         if (playerCardRepository.findForTradeByPlayerId(proposerId).isEmpty())
@@ -193,7 +195,7 @@ public class TradeService {
         if (playerCardRepository.findForTradeByPlayerId(receiverId).isEmpty())
             throw new ValidationException("Denne spiller har ingen kort markeret til bytte");
     }
-
+    
     private void validateTradeCards(List<Integer> proposerCardIds, List<Integer> receiverCardIds) {
         if (proposerCardIds == null || proposerCardIds.size() != 1)
             throw new IllegalArgumentException("Et trade skal indeholde et kort fra begge parter");
