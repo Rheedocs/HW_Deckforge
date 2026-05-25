@@ -30,11 +30,11 @@
     <div class="card-grid" id="playerCollectionGrid" th:unless="${#lists.isEmpty(playerCards)}">
         <div th:each="pc : ${playerCards}" th:with="card=${cardMap[pc.cardId]}"
              class="card-thumb"
-             th:data-name="${card != null ? card.name : '–'}"
-             th:data-type="${card != null ? card.cardType.displayName : '–'}"
-             th:data-color="${card != null ? card.color.displayName : '–'}"
-             th:data-rarity="${card != null ? card.rarity.displayName : '–'}"
-             th:data-set="${card != null ? card.setName : '–'}"
+             th:data-name="${card != null ? card.name : '-'}"
+             th:data-type="${card != null ? card.cardType.displayName : '-'}"
+             th:data-color="${card != null ? card.color.displayName : '-'}"
+             th:data-rarity="${card != null ? card.rarity.displayName : '-'}"
+             th:data-set="${card != null ? card.setName : '-'}"
              th:data-rules="${card != null ? card.ruleText : ''}"
              th:data-image="${card != null ? card.imageUrl : ''}"
              th:data-url="${card != null ? card.scryfallUrl : ''}"
@@ -47,27 +47,27 @@
              onclick="openCollectionCardModal(this)">
             <img th:if="${card != null and card.imageUrl != null}" th:src="${card.imageUrl}"
                  th:alt="${card != null ? card.name : ''}">
-            <div class="card-thumb-name" th:text="${card != null ? card.name : '–'}"></div>
+            <div class="card-thumb-name" th:text="${card != null ? card.name : '-'}"></div>
             <div th:if="${pc.forTrade}" class="card-thumb-trade">Til bytte</div>
             <a class="btn btn-secondary card-thumb-trade-toggle"
                th:if="${!isSelf and pc.forTrade}"
                th:href="@{/trades/propose/{id}(id=${owner.id}, receiverCardId=${pc.id})}"
                onclick="event.stopPropagation()">Foreslå bytte</a>
             <div class="card-thumb-meta">
-                <span th:text="'×' + ${pc.quantity}"></span>
+                <span th:text="'x' + ${pc.quantity}"></span>
             </div>
         </div>
     </div>
-    <div class="pagination-controls" id="playerCollectionPagination" data-picker="playerCollectionGrid"
+
+    <div class="pagination-controls" id="playerCollectionPagination" data-picker="playerCollectionGrid" data-table="playerCollectionTable"
          th:unless="${#lists.isEmpty(playerCards)}">
-        <button class="btn" id="playerCollectionPaginationForrige" type="button" onclick="changePage(this, -1)">←
-        </button>
+        <button class="btn" id="playerCollectionPaginationForrige" type="button" onclick="changePage(this, -1)">&#8592;</button>
         <span class="pagination-info" id="playerCollectionPaginationInfo"></span>
-        <button class="btn" id="playerCollectionPaginationNæste" type="button" onclick="changePage(this, 1)">→</button>
+        <button class="btn" id="playerCollectionPaginationNaeste" type="button" onclick="changePage(this, 1)">&#8594;</button>
     </div>
 
     <!-- Desktop: tabel -->
-    <div class="table-wrapper desktop-table" th:unless="${#lists.isEmpty(playerCards)}">
+    <div class="table-wrapper desktop-table" id="playerCollectionTable" th:unless="${#lists.isEmpty(playerCards)}">
         <table>
             <thead>
             <tr>
@@ -99,10 +99,10 @@
                          th:data-url="${card.scryfallUrl}"
                          onclick="openModal(this)">
                 </td>
-                <td th:text="${card != null ? card.name : '–'}"></td>
-                <td th:text="${card != null ? card.cardType.displayName : '–'}"></td>
-                <td th:text="${card != null ? card.color.displayName : '–'}"></td>
-                <td th:text="${card != null ? card.rarity.displayName : '–'}"></td>
+                <td th:text="${card != null ? card.name : '-'}"></td>
+                <td th:text="${card != null ? card.cardType.displayName : '-'}"></td>
+                <td th:text="${card != null ? card.color.displayName : '-'}"></td>
+                <td th:text="${card != null ? card.rarity.displayName : '-'}"></td>
                 <td th:text="${pc.quantity}"></td>
                 <td>
                     <span th:unless="${canManage}" th:text="${pc.forTrade ? 'Ja' : 'Nej'}"></span>
@@ -140,9 +140,8 @@
         </table>
     </div>
 
-    <!-- Tilføj kort til samling (ejer eller admin) -->
-    <div th:if="${canManage}" class="section-add">
-        <h3>Tilføj kort</h3>
+    <div th:if="${canManage}" class="info-section">
+        <h3>Tilføj kort til samling</h3>
         <form th:action="@{/cards/player/{pid}/add(pid=${owner.id})}" method="post" id="addCollectionCardForm">
             <input type="hidden" id="collectionCardId" name="cardId">
             <div class="picker-sticky-bar" id="collectionPickerStickyBar">
@@ -156,8 +155,7 @@
                     <button class="btn" type="submit">Tilføj til samling</button>
                 </div>
             </div>
-            <p id="collectionCardLabel" class="card-picker-selected-label picker-label">Intet kort valgt — klik et kort
-                herunder</p>
+            <p id="collectionCardLabel" class="card-picker-selected-label picker-label">Intet kort valgt — klik et kort herunder</p>
             <div class="filter-buttons">
                 <input type="text" id="collectionCardSearch" placeholder="Søg kortnavne..."
                        oninput="filterCollectionCards()" style="flex:1;min-width:120px;width:auto;margin:0;">
@@ -190,7 +188,7 @@
                         onclick="changePage(this,-1)">&#8592;
                 </button>
                 <span class="pagination-info" id="collectionCardPaginationInfo"></span>
-                <button type="button" class="btn btn-secondary" id="collectionCardPaginationNæste"
+                <button type="button" class="btn btn-secondary" id="collectionCardPaginationNaeste"
                         onclick="changePage(this,1)">&#8594;
                 </button>
             </div>
@@ -220,7 +218,7 @@
     </div>
 </div>
 
-<!-- Samlings-kort-modal: se detaljer og administrer (mobil) -->
+<!-- Samlings-kort-modal -->
 <div class="modal-overlay" id="collectionCardModalOverlay" onclick="closeCollectionCardModal(event)">
     <div class="modal">
         <button class="modal-close" onclick="closeCollectionCardModal()">&#x2715;</button>
@@ -236,14 +234,14 @@
         <p id="skModalAntal" class="modal-card-quantity"></p>
         <div id="skModalHandlinger" class="modal-actions">
             <div class="quantity-stepper">
-                <button type="button" class="btn btn-secondary" onclick="adjustCollectionQuantity(-1)">−</button>
+                <button type="button" class="btn btn-secondary" onclick="adjustCollectionQuantity(-1)">-</button>
                 <span class="quantity-stepper-display" id="skAntal">1</span>
                 <button type="button" class="btn btn-secondary" onclick="adjustCollectionQuantity(1)">+</button>
             </div>
             <div class="modal-action-row">
-                <form id="skTilføjForm" method="post" class="modal-action-form">
+                <form id="skTilfoejForm" method="post" class="modal-action-form">
                     <input type="hidden" name="cardId" id="skCardId">
-                    <input type="hidden" name="quantity" id="skTilføjQuantity" value="1">
+                    <input type="hidden" name="quantity" id="skTilfoejQuantity" value="1">
                     <button class="btn modal-form-btn" type="submit">Tilføj</button>
                 </form>
                 <form id="skFjernForm" method="post" class="modal-action-form">
@@ -261,14 +259,14 @@
     </div>
 </div>
 
-<!-- Kortbillede-vælger-modal: vælg og tilføj kort (mobil) -->
+<!-- Kortbillede-vælger-modal -->
 <div class="modal-overlay" id="cardPickerModalOverlay" onclick="closeCardPickerModal(event)">
     <div class="modal card-picker-modal">
         <button class="modal-close" onclick="closeCardPickerModal()">&#x2715;</button>
         <img id="kvModalBillede" src="" alt="">
         <h3 id="kvModalNavn"></h3>
         <div class="quantity-stepper">
-            <button type="button" class="btn btn-secondary" onclick="adjustPickerQuantity(-1)">−</button>
+            <button type="button" class="btn btn-secondary" onclick="adjustPickerQuantity(-1)">-</button>
             <span class="quantity-stepper-display" id="kvAntal">1</span>
             <button type="button" class="btn btn-secondary" onclick="adjustPickerQuantity(1)">+</button>
         </div>

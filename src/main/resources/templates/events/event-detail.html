@@ -23,7 +23,8 @@
 
         <p>
             <strong>Status:</strong>
-            <span class="badge badge-upcoming" th:if="${event.upcoming}">Kommende</span>
+            <span class="badge badge-full" th:if="${event.upcoming and isFull}">Fuldt</span>
+            <span class="badge badge-upcoming" th:if="${event.upcoming and !isFull}">Kommende</span>
             <span class="badge badge-ongoing" th:if="${event.ongoing}">Igangværende</span>
             <span class="badge badge-completed" th:if="${event.completed}">Afsluttet</span>
             <span class="badge badge-cancelled" th:if="${event.cancelled}">Aflyst</span>

@@ -42,7 +42,8 @@
                         <span th:text="${event.maxPlayers} + ' pladser'"></span>
                     </div>
                     <div class="list-thumb-meta">
-                        <span class="badge badge-upcoming">Kommende</span>
+                        <span class="badge badge-full" th:if="${fullMap.get(event.id)}">Fuldt</span>
+                        <span class="badge badge-upcoming" th:unless="${fullMap.get(event.id)}">Kommende</span>
                     </div>
                     <div class="list-thumb-actions">
                         <a class="btn card-thumb-action event-thumb-primary-action"
@@ -76,7 +77,10 @@
                         <td th:text="${event.location}"></td>
                         <td th:text="${event.format.displayName}"></td>
                         <td th:text="${event.maxPlayers}"></td>
-                        <td><span class="badge badge-upcoming">Kommende</span></td>
+                        <td>
+                            <span class="badge badge-full" th:if="${fullMap.get(event.id)}">Fuldt</span>
+                            <span class="badge badge-upcoming" th:unless="${fullMap.get(event.id)}">Kommende</span>
+                        </td>
                         <td>
                             <div class="action-col">
                                 <a class="btn" th:href="@{/events/{id}(id=${event.id})}">Se</a>

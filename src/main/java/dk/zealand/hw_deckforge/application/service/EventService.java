@@ -11,7 +11,9 @@ import dk.zealand.hw_deckforge.domain.EventRegistration;
 import dk.zealand.hw_deckforge.domain.validation.FormatValidator;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EventService {
@@ -54,6 +56,14 @@ public class EventService {
     public boolean isFull(int eventId) {
         Event event = getById(eventId);
         return eventRepository.countRegistrations(eventId) >= event.getMaxPlayers();
+    }
+
+    public Map<Integer, Boolean> getFullMap(List<Event> events) {
+        Map<Integer, Boolean> fullMap = new HashMap<>();
+        for (Event event : events) {
+            fullMap.put(event.getId(), countRegistrations(event.getId()) >= event.getMaxPlayers());
+        }
+        return fullMap;
     }
 
     public boolean isPlayerRegistered(int playerId, int eventId) {

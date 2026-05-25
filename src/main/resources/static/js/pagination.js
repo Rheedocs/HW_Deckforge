@@ -49,13 +49,11 @@ function filterCardList() {
     let selectedColor = colorInput ? colorInput.value : "";
     let selectedType = typeInput ? typeInput.value : "";
 
-    // Mobil: filtrer .card-thumb
     document.querySelectorAll(".card-grid .card-thumb").forEach(function (el) {
         el.classList.toggle("filter-hidden", !matchesFilter(el, searchText, selectedColor, selectedType));
     });
     if (document.getElementById("cardListGrid")) showPage("cardListGrid", "cardListPagination", 1);
 
-    // Desktop: filtrer tabelrækker — name=1, type=2, color=3
     document.querySelectorAll(".desktop-table tbody tr").forEach(function (tr) {
         let c = tr.cells;
         if (!c || c.length < 4) return;
@@ -73,14 +71,12 @@ function filterPlayerList() {
     let searchInput = document.getElementById("playerSearch");
     let searchText = searchInput ? searchInput.value.toLowerCase() : "";
 
-    // Mobil: filtrer .list-thumb elementer
     document.querySelectorAll(".list-grid .list-thumb").forEach(function (el) {
         let name = el.querySelector(".list-thumb-title") ? el.querySelector(".list-thumb-title")
             .textContent.toLowerCase() : "";
         el.classList.toggle("filter-hidden", searchText && !name.includes(searchText));
     });
 
-    // Desktop: filtrer tabelrækker på brugernavn kolonnen
     document.querySelectorAll(".desktop-table tbody tr").forEach(function (tr) {
         let c = tr.cells;
         if (!c || c.length < 2) return;
@@ -139,6 +135,17 @@ function initPagination(pickerId, controlId) {
     showPage(pickerId, controlId, 1);
 }
 
+function getPaginationButtons(controlId) {
+    let controls = document.getElementById(controlId);
+    if (!controls) return { forrige: null, naeste: null, info: null };
+    let buttons = controls.querySelectorAll("button");
+    return {
+        forrige: buttons[0] || null,
+        naeste: buttons[1] || null,
+        info: controls.querySelector(".pagination-info") || null
+    };
+}
+
 function showPage(pickerId, controlId, side) {
     let pageSize = getPageSize();
     let selector = "#" + pickerId + " .card-picker-item:not(.filter-hidden), " +
@@ -150,21 +157,34 @@ function showPage(pickerId, controlId, side) {
     if (side > pages) side = pages;
     pagination[pickerId] = side;
 
+    // Skjul alle mobil items
     let allSelector = "#" + pickerId + " .card-picker-item, " +
         "#" + pickerId + " .card-thumb";
     document.querySelectorAll(allSelector).forEach(function (item) {
         item.classList.add("page-hidden");
     });
 
+    // Vis items for denne side
     for (let i = 0; i < items.length; i++) {
         if (i >= (side - 1) * pageSize && i < side * pageSize) items[i].classList.remove("page-hidden");
     }
 
+    // Desktop tabel paginering
     let controls = document.getElementById(controlId);
-    if (!controls) return;
-    document.getElementById(controlId + "Forrige").disabled = side <= 1;
-    document.getElementById(controlId + "Næste").disabled = side >= pages;
-    document.getElementById(controlId + "Info").textContent = "Side " + side + " af " + pages + " (" + total + " kort)";
+    if (controls && controls.dataset.table) {
+        let tableId = controls.dataset.table;
+        let allRows = document.querySelectorAll("#" + tableId + " tbody tr");
+        let visibleRows = document.querySelectorAll("#" + tableId + " tbody tr:not(.filter-hidden)");
+        allRows.forEach(function (row) { row.classList.add("page-hidden"); });
+        for (let i = 0; i < visibleRows.length; i++) {
+            if (i >= (side - 1) * pageSize && i < side * pageSize) visibleRows[i].classList.remove("page-hidden");
+        }
+    }
+
+    let btns = getPaginationButtons(controlId);
+    if (btns.forrige) btns.forrige.disabled = side <= 1;
+    if (btns.naeste) btns.naeste.disabled = side >= pages;
+    if (btns.info) btns.info.textContent = "Side " + side + " af " + pages + " (" + total + " kort)";
 }
 
 function changePage(btn, delta) {
@@ -200,7 +220,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let quantityInput = document.getElementById("quantity");
     if (quantityInput) {
         quantityInput.addEventListener("input", function () {
-            if (document.getElementById("selectedCardId").value) {
+            let cardId = document.getElementById("selectedCardId");
+            if (cardId && cardId.value) {
                 updateDeckWarning(parseInt(this.value) || 1);
             }
         });

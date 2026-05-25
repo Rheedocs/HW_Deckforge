@@ -76,14 +76,30 @@ td:empty { border: 1px solid var(--border); background: transparent; }
     font-weight: bold;
 }
 
-/* Grønne badges: aktive og positive tilstande */
-.badge-upcoming, .badge-accepted { background-color: #d5e8d4; color: #2d6a2d; }
+/* Grønne badges: positive eller åbne tilstande */
+.badge-upcoming,
+.badge-accepted {
+    background-color: #d4edda;
+    color: #155724;
+}
 
-/* Gule badges: afventende tilstande */
-.badge-ongoing, .badge-pending { background-color: #fff3cd; color: #856404; }
+/* Gule badges: aktive eller afventende tilstande */
+.badge-ongoing,
+.badge-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
 
-/* Grå badge: afsluttet */
-.badge-completed { background-color: #e2e3e5; color: #383d41; }
+/* Blå badge: afsluttet */
+.badge-completed {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
 
-/* Røde badges: fejl og afviste tilstande */
-.badge-cancelled, .badge-declined { background-color: var(--error-bg); color: var(--error); }
+/* Røde badges: negative eller lukkede tilstande */
+.badge-cancelled,
+.badge-declined,
+.badge-full {
+    background-color: #f8d7da;
+    color: #721c24;
+}

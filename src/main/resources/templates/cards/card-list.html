@@ -49,60 +49,59 @@
             </div>
         </div>
 
-        <div class="pagination-controls" id="cardListPagination" data-picker="cardListGrid">
-            <button class="btn" id="cardListPaginationForrige" type="button" onclick="changePage(this, -1)">←</button>
+        <div class="pagination-controls" id="cardListPagination" data-picker="cardListGrid" data-table="cardListTable">
+            <button class="btn" id="cardListPaginationForrige" type="button" onclick="changePage(this, -1)">&#8592;</button>
             <span class="pagination-info" id="cardListPaginationInfo"></span>
-            <button class="btn" id="cardListPaginationNæste" type="button" onclick="changePage(this, 1)">→</button>
+            <button class="btn" id="cardListPaginationNaeste" type="button" onclick="changePage(this, 1)">&#8594;</button>
         </div>
 
         <!-- Desktop: tabel -->
-        <div class="table-wrapper desktop-table">
-        <table>
-            <thead>
-            <tr>
-                <th>Billede</th>
-                <th>Navn</th>
-                <th>Type</th>
-
-                <th>Farve</th>
-                <th>Sjældenhed</th>
-                <th>Sæt</th>
-                <th th:if="${isAdmin}">Handlinger</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="card : ${cards}">
-                <td>
-                    <img class="card-img-small"
-                         th:if="${card.hasImage()}"
-                         th:src="${card.imageUrl}"
-                         th:alt="${card.name}"
-                         th:data-name="${card.name}"
-                         th:data-type="${card.cardType.displayName}"
-                         th:data-color="${card.color.displayName}"
-                         th:data-rarity="${card.rarity.displayName}"
-                         th:data-set="${card.setName}"
-                         th:data-rules="${card.ruleText}"
-                         th:data-image="${card.imageUrl}"
-                         th:data-url="${card.scryfallUrl}"
-                         th:data-edit-url="${isAdmin ? '/cards/' + card.id + '/edit' : null}"
-                         th:data-delete-url="${isAdmin ? '/cards/' + card.id + '/delete' : null}"
-                         onclick="openModal(this)">
-                </td>
-                <td th:text="${card.name}"></td>
-                <td th:text="${card.cardType.displayName}"></td>
-                <td th:text="${card.color.displayName}"></td>
-                <td th:text="${card.rarity.displayName}"></td>
-                <td th:text="${card.setName}"></td>
-                <td th:if="${isAdmin}">
-                    <div class="action-col">
-                        <a class="btn" th:href="@{/cards/{id}/edit(id=${card.id})}">Rediger</a>
-                        <a class="btn btn-danger" th:href="@{/cards/{id}/delete(id=${card.id})}">Slet</a>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="table-wrapper desktop-table" id="cardListTable">
+            <table>
+                <thead>
+                <tr>
+                    <th>Billede</th>
+                    <th>Navn</th>
+                    <th>Type</th>
+                    <th>Farve</th>
+                    <th>Sjældenhed</th>
+                    <th>Sæt</th>
+                    <th th:if="${isAdmin}">Handlinger</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="card : ${cards}">
+                    <td>
+                        <img class="card-img-small"
+                             th:if="${card.hasImage()}"
+                             th:src="${card.imageUrl}"
+                             th:alt="${card.name}"
+                             th:data-name="${card.name}"
+                             th:data-type="${card.cardType.displayName}"
+                             th:data-color="${card.color.displayName}"
+                             th:data-rarity="${card.rarity.displayName}"
+                             th:data-set="${card.setName}"
+                             th:data-rules="${card.ruleText}"
+                             th:data-image="${card.imageUrl}"
+                             th:data-url="${card.scryfallUrl}"
+                             th:data-edit-url="${isAdmin ? '/cards/' + card.id + '/edit' : null}"
+                             th:data-delete-url="${isAdmin ? '/cards/' + card.id + '/delete' : null}"
+                             onclick="openModal(this)">
+                    </td>
+                    <td th:text="${card.name}"></td>
+                    <td th:text="${card.cardType.displayName}"></td>
+                    <td th:text="${card.color.displayName}"></td>
+                    <td th:text="${card.rarity.displayName}"></td>
+                    <td th:text="${card.setName}"></td>
+                    <td th:if="${isAdmin}">
+                        <div class="action-col">
+                            <a class="btn" th:href="@{/cards/{id}/edit(id=${card.id})}">Rediger</a>
+                            <a class="btn btn-danger" th:href="@{/cards/{id}/delete(id=${card.id})}">Slet</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </main>
