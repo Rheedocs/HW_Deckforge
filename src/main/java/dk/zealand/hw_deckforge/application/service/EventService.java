@@ -9,6 +9,7 @@ import dk.zealand.hw_deckforge.domain.Deck;
 import dk.zealand.hw_deckforge.domain.Event;
 import dk.zealand.hw_deckforge.domain.EventRegistration;
 import dk.zealand.hw_deckforge.domain.validation.FormatValidator;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -101,6 +102,11 @@ public class EventService {
         Deck deck = deckService.getById(deckId);
         validateRegistration(playerId, event, deck);
         eventRepository.registerPlayer(playerId, eventId, deckId);
+    }
+
+    @Scheduled(fixedRate = 3600000)
+    public void updateEventStatuses() {
+        eventRepository.updateExpiredEvents();
     }
 
     // --- Validering ---

@@ -705,63 +705,48 @@ INSERT INTO trade (
     proposer_id, receiver_id, status,
     created_at, expires_at
 ) VALUES
-      -- Con Galo foreslår til Mattam Ei (PENDING)
-      (
-          2,
-          3,
-          'PENDING',
-          '2026-05-24 10:00:00',
-          '2026-05-26 10:00:00'
-      ),
-      -- Mattam Ei foreslår til Holger (ACCEPTED - aktiv bytte)
-      (
-          3,
-          5,
-          'ACCEPTED',
-          '2026-05-23 12:00:00',
-          '2026-05-25 12:00:00'
-      ),
-      -- Wicky Icki afvist af Con Galo (DECLINED - historik)
-      (
-          4,
-          2,
-          'DECLINED',
-          '2026-04-28 09:00:00',
-          '2026-04-29 09:00:00'
-      ),
-      -- Holger foreslår til Con Galo (PENDING - Con Galo har noget i kræver handling)
-      (
-          5,
-          2,
-          'PENDING',
-          '2026-05-24 14:00:00',
-          '2026-05-26 14:00:00'
-      ),
-      -- Con Galo og testspiller (COMPLETED - historik)
-      (
-          2,
-          6,
-          'COMPLETED',
-          '2026-05-20 09:00:00',
-          '2026-05-21 09:00:00'
-      );
+      -- Con Galo har sendt et forslag til Holger (Dine forslag)
+      (2, 5, 'PENDING', '2026-05-25 09:00:00', '2026-06-13 09:00:00'),
+      -- Con Galo har sendt endnu et forslag til Testspiller (Dine forslag)
+      (2, 6, 'PENDING', '2026-05-24 14:00:00', '2026-06-13 14:00:00'),
+      -- Mattam Ei har sendt forslag til Con Galo (Kræver handling)
+      (3, 2, 'PENDING', '2026-05-25 11:00:00', '2026-06-13 11:00:00'),
+      -- Holger har sendt forslag til Con Galo (Kræver handling)
+      (5, 2, 'PENDING', '2026-05-24 16:00:00', '2026-06-13 16:00:00'),
+      -- Con Galo og Testspiller afventer gennemførsel (Aktive bytter)
+      (2, 6, 'ACCEPTED', '2026-05-22 10:00:00', '2026-06-13 10:00:00'),
+      -- Mattam Ei og Con Galo gennemført (Historik)
+      (3, 2, 'COMPLETED', '2026-05-15 09:00:00', '2026-05-16 09:00:00'),
+      -- Con Galo afvist af Holger (Historik)
+      (2, 5, 'DECLINED', '2026-05-10 10:00:00', '2026-05-11 10:00:00'),
+      -- Con Galo annullerede selv et forslag (Historik)
+      (2, 3, 'CANCELLED', '2026-05-05 12:00:00', '2026-05-06 12:00:00');
 
 INSERT INTO trade_card (trade_id, player_card_id, role) VALUES
-      -- Trade 1: Con Galo (Shivan Dragon) → Mattam Ei vil have Counterspell
+      -- Trade 1: Con Galo tilbyder Shivan Dragon, vil have Counterspell fra Holger
       (1, 28, 'PROPOSER'),
-      (1, 45, 'RECEIVER'),
-      -- Trade 2: Mattam Ei (Brainstorm) → Holger vil have Counterspell
-      (2, 47, 'PROPOSER'),
-      (2, 81, 'RECEIVER'),
-      -- Trade 3: Wicky Icki → Con Galo (DECLINED)
-      (3, 58, 'PROPOSER'),
-      (3, 28, 'RECEIVER'),
-      -- Trade 4: Holger (Shivan Dragon) → Con Galo vil have Lightning Bolt
+      (1, 81, 'RECEIVER'),
+      -- Trade 2: Con Galo tilbyder Lightning Bolt, vil have Sol Ring fra Testspiller
+      (2, 29, 'PROPOSER'),
+      (2, 97, 'RECEIVER'),
+      -- Trade 3: Mattam Ei tilbyder Counterspell, vil have Sol Ring fra Con Galo
+      (3, 45, 'PROPOSER'),
+      (3, 31, 'RECEIVER'),
+      -- Trade 4: Holger tilbyder Shivan Dragon, vil have Chaos Warp fra Con Galo
       (4, 77, 'PROPOSER'),
-      (4, 29, 'RECEIVER'),
-      -- Trade 5: Con Galo → Testspiller (COMPLETED)
-      (5, 29, 'PROPOSER'),
-      (5, 96, 'RECEIVER');
+      (4, 33, 'RECEIVER'),
+      -- Trade 5: Con Galo tilbyder Sol Ring, vil have Lightning Bolt fra Testspiller
+      (5, 31, 'PROPOSER'),
+      (5, 96, 'RECEIVER'),
+      -- Trade 6: Mattam Ei tilbyder Brainstorm, Con Galo tilbød Chaos Warp (COMPLETED)
+      (6, 47, 'PROPOSER'),
+      (6, 33, 'RECEIVER'),
+      -- Trade 7: Con Galo tilbød Shivan Dragon, Holger afviste (DECLINED)
+      (7, 28, 'PROPOSER'),
+      (7, 87, 'RECEIVER'),
+      -- Trade 8: Con Galo annullerede forslag til Mattam Ei (CANCELLED)
+      (8, 29, 'PROPOSER'),
+      (8, 48, 'RECEIVER');
 
 INSERT INTO result (
     player_id, event_id, placement

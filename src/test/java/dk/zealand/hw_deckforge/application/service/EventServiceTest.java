@@ -143,4 +143,11 @@ class EventServiceTest {
         assertThrows(ValidationException.class, () -> eventService.registerPlayer(20, 1, 5));
         verify(eventRepository, never()).registerPlayer(anyInt(), anyInt(), anyInt());
     }
+
+    @Test
+    void updateEventStatuses_callsRepository() {
+        eventService.updateEventStatuses();
+
+        verify(eventRepository).updateExpiredEvents();
+    }
 }

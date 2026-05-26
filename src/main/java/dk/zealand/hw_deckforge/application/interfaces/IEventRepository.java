@@ -14,6 +14,7 @@ public interface IEventRepository {
     void delete(int id);
     void registerPlayer(int playerId, int eventId, int deckId);
     boolean existsRegistration(int playerId, int eventId);
+    void updateExpiredEvents();
     int countRegistrations(int eventId);
     int countRegistrationsByPlayerId(int playerId);
 }

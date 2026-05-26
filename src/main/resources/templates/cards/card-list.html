@@ -44,7 +44,8 @@
                  th:data-edit-url="${isAdmin ? '/cards/' + card.id + '/edit' : null}"
                  th:data-delete-url="${isAdmin ? '/cards/' + card.id + '/delete' : null}"
                  onclick="openModal(this)">
-                <img th:if="${card.hasImage()}" th:src="${card.imageUrl}" th:alt="${card.name}">
+                <img th:src="${card.imageUrl != null and !card.imageUrl.isBlank() ? card.imageUrl :
+                 '/images/card-placeholder.png'}" th:alt="${card.name}">
                 <div class="card-thumb-name" th:text="${card.name}"></div>
             </div>
         </div>
@@ -73,8 +74,8 @@
                 <tr th:each="card : ${cards}">
                     <td>
                         <img class="card-img-small"
-                             th:if="${card.hasImage()}"
-                             th:src="${card.imageUrl}"
+                             th:src="${card.imageUrl != null and !card.imageUrl.isBlank() ? card.imageUrl :
+                              '/images/card-placeholder.png'}"
                              th:alt="${card.name}"
                              th:data-name="${card.name}"
                              th:data-type="${card.cardType.displayName}"

@@ -45,8 +45,8 @@
              th:data-remove-url="${canManage ? '/cards/player/' + owner.id + '/' + pc.id + '/remove' : ''}"
              th:data-trade-url="${canManage ? '/cards/player/' + owner.id + '/' + pc.id + '/set-trade' : ''}"
              onclick="openCollectionCardModal(this)">
-            <img th:if="${card != null and card.imageUrl != null}" th:src="${card.imageUrl}"
-                 th:alt="${card != null ? card.name : ''}">
+            <img th:src="${card != null and card.imageUrl != null and !card.imageUrl.isBlank() ? card.imageUrl :
+             '/images/card-placeholder.png'}" th:alt="${card != null ? card.name : ''}">
             <div class="card-thumb-name" th:text="${card != null ? card.name : '-'}"></div>
             <div th:if="${pc.forTrade}" class="card-thumb-trade">Til bytte</div>
             <a class="btn btn-secondary card-thumb-trade-toggle"
@@ -86,9 +86,10 @@
             <tr th:each="pc : ${playerCards}" th:with="card=${cardMap[pc.cardId]}">
                 <td>
                     <img class="card-img-small"
-                         th:if="${card != null and card.imageUrl != null}"
-                         th:src="${card.imageUrl}"
-                         th:alt="${card.name}"
+                         th:src="${card != null and card.imageUrl != null and !card.imageUrl.isBlank()
+                         ? card.imageUrl
+                         : '/images/card-placeholder.png'}"
+                         th:alt="${card != null ? card.name : ''}"
                          th:data-name="${card.name}"
                          th:data-type="${card.cardType.displayName}"
                          th:data-color="${card.color.displayName}"
@@ -175,8 +176,7 @@
                      th:data-type="${card.cardType.displayName}"
                      th:data-image="${card.imageUrl}"
                      onclick="selectCollectionCard(this)">
-                    <img th:if="${card.imageUrl != null}" th:src="${card.imageUrl}" th:alt="${card.name}">
-                    <div th:if="${card.imageUrl == null}" class="card-picker-no-img" th:text="${card.name}"></div>
+                    <img th:src="${card.imageUrl != null and !card.imageUrl.isBlank() ? card.imageUrl : '/images/card-placeholder.png'}" th:alt="${card.name}">
                     <div class="card-picker-item-name" th:text="${card.name}"></div>
                     <div th:with="pc=${collectionMap[card.id]}" th:if="${pc != null}"
                          class="card-picker-item-owned"

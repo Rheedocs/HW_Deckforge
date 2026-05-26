@@ -130,6 +130,22 @@ public class EventRepository implements IEventRepository {
         return count != null ? count : 0;
     }
 
+    @Override
+    public void updateExpiredEvents() {
+        jdbcTemplate.update("SET SQL_SAFE_UPDATES = 0");
+        String sql = """
+            UPDATE event
+            SET status = CASE
+                WHEN status = 'UPCOMING' AND date = CURRENT_DATE THEN 'ONGOING'
+                WHEN status IN ('UPCOMING', 'ONGOING') AND date < CURRENT_DATE THEN 'COMPLETED'
+                ELSE status
+            END
+            WHERE status IN ('UPCOMING', 'ONGOING')
+            """;
+        jdbcTemplate.update(sql);
+        jdbcTemplate.update("SET SQL_SAFE_UPDATES = 1");
+    }
+
     // --- Intern mapping ---
 
     private Event mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
