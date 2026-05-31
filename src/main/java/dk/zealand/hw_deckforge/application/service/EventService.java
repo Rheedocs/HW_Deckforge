@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/** Håndterer events, tilmeldinger og kapacitetstjek. Indeholder to @Scheduled jobs. */
 @Service
 public class EventService {
 
@@ -54,11 +55,13 @@ public class EventService {
         return eventRepository.countRegistrations(eventId);
     }
 
+    /** @return true hvis antal registreringer har nået eventets maksimum. Bruges til Fuldt badge. */
     public boolean isFull(int eventId) {
         Event event = getById(eventId);
         return eventRepository.countRegistrations(eventId) >= event.getMaxPlayers();
     }
 
+    /** Bygger et map fra event-id til fuld-status til brug i Thymeleaf uden ekstra databasekald pr. event. */
     public Map<Integer, Boolean> getFullMap(List<Event> events) {
         Map<Integer, Boolean> fullMap = new HashMap<>();
         for (Event event : events) {
@@ -96,6 +99,7 @@ public class EventService {
         eventRepository.delete(id);
     }
 
+    /** Validerer format, kapacitet og ejerskab af deck inden tilmelding registreres. */
     public void registerPlayer(int playerId, int eventId, int deckId) {
         validateRegistrationIds(playerId, eventId, deckId);
         Event event = getById(eventId);
@@ -104,6 +108,7 @@ public class EventService {
         eventRepository.registerPlayer(playerId, eventId, deckId);
     }
 
+    /** Opdaterer event-statusser fra UPCOMING til ONGOING og COMPLETED. Køres automatisk hver time via @Scheduled. */
     @Scheduled(fixedRate = 3600000)
     public void updateEventStatuses() {
         eventRepository.updateExpiredEvents();

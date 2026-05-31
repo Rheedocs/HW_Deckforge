@@ -4,6 +4,7 @@ import dk.zealand.hw_deckforge.domain.enums.CardType;
 import dk.zealand.hw_deckforge.domain.enums.Color;
 import dk.zealand.hw_deckforge.domain.enums.Rarity;
 
+/** Domæneentitet for et Magic: The Gathering kort med type, farve, sæt og sjældenhed. */
 public class Card {
     private Integer id;
     private String name;

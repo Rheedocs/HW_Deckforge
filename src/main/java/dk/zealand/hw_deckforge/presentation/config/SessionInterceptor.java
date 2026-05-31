@@ -7,9 +7,17 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+/**
+ * Interceptor der kører før alle beskyttede controllers.
+ * Sender uautoriserede brugere til login.
+ */
 @Component
 public class SessionInterceptor implements HandlerInterceptor {
 
+    /**
+     * Returnerer false og redirecter til /login
+     * hvis session mangler eller spilleren er inaktiv.
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         HttpSession session = request.getSession(false);

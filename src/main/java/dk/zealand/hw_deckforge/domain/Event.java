@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Domæneentitet for et event med format, kapacitet og automatisk statusopdatering. */
 public class Event {
     private int id;
     private String name;
@@ -69,6 +70,7 @@ public class Event {
         return errors;
     }
 
+    /** Kaster ValidationException hvis eventets felter ikke overholder domænereglerne. */
     public void validateOrThrow() {
         List<String> errors = validate();
         if (!errors.isEmpty()) throw new IllegalArgumentException(String.join(", ", errors));

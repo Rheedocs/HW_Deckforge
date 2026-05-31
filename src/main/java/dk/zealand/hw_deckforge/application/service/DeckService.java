@@ -2,8 +2,6 @@ package dk.zealand.hw_deckforge.application.service;
 
 import dk.zealand.hw_deckforge.domain.exceptions.NotFoundException;
 
-import dk.zealand.hw_deckforge.domain.exceptions.ValidationException;
-
 import dk.zealand.hw_deckforge.application.interfaces.ICardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.IDeckCardRepository;
 import dk.zealand.hw_deckforge.application.interfaces.IDeckRepository;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Håndterer deck-logik inkl. formatvalidering og synlighedsstyring. */
 @Service
 public class DeckService {
 
@@ -55,6 +54,7 @@ public class DeckService {
         return matchingDecks;
     }
 
+    /** Returnerer decks baseret på ejerskab og synlighed. Admins og ejere ser alt, andre kun PUBLIC. */
     public List<Deck> getVisibleDecks(int playerId, boolean isSelf, boolean isAdmin) {
         validateId(playerId, "PlayerId");
         List<Deck> all = deckRepository.findByPlayerId(playerId);
@@ -66,11 +66,12 @@ public class DeckService {
         return visible;
     }
 
+    /** Kaster AccessDeniedException hvis spilleren hverken er ejer eller admin. */
     public void checkAccess(Deck deck, boolean isSelf, boolean isAdmin) {
         if (!deck.isPublic() && !isSelf && !isAdmin) throw new AccessDeniedException("Du har ikke adgang til dette deck");
     }
 
-    public void checkOwnerAccess(Deck deck, boolean isSelf, boolean isAdmin) {
+    public void checkOwnerAccess(boolean isSelf, boolean isAdmin) {
         if (!isSelf && !isAdmin) throw new AccessDeniedException("Du har ikke adgang til dette deck");
     }
 
@@ -84,6 +85,7 @@ public class DeckService {
         deckRepository.update(deck);
     }
 
+    /** Ændrer synlighed med ejerskabstjek. Kun ejer eller admin kan ændre. */
     public void makePrivate(int id, int requestingPlayerId) {
         Deck deck = getById(id);
         validateDeckOwner(deck, requestingPlayerId);
@@ -92,6 +94,7 @@ public class DeckService {
         deckRepository.update(deck);
     }
 
+    /** Ændrer synlighed med ejerskabstjek. Kun ejer eller admin kan ændre. */
     public void makePublic(int id, int requestingPlayerId) {
         Deck deck = getById(id);
         validateDeckOwner(deck, requestingPlayerId);
@@ -113,6 +116,7 @@ public class DeckService {
         return deckCardRepository.findByDeckId(deckId);
     }
 
+    /** Tilføjer kort til deck efter formatvalidering via FormatValidator. */
     public void addCard(int deckId, int cardId, int quantity, int requestingPlayerId) {
         validateQuantity(quantity);
         Deck deck = getById(deckId);
@@ -136,6 +140,7 @@ public class DeckService {
         removeOrReduceDeckCard(deckCard, quantity);
     }
 
+    /** @return samlet antal kort i decket. Bruges af FormatValidator ved event-tilmelding. */
     public int getTotalCardCount(int deckId) {
         int total = 0;
         for (DeckCard dc : getDeckCards(deckId)) {

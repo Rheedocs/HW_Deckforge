@@ -3,6 +3,7 @@ package dk.zealand.hw_deckforge.application.interfaces;
 import dk.zealand.hw_deckforge.domain.Trade;
 import java.util.List;
 
+/** Kontrakt for byttedata inkl. reservation og udløb. */
 public interface ITradeRepository {
     Trade findById(int id);
     List<Trade> findByPlayerId(int playerId);

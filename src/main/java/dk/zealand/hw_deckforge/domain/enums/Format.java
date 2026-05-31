@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.domain.enums;
 
+/** Magic-formater med tilhørende størrelsesbegrænsninger. Bruges af FormatValidator og EventService. */
 public enum Format {
     COMMANDER("Commander", 100, 100),
     STANDARD("Standard", 60, 0),
@@ -17,6 +18,8 @@ public enum Format {
     }
 
     public String getDisplayName() { return displayName; }
+
+    /** @return minimumsstørrelse for et gyldigt deck i dette format */
     public int getMinSize() { return minSize; }
     public int getMaxSize() { return maxSize; }
     public boolean hasMaxSize() { return maxSize > 0; }

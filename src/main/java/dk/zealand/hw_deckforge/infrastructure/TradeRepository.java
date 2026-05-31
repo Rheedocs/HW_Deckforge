@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/** JdbcTemplate-implementering af ITradeRepository inkl. reservation og automatisk udløb. */
 @Repository
 public class TradeRepository implements ITradeRepository {
 

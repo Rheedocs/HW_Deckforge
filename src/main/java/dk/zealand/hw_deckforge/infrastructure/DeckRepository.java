@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/** JdbcTemplate-implementering af IDeckRepository med synlighedsstyring og formatvalidering. */
 @Repository
 public class DeckRepository implements IDeckRepository {
 

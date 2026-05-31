@@ -1,6 +1,10 @@
-﻿let cardPickerContext = null;
+﻿// --- Tilstand ---
+
+let cardPickerContext = null;
 let cardPickerElement = null;
 let selectedCardOwnedQuantity = 0;
+
+// --- Advarsel ---
 
 function updateDeckWarning(quantity) {
     let show = selectedCardOwnedQuantity < quantity;
@@ -20,28 +24,31 @@ function updateDeckWarning(quantity) {
     }
 }
 
+// --- Deck-kort valg ---
+
 function selectCard(el) {
-    if (window.innerWidth < 768) {
-        openCardPickerModal(el, "deck");
-        return;
-    }
-    let isSelected = el.classList.contains("selected");
+    if (window.innerWidth < 768) { openCardPickerModal(el, "deck"); return; }
     document.querySelectorAll("#deckCardPicker .card-picker-item.selected").forEach(function(item) {
         item.classList.remove("selected");
     });
-    if (isSelected) {
-        document.getElementById("selectedCardId").value = "";
-        let label = document.getElementById("cardPickerLabel");
-        label.textContent = "Intet kort valgt — klik et kort herunder";
-        label.classList.remove("selected");
-        document.getElementById("deckPickerStickyBar").classList.remove("active");
-        selectedCardOwnedQuantity = 0;
-        updateDeckWarning(0);
-        return;
-    }
+    if (el.classList.contains("selected")) { clearDeckSelection(); return; }
+    applyDeckSelection(el);
+}
+
+function clearDeckSelection() {
+    document.getElementById("selectedCardId").value = "";
+    let label = document.getElementById("cardPickerLabel");
+    label.textContent = "Intet kort valgt — klik et kort herunder";
+    label.classList.remove("selected");
+    document.getElementById("deckPickerStickyBar").classList.remove("active");
+    selectedCardOwnedQuantity = 0;
+    updateDeckWarning(0);
+}
+
+function applyDeckSelection(el) {
     el.classList.add("selected");
     document.getElementById("selectedCardId").value = el.dataset.id;
-    label = document.getElementById("cardPickerLabel");
+    let label = document.getElementById("cardPickerLabel");
     label.textContent = "Valgt: " + el.dataset.name;
     label.classList.add("selected");
     let img = el.querySelector("img");
@@ -53,26 +60,29 @@ function selectCard(el) {
     updateDeckWarning(parseInt(document.getElementById("quantity").value) || 1);
 }
 
+// --- Samlings-kort valg ---
+
 function selectCollectionCard(el) {
-    if (window.innerWidth < 768) {
-        openCardPickerModal(el, "samling");
-        return;
-    }
-    let isSelected = el.classList.contains("selected");
+    if (window.innerWidth < 768) { openCardPickerModal(el, "samling"); return; }
     document.querySelectorAll("#collectionCardPicker .card-picker-item.selected").forEach(function(item) {
         item.classList.remove("selected");
     });
-    if (isSelected) {
-        document.getElementById("collectionCardId").value = "";
-        let label = document.getElementById("collectionCardLabel");
-        label.textContent = "Intet kort valgt — klik et kort herunder";
-        label.classList.remove("selected");
-        document.getElementById("collectionPickerStickyBar").classList.remove("active");
-        return;
-    }
+    if (el.classList.contains("selected")) { clearCollectionSelection(); return; }
+    applyCollectionSelection(el);
+}
+
+function clearCollectionSelection() {
+    document.getElementById("collectionCardId").value = "";
+    let label = document.getElementById("collectionCardLabel");
+    label.textContent = "Intet kort valgt — klik et kort herunder";
+    label.classList.remove("selected");
+    document.getElementById("collectionPickerStickyBar").classList.remove("active");
+}
+
+function applyCollectionSelection(el) {
     el.classList.add("selected");
     document.getElementById("collectionCardId").value = el.dataset.id;
-    label = document.getElementById("collectionCardLabel");
+    let label = document.getElementById("collectionCardLabel");
     label.textContent = "Valgt: " + el.dataset.name;
     label.classList.add("selected");
     let img = el.querySelector("img");
@@ -81,6 +91,8 @@ function selectCollectionCard(el) {
     document.getElementById("collectionPickerPreviewName").textContent = el.dataset.name || "";
     document.getElementById("collectionPickerStickyBar").classList.add("active");
 }
+
+// --- Modal ---
 
 function openCardPickerModal(el, context) {
     cardPickerContext = context;
@@ -122,6 +134,8 @@ function addFromPicker() {
     }
     document.getElementById("cardPickerModalOverlay").classList.remove("active");
 }
+
+// --- Formular-validering ---
 
 let addCollectionCardForm = document.getElementById("addCollectionCardForm");
 if (addCollectionCardForm) {

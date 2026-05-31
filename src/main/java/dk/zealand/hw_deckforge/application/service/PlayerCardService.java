@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/** Håndterer spillerens kortsamling og synlighedsstyring. */
 @Service
 public class PlayerCardService {
 
@@ -31,11 +32,13 @@ public class PlayerCardService {
         return playerCardRepository.findByPlayerId(playerId);
     }
 
+    /** @return kun kort markeret til bytning. Bruges i bytteforslags-formularen. */
     public List<PlayerCard> getForTradeByPlayerId(int playerId) {
         validateId(playerId, "Spiller-id");
         return playerCardRepository.findForTradeByPlayerId(playerId);
     }
 
+    /** @return map fra player_card-id til PlayerCard for O(1) opslag i templates. */
     public Map<Integer, PlayerCard> getPlayerCardMap(int playerId) {
         validateId(playerId, "Spiller-id");
         Map<Integer, PlayerCard> map = new HashMap<>();
@@ -56,6 +59,7 @@ public class PlayerCardService {
 
     // --- Synlighed ---
 
+    /** Returnerer kort baseret på synlighedsniveau: PRIVATE, TRADE_ONLY eller PUBLIC. */
     public List<PlayerCard> getVisibleCards(int playerId, CollectionVisibility visibility, boolean isSelf, boolean isAdmin) {
         validateId(playerId, "Spiller-id");
         List<PlayerCard> all = playerCardRepository.findByPlayerId(playerId);
@@ -98,6 +102,7 @@ public class PlayerCardService {
         playerCardRepository.delete(id);
     }
 
+    /** Markerer eller afmarkerer et kort som tilgængeligt for bytning. Bruges af bytteflowet til reservation. */
     public void setForTrade(int id, boolean forTrade) {
         validateId(id, "Id");
         PlayerCard playerCard = getExistingPlayerCard(id);

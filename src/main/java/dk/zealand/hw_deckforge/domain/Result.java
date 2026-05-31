@@ -3,6 +3,7 @@ package dk.zealand.hw_deckforge.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Gemmer en spillers placering i et afsluttet event. */
 public class Result {
     private int id;
     private int playerId;

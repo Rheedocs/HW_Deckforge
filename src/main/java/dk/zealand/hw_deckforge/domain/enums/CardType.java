@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.domain.enums;
 
+/** Korttyper i Magic: The Gathering som defineret i systemet. */
 public enum CardType {
     CREATURE("Creature"),
     LAND("Land"),

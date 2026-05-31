@@ -72,7 +72,7 @@ class PlayerCardServiceTest {
         when(playerCardRepository.findForTradeByPlayerId(1)).thenReturn(List.of(forTrade));
         List<PlayerCard> result = playerCardService.getForTradeByPlayerId(1);
         assertEquals(1, result.size());
-        assertTrue(result.get(0).isForTrade());
+        assertTrue(result.getFirst().isForTrade());
     }
 
     @Test

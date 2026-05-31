@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/** JdbcTemplate-implementering af ITradeCardRepository. Gemmer kortroller i et bytte (PROPOSER/RECEIVER). */
 @Repository
 public class TradeCardRepository implements ITradeCardRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -47,16 +48,6 @@ public class TradeCardRepository implements ITradeCardRepository {
                     tradeCard.getRole().name());
         } catch (DataAccessException e) {
             throw new DatabaseException("Kunne ikke gemme trade kort", e.getCause());
-        }
-    }
-
-    @Override
-    public void deleteByTradeId(int tradeId) {
-        try {
-            String sql = "DELETE FROM trade_card WHERE trade_id = ?";
-            jdbcTemplate.update(sql, tradeId);
-        } catch (DataAccessException e) {
-            throw new DatabaseException("Kunne ikke fjerne kort fra trade", e);
         }
     }
 }

@@ -3,6 +3,7 @@ package dk.zealand.hw_deckforge.application.interfaces;
 import dk.zealand.hw_deckforge.domain.DeckCard;
 import java.util.List;
 
+/** Kontrakt for kortmængder i decks. */
 public interface IDeckCardRepository {
     List<DeckCard> findByDeckId(int deckId);
     DeckCard findById(int id);

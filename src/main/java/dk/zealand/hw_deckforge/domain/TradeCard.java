@@ -2,6 +2,7 @@ package dk.zealand.hw_deckforge.domain;
 
 import dk.zealand.hw_deckforge.domain.enums.TradeRole;
 
+/** Mellemled mellem Trade og PlayerCard. Angiver hvilke kort der indgår i byttet og på hvilken side (PROPOSER/RECEIVER). */
 public class TradeCard {
     private int id;
     private int tradeId;

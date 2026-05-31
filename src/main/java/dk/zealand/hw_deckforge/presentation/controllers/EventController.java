@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/** Modtager HTTP-anmodninger for events og tilmeldinger og delegerer til EventService og DeckService.
+ * Ingen forretningslogik. */
 @Controller
 @RequestMapping("/events")
 public class EventController {

@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.domain;
 
+/** Mellemled mellem Deck og Card. Gemmer antal kopier af et kort i et deck. */
 public class DeckCard {
     private final int id;
     private final int deckId;

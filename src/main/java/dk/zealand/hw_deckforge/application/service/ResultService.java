@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/** Håndterer registrering og hentning af turneringsresultater. */
 @Service
 public class ResultService {
 
@@ -24,6 +25,7 @@ public class ResultService {
         return resultRepository.findByEventId(eventId);
     }
 
+    /** @return alle placeringer for en given spiller på tværs af events. */
     public List<Result> getByPlayerId(int playerId) {
         validateId(playerId, "PlayerId");
         List<Result> results = resultRepository.findByPlayerId(playerId);

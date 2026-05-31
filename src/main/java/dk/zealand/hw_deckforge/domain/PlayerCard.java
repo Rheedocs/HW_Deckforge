@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.domain;
 
+/** Mellemled mellem spiller og kort. Gemmer antal og om kortet er markeret til bytning. */
 public class PlayerCard {
     private final int id;
     private final int playerId;
@@ -31,6 +32,7 @@ public class PlayerCard {
         this.quantity = quantity;
     }
 
+    /** Markerer eller afmarkerer kortet som tilgængeligt for bytning. Kaldes af setForTrade i PlayerCardService. */
     public void markForTrade() { this.forTrade = true; }
     public void unmarkForTrade() { this.forTrade = false; }
 

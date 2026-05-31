@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.domain.enums;
 
+/** Sjældenhedsgrader fra COMMON til MYTHIC_RARE. */
 public enum Rarity {
     COMMON("Common"),
     UNCOMMON("Uncommon"),

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+/** Modtager HTTP-anmodninger for kortadministration og delegerer til CardService. Kun tilgængelig for admin. */
 @Controller
 @RequestMapping("/cards")
 public class CardController {

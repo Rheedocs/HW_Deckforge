@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/** JdbcTemplate-implementering af IResultRepository. Gemmer placeringer fra afsluttede events. */
 @Repository
 public class ResultRepository implements IResultRepository {
     private final JdbcTemplate jdbcTemplate;

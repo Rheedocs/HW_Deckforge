@@ -42,27 +42,27 @@ function filterCollectionCards() {
 }
 
 function filterCardList() {
-    let searchInput = document.getElementById("cardListSearch");
-    let colorInput = document.getElementById("cardListColor");
-    let typeInput = document.getElementById("cardListType");
-    let searchText = searchInput ? searchInput.value.toLowerCase() : "";
-    let selectedColor = colorInput ? colorInput.value : "";
-    let selectedType = typeInput ? typeInput.value : "";
+    let searchText = document.getElementById("cardListSearch")?.value.toLowerCase() || "";
+    let selectedColor = document.getElementById("cardListColor")?.value || "";
+    let selectedType = document.getElementById("cardListType")?.value || "";
+    filterCardGrid(searchText, selectedColor, selectedType);
+    filterCardTable(searchText, selectedColor, selectedType);
+}
 
+function filterCardGrid(searchText, selectedColor, selectedType) {
     document.querySelectorAll(".card-grid .card-thumb").forEach(function (el) {
         el.classList.toggle("filter-hidden", !matchesFilter(el, searchText, selectedColor, selectedType));
     });
     if (document.getElementById("cardListGrid")) showPage("cardListGrid", "cardListPagination", 1);
+}
 
+function filterCardTable(searchText, selectedColor, selectedType) {
     document.querySelectorAll(".desktop-table tbody tr").forEach(function (tr) {
         let c = tr.cells;
         if (!c || c.length < 4) return;
-        let name = c[1].textContent.toLowerCase();
-        let cardType = c[2].textContent.trim();
-        let cardColor = c[3].textContent.trim();
-        let matches = (!searchText || name.includes(searchText)) &&
-            (!selectedColor || cardColor === selectedColor) &&
-            (!selectedType || cardType === selectedType);
+        let matches = (!searchText || c[1].textContent.toLowerCase().includes(searchText)) &&
+            (!selectedColor || c[3].textContent.trim() === selectedColor) &&
+            (!selectedType || c[2].textContent.trim() === selectedType);
         tr.classList.toggle("filter-hidden", !matches);
     });
 }

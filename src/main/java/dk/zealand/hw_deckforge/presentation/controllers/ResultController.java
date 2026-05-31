@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+/** Modtager HTTP-anmodninger for resultatregistrering og delegerer til ResultService. Kun tilgængelig for admin. */
 @Controller
 @RequestMapping("/results")
 public class ResultController {

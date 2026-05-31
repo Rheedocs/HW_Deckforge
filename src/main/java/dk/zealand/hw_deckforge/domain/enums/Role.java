@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.domain.enums;
 
+/** Brugerroller i systemet. PLAYER har adgang til samling, decks, events og bytning. ADMIN kan oprette kortdata. */
 public enum Role {
     PLAYER("Spiller"),
     ADMIN("Admin");

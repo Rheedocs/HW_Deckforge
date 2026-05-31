@@ -8,10 +8,8 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.util.regex.Pattern;
 
-/**
- * Henter kortbilleder fra Scryfall API.
- * Placeret i infrastructure-laget da det er ekstern datahåndtering.
- */
+/** Henter kortbilleder fra Scryfall API via kortets navn og sætnavn.
+ *  Gemmer URL i databasen så vi ikke kalder API'et ved hver visning. */
 @Component
 public class ScryfallService {
 
@@ -31,6 +29,7 @@ public class ScryfallService {
 
     // --- Billedopslag ---
 
+    /** Henter kortbillede-URL fra Scryfall API via kortnavn og sætnavn. Returnerer null hvis kortet ikke findes. */
     public String fetchImageUrlByScryfallLink(String scryfallLink) {
         if (scryfallLink == null) return null;
         if (!SCRYFALL_CARD_URL_PATTERN.matcher(scryfallLink).matches()) return null;
@@ -40,7 +39,7 @@ public class ScryfallService {
             if (parts.length < 4) return null;
             String set = parts[2];
             String number = parts[3];
-            if (!isValidSet(set) || !isValidNumber(number)) return null;
+            if (isInvalidSet(set) || isInvalidNumber(number)) return null;
             return fetchImageUrlBySetAndNumber(set, number);
         } catch (Exception e) {
             return null;
@@ -48,7 +47,7 @@ public class ScryfallService {
     }
 
     public String fetchImageUrlBySetAndNumber(String set, String number) {
-        if (!isValidSet(set) || !isValidNumber(number)) return null;
+        if (isInvalidSet(set) || isInvalidNumber(number)) return null;
         try {
             URI uri = new URI("https", SCRYFALL_API_HOST, "/cards/" + set + "/" + number, null);
             String json = restTemplate.getForObject(uri, String.class);
@@ -61,12 +60,12 @@ public class ScryfallService {
 
     // --- Validering ---
 
-    private boolean isValidSet(String set) {
-        return set != null && set.matches(SET_PATTERN);
+    private boolean isInvalidSet(String set) {
+        return set == null || !set.matches(SET_PATTERN);
     }
 
-    private boolean isValidNumber(String number) {
-        return number != null && number.matches(NUMBER_PATTERN);
+    private boolean isInvalidNumber(String number) {
+        return number == null || !number.matches(NUMBER_PATTERN);
     }
 
     // --- Intern behandling ---

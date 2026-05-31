@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+/** Modtager HTTP-anmodninger for bytteflowet og delegerer til TradeService. Ingen forretningslogik. */
 @Controller
 @RequestMapping("/trades")
 public class TradeController {
@@ -81,19 +82,19 @@ public class TradeController {
     // --- Handlinger ---
 
     @PostMapping("/{tradeId}/accept")
-    public String accept(@PathVariable int tradeId, HttpSession session) {
+    public String accept(@PathVariable int tradeId) {
         tradeService.accept(tradeId);
         return "redirect:/trades";
     }
 
     @PostMapping("/{tradeId}/decline")
-    public String decline(@PathVariable int tradeId, HttpSession session) {
+    public String decline(@PathVariable int tradeId) {
         tradeService.decline(tradeId);
         return "redirect:/trades";
     }
 
     @PostMapping("/{tradeId}/cancel")
-    public String cancel(@PathVariable int tradeId, HttpSession session) {
+    public String cancel(@PathVariable int tradeId) {
         tradeService.cancel(tradeId);
         return "redirect:/trades";
     }

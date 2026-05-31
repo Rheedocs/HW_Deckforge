@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/** Registrerer SessionInterceptor på alle ruter undtagen login, registrering og statiske ressourcer. */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 

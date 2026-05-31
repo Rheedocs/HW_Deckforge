@@ -1,4 +1,6 @@
-﻿function openDeckCardModal(el) {
+﻿// --- Indhold ---
+
+function setDeckModalContent(el) {
     document.getElementById("dkModalBillede").src = el.dataset.image || "";
     document.getElementById("dkModalBillede").alt = el.dataset.name || "";
     document.getElementById("dkModalNavn").textContent = el.dataset.name || "";
@@ -10,16 +12,27 @@
     document.getElementById("dkModalRulesItem").style.display = el.dataset.rules ? "list-item" : "none";
     document.getElementById("dkModalAntal").textContent = "I decket: " + (el.dataset.quantity || "?");
     document.getElementById("dkModalScryfall").href = el.dataset.url || "";
+}
+
+// --- Handlinger ---
+
+function setDeckModalActions(el) {
     let hasActions = !!el.dataset.addUrl;
     document.getElementById("dkModalHandlinger").classList.toggle("modal-actions", !hasActions);
-    if (hasActions) {
-        document.getElementById("dkAntal").textContent = "1";
-        document.getElementById("dkTilføjQuantity").value = "1";
-        document.getElementById("dkFjernQuantity").value = "1";
-        document.getElementById("dkCardId").value = el.dataset.cardId || "";
-        document.getElementById("dkTilføjForm").action = el.dataset.addUrl;
-        document.getElementById("dkFjernForm").action = el.dataset.removeUrl;
-    }
+    if (!hasActions) return;
+    document.getElementById("dkAntal").textContent = "1";
+    document.getElementById("dkTilføjQuantity").value = "1";
+    document.getElementById("dkFjernQuantity").value = "1";
+    document.getElementById("dkCardId").value = el.dataset.cardId || "";
+    document.getElementById("dkTilføjForm").action = el.dataset.addUrl;
+    document.getElementById("dkFjernForm").action = el.dataset.removeUrl;
+}
+
+// --- Modal-styring ---
+
+function openDeckCardModal(el) {
+    setDeckModalContent(el);
+    setDeckModalActions(el);
     document.getElementById("deckCardModalOverlay").classList.add("active");
 }
 

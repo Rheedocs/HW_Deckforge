@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/** JdbcTemplate-implementering af IEventRepository inkl. kapacitetstjek og automatisk statusopdatering. */
 @Repository
 public class EventRepository implements IEventRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -130,20 +131,20 @@ public class EventRepository implements IEventRepository {
         return count != null ? count : 0;
     }
 
+    /** Opdaterer events fra UPCOMING til ONGOING eller COMPLETED baseret på dato.
+     * Kaldes af @Scheduled i EventService. */
     @Override
     public void updateExpiredEvents() {
-        jdbcTemplate.update("SET SQL_SAFE_UPDATES = 0");
         String sql = """
-            UPDATE event
-            SET status = CASE
-                WHEN status = 'UPCOMING' AND date = CURRENT_DATE THEN 'ONGOING'
-                WHEN status IN ('UPCOMING', 'ONGOING') AND date < CURRENT_DATE THEN 'COMPLETED'
-                ELSE status
-            END
-            WHERE status IN ('UPCOMING', 'ONGOING')
-            """;
+        UPDATE event
+        SET status = CASE
+            WHEN status = 'UPCOMING' AND date = CURRENT_DATE THEN 'ONGOING'
+            WHEN status IN ('UPCOMING', 'ONGOING') AND date < CURRENT_DATE THEN 'COMPLETED'
+            ELSE status
+        END
+        WHERE status IN ('UPCOMING', 'ONGOING') AND id > 0
+        """;
         jdbcTemplate.update(sql);
-        jdbcTemplate.update("SET SQL_SAFE_UPDATES = 1");
     }
 
     // --- Intern mapping ---

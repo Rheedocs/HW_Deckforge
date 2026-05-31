@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.domain.enums;
 
+/** Livscyklus for et event. Opdateres automatisk via updateEventStatuses() i EventService. */
 public enum EventStatus {
     UPCOMING("Kommende"),
     ONGOING("Igangværende"),

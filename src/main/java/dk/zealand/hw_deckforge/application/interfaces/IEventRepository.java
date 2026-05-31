@@ -4,6 +4,7 @@ import dk.zealand.hw_deckforge.domain.Event;
 import dk.zealand.hw_deckforge.domain.EventRegistration;
 import java.util.List;
 
+/** Kontrakt for event-data inkl. tilmelding, kapacitet og statusopdatering. */
 public interface IEventRepository {
     List<Event> findAll();
     Event findById(int id);

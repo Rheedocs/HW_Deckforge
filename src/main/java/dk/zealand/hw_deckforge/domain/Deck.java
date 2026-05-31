@@ -3,6 +3,7 @@ package dk.zealand.hw_deckforge.domain;
 import dk.zealand.hw_deckforge.domain.enums.DeckVisibility;
 import dk.zealand.hw_deckforge.domain.enums.Format;
 
+/** Domæneentitet for et deck med format og synlighedsniveau. Indeholder DeckCard som mellemled. */
 public class Deck {
     private Integer id;
     private int playerId;
@@ -41,6 +42,8 @@ public class Deck {
     // --- Synlighed ---
 
     public boolean isPublic() { return this.visibility == DeckVisibility.PUBLIC; }
+
+    /** Ændrer synlighedsniveau direkte på objektet inden persistering. */
     public void makePublic() { this.visibility = DeckVisibility.PUBLIC; }
     public void makePrivate() { this.visibility = DeckVisibility.PRIVATE; }
 

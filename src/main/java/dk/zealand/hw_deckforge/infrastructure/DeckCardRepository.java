@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/** JdbcTemplate-implementering af IDeckCardRepository. Gemmer kortmængder i et deck. */
 @Repository
 public class DeckCardRepository implements IDeckCardRepository {
 

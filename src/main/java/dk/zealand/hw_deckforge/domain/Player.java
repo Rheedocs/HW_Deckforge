@@ -3,6 +3,7 @@ package dk.zealand.hw_deckforge.domain;
 import dk.zealand.hw_deckforge.domain.enums.CollectionVisibility;
 import dk.zealand.hw_deckforge.domain.enums.Role;
 
+/** Domæneentitet for en spiller. Indeholder rolle, synlighedsniveau og aktiv-status. */
 public class Player {
     private int id;
     private String username;
@@ -48,6 +49,7 @@ public class Player {
 
     // --- Adfærd ---
 
+    /** Deaktiverer kontoen. Spilleren kan ikke logge ind men data bevares. */
     public void deactivate() { this.active = false; }
 
     public void changeVisibility(CollectionVisibility visibility) {
@@ -61,7 +63,10 @@ public class Player {
         this.password = hashedPassword;
     }
 
+    /** Skifter spillerens rolle. Bruges af admin via PlayerService. */
     public void promoteToAdmin() { this.role = Role.ADMIN; }
+
+    /** Skifter spillerens rolle. Bruges af admin via PlayerService. */
     public void demoteToPlayer() { this.role = Role.PLAYER; }
     public boolean isAdmin() { return this.role == Role.ADMIN; }
 

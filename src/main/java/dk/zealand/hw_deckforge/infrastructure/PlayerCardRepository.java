@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/** JdbcTemplate-implementering af IPlayerCardRepository inkl. for_trade markering til bytteflow. */
 @Repository
 public class PlayerCardRepository implements IPlayerCardRepository {
     private final JdbcTemplate jdbcTemplate;

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Håndterer forretningslogik for spillere inkl. login, registrering og samlingsstyring. */
 @Service
 public class PlayerService {
 
@@ -38,6 +39,7 @@ public class PlayerService {
         return playerRepository.findAll();
     }
 
+    /** @return alle spillere inkl. deaktiverede. Kun beregnet til admin-visninger. */
     public List<Player> getAllIncludingInactive() {
         return playerRepository.findAllIncludingInactive();
     }
@@ -49,6 +51,7 @@ public class PlayerService {
         return player;
     }
 
+    /** @return spillerliste sorteret så den loggede spiller vises øverst. */
     public List<Player> getAllSortedByLoggedIn(int loggedInId, boolean isAdmin) {
         List<Player> all = isAdmin ? playerRepository.findAllIncludingInactive() : playerRepository.findAll();
         List<Player> sorted = new ArrayList<>();
@@ -63,12 +66,14 @@ public class PlayerService {
 
     // --- Auth og livscyklus ---
 
+    /** Validerer email og sammenligner password mod BCrypt-hash. Generisk fejlbesked ved fejl. */
     public Player login(String email, String password) {
         Player player = playerRepository.findByEmail(email);
         validateLogin(player, password);
         return player;
     }
 
+    /** Opretter spiller med BCrypt-hashet password og TRADE_ONLY som standard synlighed. */
     public void create(String username, String email, String password) {
         validateNewEmail(email);
         PlayerValidator.validatePassword(password);
@@ -78,6 +83,7 @@ public class PlayerService {
         playerRepository.save(player);
     }
 
+    /** Opdaterer profil, rolle, aktiv-status og adgangskode i én samlet operation med validering. */
     public void update(Player player, String newPassword, boolean isAdmin, boolean isSelf) {
         Player existing = getById(player.getId());
         applyProfileChanges(existing, player);
@@ -87,6 +93,7 @@ public class PlayerService {
         playerRepository.update(existing);
     }
 
+    /** Sletter spiller efter tjek via isOnlyAdmin. Forhindrer sletning af systemets sidste admin. */
     public void delete(int id) {
         validateId(id, "Id");
         Player player = getById(id);
@@ -94,12 +101,14 @@ public class PlayerService {
         playerRepository.delete(id);
     }
 
+    /** @return true hvis der kun er én admin og den givne spiller er den. Forhindrer sletning af sidste admin. */
     public boolean isOnlyAdmin(int id) {
         int adminCount = 0;
         for (Player player : getAll()) if (player.getRole() == Role.ADMIN) adminCount++;
         return adminCount == 1 && getById(id).getRole() == Role.ADMIN;
     }
 
+    /** Kaster AccessDeniedException hvis samlingen er privat og spilleren hverken er ejer eller admin. */
     public void checkCollectionAccess(int playerId, boolean isSelf, boolean isAdmin) {
         Player owner = getById(playerId);
         if (!canAccessCollection(owner, isSelf, isAdmin)) throw new AccessDeniedException("Denne spillers profil er privat");

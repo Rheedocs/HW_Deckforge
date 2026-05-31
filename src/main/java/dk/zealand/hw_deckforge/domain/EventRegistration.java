@@ -2,6 +2,7 @@ package dk.zealand.hw_deckforge.domain;
 
 import java.time.LocalDate;
 
+/** Mellemled mellem spiller, event og deck. Registrerer en spillers tilmelding med valgt deck. */
 public class EventRegistration {
     private final int id;
     private final int playerId;
@@ -10,10 +11,6 @@ public class EventRegistration {
     private final LocalDate registrationDate;
     private final String playerName;
     private final String deckName;
-
-    public EventRegistration(int id, int playerId, int eventId, int deckId, LocalDate registrationDate) {
-        this(id, playerId, eventId, deckId, registrationDate, null, null);
-    }
 
     public EventRegistration(int id, int playerId, int eventId, int deckId, LocalDate registrationDate,
                              String playerName, String deckName) {

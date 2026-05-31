@@ -11,13 +11,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.List;
 
+/**
+ * Central fejlhåndtering via Spring MVC ControllerAdvice.
+ * Fanger exceptions på tværs af alle controllers
+ * og returnerer brugervenlige fejlsider frem for stack traces.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     // --- Fejlhåndtering ---
 
     @ExceptionHandler(AccessDeniedException.class)
-    public String handleAccessDenied(AccessDeniedException ex) {
+    public String handleAccessDenied() {
         return "redirect:/access-denied";
     }
 

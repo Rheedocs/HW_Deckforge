@@ -1,4 +1,6 @@
-﻿function openCollectionCardModal(el) {
+﻿// --- Indhold ---
+
+function setCollectionModalContent(el) {
     document.getElementById("skModalBillede").src = el.dataset.image || "";
     document.getElementById("skModalBillede").alt = el.dataset.name || "";
     document.getElementById("skModalNavn").textContent = el.dataset.name || "";
@@ -10,23 +12,33 @@
     document.getElementById("skModalRulesItem").style.display = el.dataset.rules ? "list-item" : "none";
     document.getElementById("skModalAntal").textContent = "I samling: " + (el.dataset.quantity || "?");
     document.getElementById("skModalScryfall").href = el.dataset.url || "";
+}
 
+// --- Handlinger ---
+
+function setCollectionModalActions(el) {
     let hasActions = !!el.dataset.addUrl;
     document.getElementById("skModalHandlinger").classList.toggle("modal-actions", !hasActions);
-    if (hasActions) {
-        document.getElementById("skAntal").textContent = "1";
-        document.getElementById("skTilføjQuantity").value = "1";
-        document.getElementById("skFjernQuantity").value = "1";
-        document.getElementById("skCardId").value = el.dataset.cardId || "";
-        document.getElementById("skTilføjForm").action = el.dataset.addUrl;
-        document.getElementById("skFjernForm").action = el.dataset.removeUrl;
-        document.getElementById("skByteForm").action = el.dataset.tradeUrl;
-        let forTrade = el.dataset.forTrade === "true";
-        document.getElementById("skForTrade").value = String(!forTrade);
-        let tradeButton = document.getElementById("skByteKnap");
-        tradeButton.textContent = forTrade ? "Fjern fra bytte" : "Markér til bytte";
-        tradeButton.className = "btn" + (forTrade ? " btn-secondary" : "");
-    }
+    if (!hasActions) return;
+    document.getElementById("skAntal").textContent = "1";
+    document.getElementById("skTilføjQuantity").value = "1";
+    document.getElementById("skFjernQuantity").value = "1";
+    document.getElementById("skCardId").value = el.dataset.cardId || "";
+    document.getElementById("skTilføjForm").action = el.dataset.addUrl;
+    document.getElementById("skFjernForm").action = el.dataset.removeUrl;
+    document.getElementById("skByteForm").action = el.dataset.tradeUrl;
+    let forTrade = el.dataset.forTrade === "true";
+    document.getElementById("skForTrade").value = String(!forTrade);
+    let tradeButton = document.getElementById("skByteKnap");
+    tradeButton.textContent = forTrade ? "Fjern fra bytte" : "Markér til bytte";
+    tradeButton.className = "btn" + (forTrade ? " btn-secondary" : "");
+}
+
+// --- Modal-styring ---
+
+function openCollectionCardModal(el) {
+    setCollectionModalContent(el);
+    setCollectionModalActions(el);
     document.getElementById("collectionCardModalOverlay").classList.add("active");
 }
 

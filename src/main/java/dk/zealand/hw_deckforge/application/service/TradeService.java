@@ -26,6 +26,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Facade for bytteforløbet. Controlleren kalder propose/accept/complete,
+ * servicen håndterer repositories, validering og statusflow internt.
+ */
 @Service
 public class TradeService {
 
@@ -59,6 +63,7 @@ public class TradeService {
         return tradeRepository.findByPlayerId(playerId);
     }
 
+    /** @return bytter med status ACCEPTED der afventer fysisk gennemførelse. */
     public List<Trade> getActiveByPlayerId(List<Trade> all, int playerId) {
         validateId(playerId, "Player-id");
         List<Trade> active = new ArrayList<>();
@@ -73,11 +78,13 @@ public class TradeService {
         return getActiveByPlayerId(tradeRepository.findByPlayerId(playerId), playerId).size();
     }
 
+    /** @return antal indgående ubesvarede forslag. Bruges til indikatoren på forsiden. */
     public int countIncomingPendingTrades(int playerId) {
         validateId(playerId, "Player-id");
         return tradeRepository.findIncomingByPlayerId(playerId).size();
     }
 
+    /** @return afventende forslag sendt af spilleren (PENDING). */
     public List<Trade> getSentByPlayerId(List<Trade> all, int playerId) {
         validateId(playerId, "Player-id");
         List<Trade> sent = new ArrayList<>();
@@ -87,6 +94,7 @@ public class TradeService {
         return sent;
     }
 
+    /** @return afventende forslag modtaget af spilleren (PENDING). */
     public List<Trade> getReceivedByPlayerId(List<Trade> all, int playerId) {
         validateId(playerId, "Player-id");
         List<Trade> received = new ArrayList<>();
@@ -96,6 +104,7 @@ public class TradeService {
         return received;
     }
 
+    /** @return afsluttede bytter med status COMPLETED, DECLINED, CANCELLED eller EXPIRED. */
     public List<Trade> getHistoryByPlayerId(List<Trade> all) {
         List<Trade> history = new ArrayList<>();
         for (Trade trade : all) {
@@ -104,6 +113,7 @@ public class TradeService {
         return history;
     }
 
+    /** Bygger map fra spiller-id til Player for O(1) opslag i templates uden databasekald pr. trade. */
     public Map<Integer, Player> getPlayerMap(List<Trade> trades) {
         Map<Integer, Player> map = new HashMap<>();
         for (Trade trade : trades) {
@@ -113,6 +123,7 @@ public class TradeService {
         return map;
     }
 
+    /** Bygger map fra trade-id til liste af TradeCard for effektiv visning af byttedetaljer. */
     public Map<Integer, List<TradeCard>> getTradeCardMap(List<Trade> trades) {
         Map<Integer, List<TradeCard>> map = new HashMap<>();
         for (Trade trade : trades) {
@@ -133,13 +144,16 @@ public class TradeService {
 
     // --- Livscyklus ---
 
+    /** Opretter forslag og reserverer begge parters kort. Udløber automatisk efter 24 timer. */
     public void propose(int proposerId, int receiverId, List<Integer> proposerCardIds, List<Integer> receiverCardIds) {
         validateProposal(proposerId, receiverId);
         validateTradeCards(proposerCardIds, receiverCardIds);
-        Trade trade = new Trade(0, proposerId, receiverId, TradeStatus.PENDING, LocalDateTime.now(), LocalDateTime.now().plusHours(24), false, false);
+        Trade trade = new Trade(0, proposerId, receiverId, TradeStatus.PENDING, LocalDateTime.now(),
+                LocalDateTime.now().plusHours(24), false, false);
         proposeWithCards(trade, proposerCardIds.getFirst(), receiverCardIds.getFirst());
     }
 
+    /** Accepterer forslag. Byttet gennemføres først når begge bekræfter via complete(). */
     public void accept(int tradeId) {
         Trade trade = getById(tradeId);
         validatePending(trade, "accepteres");
@@ -147,6 +161,7 @@ public class TradeService {
         tradeRepository.update(trade);
     }
 
+    /** Afviser forslag og frigiver kortreservationer. */
     public void decline(int tradeId) {
         Trade trade = getById(tradeId);
         validatePending(trade, "afvises");
@@ -154,6 +169,7 @@ public class TradeService {
         tradeRepository.update(trade);
     }
 
+    /** Annullerer forslag og frigiver kortreservationer. */
     public void cancel(int tradeId) {
         Trade trade = getById(tradeId);
         validatePending(trade, "annulleres");
@@ -161,6 +177,7 @@ public class TradeService {
         tradeRepository.update(trade);
     }
 
+    /** Dobbelt bekræftelse. Sætter COMPLETED og opdaterer samlinger kun når begge har bekræftet. */
     public void complete(int tradeId, int requestingPlayerId) {
         Trade trade = getById(tradeId);
         validateComplete(trade, requestingPlayerId);
@@ -172,6 +189,7 @@ public class TradeService {
         tradeRepository.update(trade);
     }
 
+    /** Frigiver reservationer på forslag ældre end 24 timer. Køres dagligt via @Scheduled. */
     @Scheduled(fixedRate = 86400000)
     public void expireOldTrades() {
         tradeRepository.expireOldTrades();

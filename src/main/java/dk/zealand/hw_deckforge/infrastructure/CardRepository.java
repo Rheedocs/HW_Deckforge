@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+/** JdbcTemplate-implementering af ICardRepository inkl. ScryfallService-integration ved opret og opdater. */
 @Repository
 public class CardRepository implements ICardRepository {
     private final JdbcTemplate jdbcTemplate;

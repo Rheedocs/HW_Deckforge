@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.domain.enums;
 
+/** Farver i Magic: The Gathering inkl. COLORLESS til farveløse kort. */
 public enum Color {
     WHITE("White"),
     BLUE("Blue"),

@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/** Modtager HTTP-anmodninger for spillerprofiler og samling og delegerer til PlayerService og PlayerCardService.
+ * Ingen forretningslogik. */
 @Controller
 @RequestMapping("/players")
 public class PlayerController {

@@ -1,5 +1,6 @@
 package dk.zealand.hw_deckforge.domain.enums;
 
+/** Livscyklus for et bytteforslag: PENDING, ACCEPTED, COMPLETED, DECLINED, CANCELLED, EXPIRED. */
 public enum TradeStatus {
     PENDING("Afventer"),
     ACCEPTED("Accepteret"),

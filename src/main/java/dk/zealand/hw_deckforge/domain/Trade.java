@@ -51,13 +51,18 @@ public class Trade {
 
     // --- Adfærd ---
 
-    public boolean isExpired() { return expiresAt.isBefore(LocalDateTime.now()); }
     public void accept() { this.status = TradeStatus.ACCEPTED; }
     public void decline() { this.status = TradeStatus.DECLINED; }
     public void cancel() { this.status = TradeStatus.CANCELLED; }
     public void complete() { this.status = TradeStatus.COMPLETED; }
+
+    /** Registrerer forslagsstillerens bekræftelse på fysisk gennemførelse. */
     public void confirmProposer() { this.proposerConfirmed = true; }
+
+    /** Registrerer modtagerens bekræftelse. */
     public void confirmReceiver() { this.receiverConfirmed = true; }
+
+    /** @return true når begge parter har bekræftet */
     public boolean isFullyConfirmed() { return proposerConfirmed && receiverConfirmed; }
 
     // --- Validering ---

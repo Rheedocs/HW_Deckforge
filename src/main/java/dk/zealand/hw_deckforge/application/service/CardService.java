@@ -2,8 +2,6 @@ package dk.zealand.hw_deckforge.application.service;
 
 import dk.zealand.hw_deckforge.domain.exceptions.NotFoundException;
 
-import dk.zealand.hw_deckforge.domain.exceptions.ValidationException;
-
 import dk.zealand.hw_deckforge.application.interfaces.ICardRepository;
 import dk.zealand.hw_deckforge.domain.Card;
 import dk.zealand.hw_deckforge.infrastructure.external.ScryfallService;
@@ -13,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/** Håndterer kortadministration inkl. hentning af kortbilleder via ScryfallService.
+ * Kun admin kan oprette og redigere. */
 @Service
 public class CardService {
 
@@ -32,6 +32,7 @@ public class CardService {
         return cardRepository.findAll();
     }
 
+    /** @return map fra kort-id til Card for O(1) opslag i templates uden gentagne databasekald. */
     public Map<Integer, Card> getCardMap() {
         Map<Integer, Card> map = new HashMap<>();
         for (Card card : cardRepository.findAll()) {
@@ -41,7 +42,7 @@ public class CardService {
     }
 
     public Card getById(int id) {
-        validateId(id, "Id");
+        validateId(id);
         Card card = cardRepository.findById(id);
         if (card == null) throw new NotFoundException("Kort med id " + id + " blev ikke fundet");
         return card;
@@ -49,11 +50,13 @@ public class CardService {
 
     // --- Livscyklus ---
 
+    /** Opretter kort og henter billedeurl fra Scryfall hvis en Scryfall-url er angivet. */
     public void create(Card card, String scryfallUrl) {
         prepareCardForSave(card, scryfallUrl);
         cardRepository.save(card);
     }
 
+    /** Opdaterer kortdata og henter ny billedeurl fra Scryfall hvis url er ændret. */
     public void update(Card card, String scryfallUrl) {
         validateCardForUpdate(card);
         prepareCardForSave(card, scryfallUrl);
@@ -61,7 +64,7 @@ public class CardService {
     }
 
     public void delete(int id) {
-        validateId(id, "Id");
+        validateId(id);
         cardRepository.delete(id);
     }
 
@@ -99,8 +102,8 @@ public class CardService {
         if (card.getId() == null || card.getId() <= 0) throw new IllegalArgumentException("Ugyldigt kort-id");
     }
 
-    private void validateId(int id, String fieldName) {
-        if (id <= 0) throw new IllegalArgumentException(fieldName + " skal være større end nul");
+    private void validateId(int id) {
+        if (id <= 0) throw new IllegalArgumentException("Id skal være større end nul");
     }
 }
 
