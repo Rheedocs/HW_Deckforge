@@ -80,7 +80,7 @@ function filterPlayerList() {
     document.querySelectorAll(".desktop-table tbody tr").forEach(function (tr) {
         let c = tr.cells;
         if (!c || c.length < 2) return;
-        let nameCell = tr.querySelector("td:nth-child(2)") || tr.querySelector("td");
+        let nameCell = tr.querySelector("td a[href*='/players/']");
         let name = nameCell ? nameCell.textContent.toLowerCase() : "";
         tr.classList.toggle("filter-hidden", searchText && !name.includes(searchText));
     });
