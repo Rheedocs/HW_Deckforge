@@ -47,13 +47,13 @@ function filterCardList() {
     let selectedType = document.getElementById("cardListType")?.value || "";
     filterCardGrid(searchText, selectedColor, selectedType);
     filterCardTable(searchText, selectedColor, selectedType);
+    if (document.getElementById("cardListGrid")) showPage("cardListGrid", "cardListPagination", 1);
 }
 
 function filterCardGrid(searchText, selectedColor, selectedType) {
     document.querySelectorAll(".card-grid .card-thumb").forEach(function (el) {
         el.classList.toggle("filter-hidden", !matchesFilter(el, searchText, selectedColor, selectedType));
     });
-    if (document.getElementById("cardListGrid")) showPage("cardListGrid", "cardListPagination", 1);
 }
 
 function filterCardTable(searchText, selectedColor, selectedType) {

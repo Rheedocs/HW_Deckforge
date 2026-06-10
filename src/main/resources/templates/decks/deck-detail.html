@@ -134,7 +134,8 @@
     <!-- Tilføj kort (kun ejer) -->
     <div th:if="${isSelf}" class="section-add">
         <h3>Tilføj kort</h3>
-        <form th:action="@{/decks/{id}/cards/add(id=${deck.id})}" method="post" id="addCardForm">
+        <form th:action="@{/decks/{id}/cards/add(id=${deck.id})}" method="post" id="addCardForm"
+              th:data-format="${deck.format.name()}">
             <input type="hidden" id="selectedCardId" name="cardId">
             <div class="picker-sticky-bar" id="deckPickerStickyBar">
                 <div class="picker-sticky-preview">
@@ -143,7 +144,7 @@
                 </div>
                 <div class="picker-sticky-actions">
                     <label for="quantity">Antal</label>
-                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="4" required>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" required>
                     <button class="btn" type="submit">Tilføj</button>
                 </div>
             </div>
