@@ -177,6 +177,18 @@ public class TradeService {
         tradeRepository.update(trade);
     }
 
+    /** Annullerer alle ikke-afsluttede bytter hvor spilleren indgår. Kaldes når en spiller slettes,
+     *  så modparten ikke står med et bytte der aldrig kan gennemføres. */
+    public void cancelActiveTradesForPlayer(int playerId) {
+        validateId(playerId, "Player-id");
+        for (Trade trade : tradeRepository.findByPlayerId(playerId)) {
+            if (trade.getStatus() == TradeStatus.PENDING || trade.getStatus() == TradeStatus.ACCEPTED) {
+                trade.cancel();
+                tradeRepository.update(trade);
+            }
+        }
+    }
+
     /** Dobbelt bekræftelse. Sætter COMPLETED og opdaterer samlinger kun når begge har bekræftet. */
     public void complete(int tradeId, int requestingPlayerId) {
         Trade trade = getById(tradeId);
@@ -204,7 +216,7 @@ public class TradeService {
 
         Player proposer = playerRepository.findById(proposerId);
         Player receiver = playerRepository.findById(receiverId);
-        if (receiver == null) throw new IllegalArgumentException("Modtager findes ikke");
+        if (receiver == null || !receiver.isActive()) throw new IllegalArgumentException("Modtager findes ikke");
         if (proposer == null) throw new IllegalArgumentException("Afsender findes ikke");
         if (receiver.getCollectionVisibility() == CollectionVisibility.PRIVATE)
             throw new AccessDeniedException("Denne spillers profil er privat");

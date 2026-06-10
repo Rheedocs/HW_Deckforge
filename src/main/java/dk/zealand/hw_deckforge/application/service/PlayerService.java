@@ -25,12 +25,14 @@ public class PlayerService {
     private final IPlayerRepository playerRepository;
     private final IPlayerCardRepository playerCardRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final TradeService tradeService;
 
     public PlayerService(IPlayerRepository playerRepository, IPlayerCardRepository playerCardRepository,
-                         BCryptPasswordEncoder passwordEncoder) {
+                         BCryptPasswordEncoder passwordEncoder, TradeService tradeService) {
         this.playerRepository = playerRepository;
         this.playerCardRepository = playerCardRepository;
         this.passwordEncoder = passwordEncoder;
+        this.tradeService = tradeService;
     }
 
     // --- Forespørgsler ---
@@ -47,7 +49,8 @@ public class PlayerService {
     public Player getById(int id) {
         validateId(id, "Id");
         Player player = playerRepository.findById(id);
-        if (player == null) throw new NotFoundException("Spiller med id " + id + " findes ikke");
+        if (player == null || !player.isActive())
+            throw new NotFoundException("Spiller med id " + id + " findes ikke");
         return player;
     }
 
@@ -62,6 +65,14 @@ public class PlayerService {
         }
         if (self != null) sorted.addFirst(self);
         return sorted;
+    }
+
+    /** Til admin- og livscyklus-flows der skal kunne tilgå deaktiverede spillere. */
+    public Player getByIdIncludingInactive(int id) {
+        validateId(id, "Id");
+        Player player = playerRepository.findById(id);
+        if (player == null) throw new NotFoundException("Spiller med id " + id + " findes ikke");
+        return player;
     }
 
     // --- Auth og livscyklus ---
@@ -85,7 +96,7 @@ public class PlayerService {
 
     /** Opdaterer profil, rolle, aktiv-status og adgangskode i én samlet operation med validering. */
     public void update(Player player, String newPassword, boolean isAdmin, boolean isSelf) {
-        Player existing = getById(player.getId());
+        Player existing = getByIdIncludingInactive(player.getId());
         applyProfileChanges(existing, player);
         applyRoleAndStatus(existing, player, isAdmin, isSelf);
         applyPasswordChange(existing, newPassword);
@@ -93,19 +104,22 @@ public class PlayerService {
         playerRepository.update(existing);
     }
 
-    /** Sletter spiller efter tjek via isOnlyAdmin. Forhindrer sletning af systemets sidste admin. */
+    /** Anonymiserer spillerens persondata og deaktiverer kontoen (GDPR-sletning).
+     *  Tjekker via isOnlyAdmin og forhindrer sletning af systemets sidste admin. */
     public void delete(int id) {
         validateId(id, "Id");
-        Player player = getById(id);
+        Player player = getByIdIncludingInactive(id);
         validateCanDelete(player);
-        playerRepository.delete(id);
+        tradeService.cancelActiveTradesForPlayer(id);
+        player.anonymize();
+        playerRepository.update(player);
     }
 
     /** @return true hvis der kun er én admin og den givne spiller er den. Forhindrer sletning af sidste admin. */
     public boolean isOnlyAdmin(int id) {
         int adminCount = 0;
         for (Player player : getAll()) if (player.getRole() == Role.ADMIN) adminCount++;
-        return adminCount == 1 && getById(id).getRole() == Role.ADMIN;
+        return adminCount == 1 && getByIdIncludingInactive(id).getRole() == Role.ADMIN;
     }
 
     /** Kaster AccessDeniedException hvis samlingen er privat og spilleren hverken er ejer eller admin. */

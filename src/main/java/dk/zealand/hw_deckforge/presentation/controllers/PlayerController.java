@@ -106,7 +106,7 @@ public class PlayerController {
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable int id, Model model, HttpSession session) {
         if (!AuthHelper.isAdminOrSelf(session, id)) return "redirect:/access-denied";
-        model.addAttribute("player", playerService.getById(id));
+        model.addAttribute("player", playerService.getByIdIncludingInactive(id));
         model.addAttribute("roles", Role.values());
         model.addAttribute("visibilities", CollectionVisibility.values());
         return "players/edit-player";
@@ -131,7 +131,7 @@ public class PlayerController {
     public String showDeleteConfirm(@PathVariable int id, Model model, HttpSession session,
                                     @RequestHeader(value = "Referer", required = false) String referer) {
         if (!AuthHelper.isAdminOrSelf(session, id)) return "redirect:/access-denied";
-        Player player = playerService.getById(id);
+        Player player = playerService.getByIdIncludingInactive(id);
         model.addAttribute("navn", player.getUsername());
         model.addAttribute("deleteUrl", "/players/" + id + "/delete");
         model.addAttribute("tilbage", referer != null ? referer : "/players");

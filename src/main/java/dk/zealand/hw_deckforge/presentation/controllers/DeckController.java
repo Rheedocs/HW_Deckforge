@@ -55,6 +55,7 @@ public class DeckController {
     @GetMapping("/{id}")
     public String showDetail(@PathVariable int id, Model model, HttpSession session) {
         Deck deck = deckService.getById(id);
+        playerService.getById(deck.getPlayerId()); // kaster NotFound hvis ejeren er slettet
         boolean isSelf = AuthHelper.isSelf(session, deck.getPlayerId());
         boolean isAdmin = AuthHelper.isAdmin(session);
         deckService.checkAccess(deck, isSelf, isAdmin);

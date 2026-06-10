@@ -28,6 +28,7 @@ class PlayerServiceTest {
     @Mock private IPlayerRepository playerRepository;
     @Mock private IPlayerCardRepository playerCardRepository;
     @Mock private BCryptPasswordEncoder passwordEncoder;
+    @Mock private TradeService tradeService;
 
     private PlayerService playerService;
     private Player player;
@@ -35,7 +36,7 @@ class PlayerServiceTest {
 
     @BeforeEach
     void setup() {
-        playerService = new PlayerService(playerRepository, playerCardRepository, passwordEncoder);
+        playerService = new PlayerService(playerRepository, playerCardRepository, passwordEncoder, tradeService);
         player = new Player(1, "Nicki", "nicki@test.dk", "hashed-password", Role.PLAYER, CollectionVisibility.TRADE_ONLY);
         admin = new Player(2, "Admin", "admin@test.dk", "hashed-password", Role.ADMIN, CollectionVisibility.PUBLIC);
     }
@@ -207,13 +208,16 @@ class PlayerServiceTest {
     // --- Slet ---
 
     @Test
-    void delete_withExistingPlayer_deletesPlayer() {
+    void delete_withExistingPlayer_anonymizesAndDeactivates() {
         when(playerRepository.findById(1)).thenReturn(player);
         when(playerRepository.findAll()).thenReturn(List.of(player, admin));
 
         playerService.delete(1);
 
-        verify(playerRepository).delete(1);
+        assertEquals("Slettet bruger #1", player.getUsername());
+        assertFalse(player.isActive());
+        verify(tradeService).cancelActiveTradesForPlayer(1);
+        verify(playerRepository).update(player);
     }
 
     @Test

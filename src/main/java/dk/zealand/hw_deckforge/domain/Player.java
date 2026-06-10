@@ -49,9 +49,6 @@ public class Player {
 
     // --- Adfærd ---
 
-    /** Deaktiverer kontoen. Spilleren kan ikke logge ind men data bevares. */
-    public void deactivate() { this.active = false; }
-
     public void changeVisibility(CollectionVisibility visibility) {
         if (visibility == null) throw new IllegalArgumentException("Synlighed må ikke være null");
         this.collectionVisibility = visibility;
@@ -69,6 +66,14 @@ public class Player {
     /** Skifter spillerens rolle. Bruges af admin via PlayerService. */
     public void demoteToPlayer() { this.role = Role.PLAYER; }
     public boolean isAdmin() { return this.role == Role.ADMIN; }
+
+    /** GDPR: fjerner personhenførbare oplysninger ved sletning og deaktiverer kontoen.
+     *  Historik bevares via player_id, men viser nu en anonym værdi. */
+    public void anonymize() {
+        this.username = "Slettet bruger #" + id;
+        this.email = "slettet-" + id + "@deleted.invalid";
+        this.active = false;
+    }
 
     public boolean isCollectionVisible(CollectionVisibility visibility) {
         return this.collectionVisibility == visibility;
